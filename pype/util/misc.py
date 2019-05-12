@@ -2,10 +2,18 @@
 
 """Utility functions."""
 
+import logging
 
-def get_or_default(json, key, default_value):
-    value = json.get(key)
-    return value if value else default_value
+
+def get_or_default(json, path, default_value):
+    try:
+        for breadcrumb in path.split('.'):
+            json = json[breadcrumb]
+        return json if json else default_value
+    except KeyError:
+        logging.getLogger(__name__).error(
+            'Invalid config key \'{}\''.format(path))
+        return default_value
 
 
 def get_kwarg_value_or_empty(kwargs, key):

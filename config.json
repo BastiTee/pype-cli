@@ -1,0 +1,9 @@
+{
+    "core": {
+        "loglevel": "INFO",
+        "logformat": "%(asctime)-15s %(levelname)s %(message)s"
+    },
+    "pypes": [
+        "pypes_default"
+    ]
+}
