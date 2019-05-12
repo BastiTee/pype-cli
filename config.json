@@ -4,6 +4,7 @@
         "logformat": "%(asctime)-15s %(levelname)s %(message)s"
     },
     "pypes": [
-        "pypes_default"
+        "pypes_internal",
+        "pypes_example"
     ]
 }

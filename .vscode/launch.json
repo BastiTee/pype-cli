@@ -1,0 +1,23 @@
+{
+    "configurations": [
+        {
+            "name": "Python: Module",
+            "type": "python",
+            "request": "launch",
+            "module": "pype",
+            "env": {
+                "PYTHONPATH": "${workspaceRoot}"
+            }
+        },
+        {
+            "name": "Run current file",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "env": {
+                "PYTHONPATH": "${workspaceRoot}"
+            },
+            "console": "integratedTerminal"
+        }
+    ]
+}

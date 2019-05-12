@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import pytest
-from pype.utils import (get_kwarg_value_or_empty)
+from pype.util.misc import (get_kwarg_value_or_empty)
 
 
 class TestUtils:
