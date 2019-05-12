@@ -8,7 +8,7 @@
 """
 
 from argparse import ArgumentParser
-from pype.pype_core import PypeCore
+from pype_core import PypeCore
 
 if __name__ == "__main__":
     parser = ArgumentParser(description="pype")
@@ -22,4 +22,4 @@ if __name__ == "__main__":
         action='store_true',
         help='Set logging to DEBUG')
     parser.add_argument('pype_command', nargs='*')
-    pype = PypeCore(parser.parse_args())
+    PypeCore(parser.parse_args())

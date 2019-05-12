@@ -3,7 +3,7 @@
         "loglevel": "INFO",
         "logformat": "%(asctime)-15s %(levelname)s %(message)s"
     },
-    "pypes": [
+    "plugin_pypes": [
         "pypes_internal",
         "pypes_example"
     ]
