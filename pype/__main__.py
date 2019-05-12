@@ -3,7 +3,6 @@
 
 """Pype: A Python framework for your command-line tooling needs"""
 
-import os
 from pype.pype_core import PypeCore
 import click
 

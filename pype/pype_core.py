@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """"""
 
-import importlib
+import subprocess
 import logging
 from json import load
 from os.path import dirname
@@ -43,14 +43,8 @@ class PypeCore():
                     continue
                 self.log.debug('Invoking script \'{}\''.format(
                     plugin.name + '.' + pype.name))
-                # This will trigger any script not supporting main()
-                pype = importlib.import_module(plugin.name + '.' + pype.name)
-                try:
-                    # And this any main() based script
-                    sys.args = pype
-                    pype.main()
-                except AttributeError:
-                    pass
+                subprocess.run([sys.executable, '-m', plugin.name +
+                                '.' + pype.name] + list(args_pype[1:]))
                 return
         self.log.info('Pype not found: \'{}\''.format(root_cmd))
 
