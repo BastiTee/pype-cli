@@ -5,9 +5,10 @@
 import importlib
 import logging
 from json import load
+from os.path import dirname
 
-from plugin_type import Plugin
-from util.misc import get_or_default
+from pype.plugin_type import Plugin
+from pype.util.misc import get_or_default
 
 
 class PypeCore():
@@ -18,10 +19,41 @@ class PypeCore():
         '%(asctime)-15s %(levelname)s %(message)s [%(name)s.%(funcName)s]'
     )
 
-    def __init__(self, args):
-        cfg = self.load_configuration(args.c)
+    def __init__(self, config_file, verbose, list_pypes, pype):
+        cfg = self.load_configuration(config_file)
+        self.configure_logging(cfg, verbose)
+        self.log.debug('Initializing pype...')
+        self.plugins = [
+            Plugin(plugin)
+            for plugin in get_or_default(cfg, 'plugins', [])
+        ]
+        if list_pypes:
+            self.print_docu()
+        else:
+            self.run_pype(self.plugins, pype)
+
+    def run_pype(self, reg, args_pype):
+        if not args_pype:
+            print('No pype selected.')
+            exit(0)
+        root_cmd = args_pype[0]
+        for plugin in self.plugins:
+            for pype in plugin.pypes:
+                if not pype.name == root_cmd:
+                    continue
+                self.log.debug('Starting pype \'{}\''.format(
+                    plugin.name + '.' + pype.name))
+                importlib.import_module(plugin.name + '.' + pype.name)
+                return
+        self.log.info('Pype not found: \'{}\''.format(root_cmd))
+
+    def load_configuration(self, cfg_path):
+        cfg_path = cfg_path if cfg_path else self.DEFAULT_CONFIG_FILE
+        return load(open(cfg_path, 'r'))
+
+    def configure_logging(self, cfg, verbose):
         default_loglevel = (
-            'DEBUG' if args.v
+            'DEBUG' if verbose
             else get_or_default(cfg, 'core.loglevel', self.DEFAULT_LOG_LEVEL))
         logging.basicConfig(
             level=default_loglevel,
@@ -29,36 +61,17 @@ class PypeCore():
                                   'core.logformat', self.DEFAULT_LOG_FORMAT)
         )
         self.log = logging.getLogger(__name__)
-        self.log.debug('Initializing pype...')
-        self.plugin_pypes = [
-            Plugin(plugin)
-            for plugin in get_or_default(cfg, 'plugin_pypes', [])
-        ]
-        self.log.debug('Loaded plugins:\n{}'.format(
-            self.prettify_plugin_registry()))
-        self.invoke_matching_pype(self.plugin_pypes, args.pype_command)
 
-    def invoke_matching_pype(self, reg, cmdline):
-        if not cmdline:
-            print('No pype selected.')
-            exit(0)
-        root_cmd = cmdline[0]
-        for plugin in self.plugin_pypes:
+    def print_docu(self):
+        for plugin in self.plugins:
+            print('PLUGIN: {} ({})'.format(
+                plugin.name.upper(), plugin.doc))
             for pype in plugin.pypes:
-                if not pype.name == root_cmd:
-                    continue
-                importlib.import_module(plugin.name + '.' + pype.name)
-                return
-        self.log.info('No matching pype for name \'{}\'.'.format(root_cmd))
+                print('\t{} - {}'.format(
+                    pype.name, pype.doc
+                ))
+            print()
 
-    def load_configuration(self, cfg_path):
-        cfg_path = cfg_path if cfg_path else self.DEFAULT_CONFIG_FILE
-        return load(open(cfg_path, 'r'))
 
-    def prettify_plugin_registry(self):
-        plugin_docu = []
-        for plugin in self.plugin_pypes:
-            plugin_docu.append(plugin.name.upper())
-            for pype in plugin.pypes:
-                plugin_docu.append(' - {} = {}'.format(pype.name, pype.docu))
-        return '\n'.join(plugin_docu)
+def get_pype_basepath():
+    return dirname(dirname(__file__))

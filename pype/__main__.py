@@ -1,25 +1,27 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-"""Pype
+"""Pype: A Python framework for your command-line tooling needs"""
 
-:copyright: (c) 2019 by Basti Tee.
-:license: Apache 2.0, see LICENSE for more details.
-"""
+from pype.pype_core import PypeCore
+import click
 
-from argparse import ArgumentParser
-from pype_core import PypeCore
+CONTEXT_SETTINGS = dict(
+    help_option_names=['-h', '--help']
+)
+
+
+@click.command(context_settings=CONTEXT_SETTINGS)
+@click.option('--verbose', '-v', is_flag=True,
+              help='Show verbose output')
+@click.option('--list-pypes', '-l', is_flag=True,
+              help='Print available pypes')
+@click.option('--config', '-c', default='config.json',
+              help='Pype configuration file')
+@click.argument('pype', nargs=-1, type=click.UNPROCESSED)
+def main(config, verbose, list_pypes, pype):
+    PypeCore(config, verbose, list_pypes, pype)
+
 
 if __name__ == "__main__":
-    parser = ArgumentParser(description="pype")
-    parser.add_argument(
-        '-c',
-        metavar="CONFIG_JSON",
-        type=str,
-        help='Pype configuration file (defaults to config.json)')
-    parser.add_argument(
-        '-v',
-        action='store_true',
-        help='Set logging to DEBUG')
-    parser.add_argument('pype_command', nargs='*')
-    PypeCore(parser.parse_args())
+    main()  # pylint: disable=no-value-for-parameter

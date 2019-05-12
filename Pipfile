@@ -14,6 +14,7 @@ rope = "*"
 
 [packages]
 requests = "*"
+click = "*"
 
 [requires]
 # Please check https://github.com/pypa/pipenv/issues/1050 why we don't set

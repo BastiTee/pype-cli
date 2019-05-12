@@ -7,9 +7,9 @@ import inspect
 from os import path
 from re import sub
 
-from exception import PypeConfigurationException
-from pype_type import Pype
-from util.iotools import get_immediate_subfiles
+from pype.exceptions import PypeConfigurationException
+from pype.pype_type import Pype
+from pype.util.iotools import get_immediate_subfiles
 
 
 class Plugin():

@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 """"""
 
-import os
-import re
+from os import path, listdir
+from re import match, IGNORECASE
 
 
 def get_immediate_subfiles(file_path, pattern=None, ignorecase=False):
@@ -13,13 +13,13 @@ def get_immediate_subfiles(file_path, pattern=None, ignorecase=False):
         raise TypeError('file_path not provided.')
 
     files = []
-    for name in os.listdir(file_path):
-        if os.path.isdir(os.path.join(file_path, name)):
+    for name in listdir(file_path):
+        if path.isdir(path.join(file_path, name)):
             continue
         if pattern:
-            if ignorecase and re.match(pattern, name, re.IGNORECASE):
+            if ignorecase and match(pattern, name, IGNORECASE):
                 files.append(name)
-            elif re.match(pattern, name):
+            elif match(pattern, name):
                 files.append(name)
             continue
         files.append(name)

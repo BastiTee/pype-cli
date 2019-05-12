@@ -1,9 +1,9 @@
 {
     "core": {
         "loglevel": "INFO",
-        "logformat": "%(asctime)-15s %(levelname)s %(message)s"
+        "logformat": "%(message)s"
     },
-    "plugin_pypes": [
+    "plugins": [
         "pypes_internal",
         "pypes_example"
     ]
