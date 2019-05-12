@@ -21,7 +21,7 @@ init() {
 
 shell() {
     # Initialize virtualenv and open a new shell using it
-    init
+    pipenv run pip install --editable .
     pipenv shell
 }
 

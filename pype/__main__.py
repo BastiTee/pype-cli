@@ -3,11 +3,14 @@
 
 """Pype: A Python framework for your command-line tooling needs"""
 
+import os
 from pype.pype_core import PypeCore
 import click
 
 CONTEXT_SETTINGS = dict(
-    help_option_names=['-h', '--help']
+    help_option_names=['-h', '--help'],
+    ignore_unknown_options=True,
+    allow_extra_args=True,
 )
 
 

@@ -35,7 +35,11 @@ setup(
     packages=find_packages(exclude=("tests",)),
     include_package_data=True,
     python_requires=">=3.6",
-    install_requires=[],
+    install_requires=['Click'],
+    entry_points='''
+        [console_scripts]
+        pype=pype.__main__:main
+    ''',
     # Licensing and copyright
     license='Apache 2.0'
 )

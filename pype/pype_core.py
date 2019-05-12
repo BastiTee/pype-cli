@@ -6,7 +6,7 @@ import importlib
 import logging
 from json import load
 from os.path import dirname
-
+import sys
 from pype.plugin_type import Plugin
 from pype.util.misc import get_or_default
 
@@ -22,7 +22,7 @@ class PypeCore():
     def __init__(self, config_file, verbose, list_pypes, pype):
         cfg = self.load_configuration(config_file)
         self.configure_logging(cfg, verbose)
-        self.log.debug('Initializing pype...')
+        self.log.debug('Initializing pype: {}'.format(pype))
         self.plugins = [
             Plugin(plugin)
             for plugin in get_or_default(cfg, 'plugins', [])
@@ -41,9 +41,16 @@ class PypeCore():
             for pype in plugin.pypes:
                 if not pype.name == root_cmd:
                     continue
-                self.log.debug('Starting pype \'{}\''.format(
+                self.log.debug('Invoking script \'{}\''.format(
                     plugin.name + '.' + pype.name))
-                importlib.import_module(plugin.name + '.' + pype.name)
+                # This will trigger any script not supporting main()
+                pype = importlib.import_module(plugin.name + '.' + pype.name)
+                try:
+                    # And this any main() based script
+                    sys.args = pype
+                    pype.main()
+                except AttributeError:
+                    pass
                 return
         self.log.info('Pype not found: \'{}\''.format(root_cmd))
 
