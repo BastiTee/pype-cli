@@ -1,0 +1,20 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+pytest = "*"
+pylint = "*"
+autopep8 = "*"
+flake8 = "*"
+detox = "*"
+requests = "*"
+
+[packages]
+requests = "*"
+
+[requires]
+# Please check https://github.com/pypa/pipenv/issues/1050 why we don't set
+# a specific Python version (https://www.python.org/doc/versions) here.
+# python_version = "3.6"
