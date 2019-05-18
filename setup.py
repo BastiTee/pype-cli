@@ -18,7 +18,7 @@ setup(
     author_email='basti.tee@posteo.de',
     url='https://github.com/BastiTee/pype',
     # Detailed description
-    description='A Python framework for command line tooling',
+    description='A command-line tool for command-line tools',
     long_description=long_description,
     long_description_content_type='text/markdown',
     keywords='development',
