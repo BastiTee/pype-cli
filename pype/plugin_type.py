@@ -17,7 +17,7 @@ class Plugin():
 
     def __init__(self, plugin_config):
         self.name = plugin_config['name']
-        syspath.append(plugin_config['path'])
+        syspath.append(path.abspath(plugin_config['path']))
         try:
             py_module = importlib.import_module(self.name)
         except ModuleNotFoundError as e:

@@ -6,7 +6,8 @@ import subprocess
 import logging
 from json import load
 from os.path import dirname
-import sys
+from os import environ
+from sys import executable, path as syspath
 from pype.plugin_type import Plugin
 from pype.util.misc import get_or_default
 
@@ -43,8 +44,14 @@ class PypeCore():
                     continue
                 self.log.debug('Invoking script \'{}\''.format(
                     plugin.name + '.' + pype.name))
-                subprocess.run([sys.executable, '-m', plugin.name +
-                                '.' + pype.name] + list(args_pype[1:]))
+                # extend PYTHONPATH
+                syspath.append(dirname(pype.abspath))
+                # copy environment
+                sub_environment = environ.copy()
+                sub_environment['PYTHONPATH'] = ':'.join(syspath)
+                command = [executable, '-m', plugin.name +
+                           '.' + pype.name] + list(args_pype[1:])
+                subprocess.run(command, env=sub_environment)
                 return
         self.log.info('Pype not found: \'{}\''.format(root_cmd))
 
