@@ -1,6 +1,5 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-""""""
+"""I/O utilities."""
 
 from os import path, listdir
 from re import match, IGNORECASE

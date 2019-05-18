@@ -1,8 +1,4 @@
 {
-    "core": {
-        "loglevel": "INFO",
-        "logformat": "%(message)s"
-    },
     "plugins": [
         {
             "name": "basics",

@@ -1,21 +1,46 @@
 # -*- coding: utf-8 -*-
 
-import pytest
-from pype.util.misc import (get_kwarg_value_or_empty)
+from pype.util.misc import (get_or_default)
 
 
 class TestUtils:
 
-    @pytest.mark.parametrize('kwarg, key', [
-        (None, 1), (1, None), (None, None)
-    ])
-    def test_get_kwarg_value_or_empty_no_input(self, kwarg, key):
-        with pytest.raises(ValueError):
-            get_kwarg_value_or_empty(kwarg, key)
+    def test_get_or_default__noneInput(self):
+        value = get_or_default(None, None, None)
+        assert not value
 
-    @pytest.mark.parametrize('kwarg, key', [
-        ({'foo': 'bar'}, 'foo'),
-        ({'foo': '   bar        '}, 'foo')
-    ])
-    def test_get_kwarg_value_or_empty_regular_input(self, kwarg, key):
-        assert get_kwarg_value_or_empty(kwarg, key) == 'bar'
+    def test_get_or_default__noneInputWithEmptyBreadcrumb(self):
+        value = get_or_default(None, '', None)
+        assert not value
+
+    def test_get_or_default__noneInputWithBreadcrumb(self):
+        value = get_or_default(None, 'test', None)
+        assert not value
+
+    def test_get_or_default__noneInputWithBreadcrumbCustom(self):
+        value = get_or_default(None, 'test', 'custom')
+        assert value == 'custom'
+
+    def test_get_or_default__firstLevelBreadcrumb(self):
+        value = get_or_default({
+            'test': 'response'
+        }, 'test', 'custom')
+        assert value == 'response'
+
+    def test_get_or_default__secondLevelBreadcrumb(self):
+        value = get_or_default({
+            'test': {
+                'subtest': 'response'
+            }
+        }, 'test.subtest', 'default'
+        )
+        assert value == 'response'
+
+    def test_get_or_default__secondLevelBreadcrumbMiss(self):
+        value = get_or_default({
+            'test': {
+                'subtest': 'response'
+            }
+        }, 'test.subtestmiss', 'default'
+        )
+        assert value == 'default'

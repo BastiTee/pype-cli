@@ -5,12 +5,13 @@ from os import path
 from re import sub
 from sys import path as syspath
 
-from pype.exceptions import PypeConfigurationException
+from pype.pype_exception import PypeException
 from pype.pype_type import Pype
 from pype.util.iotools import get_immediate_subfiles
 
 
 class Plugin():
+    """Data structure defining a plugin, i.e., a set of pypes."""
 
     def __init__(self, plugin_config):
         self.name = plugin_config['name']
@@ -18,7 +19,7 @@ class Plugin():
         try:
             self.module = importlib.import_module(self.name)
         except ModuleNotFoundError as e:
-            raise PypeConfigurationException(e)
+            raise PypeException(e)
         self.doc = self.get_docu_or_default(self.module)
         self.abspath = path.join(
             path.abspath(plugin_config['path']), self.name)

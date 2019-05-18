@@ -7,6 +7,10 @@
 - Run `./make shell` to open a `pipenv` shell with the required shell configuration
 - Inside venv-shell run `pype` to operate locale development version (it will react to code changes)
 
+```shell
+eval "$(_PYPE_COMPLETE=source pype)"
+```
+
 ## To-Do's
 
 This project is currently a proof of concept.

@@ -9,27 +9,19 @@ import click
 
 from pype.pype_core import PypeCore
 
-"""
-eval "$(_PYPE_COMPLETE=source pype)"
-
-"""
-
-CONTEXT_SETTINGS = dict(
-    help_option_names=['-h', '--help'],
-    # ignore_unknown_options=True,
-    # allow_extra_args=True,
-)
 CONFIG_FILE_PATH = path.join(
     path.dirname(path.dirname(__file__)), 'config.json')
 PYPE_CORE = PypeCore(CONFIG_FILE_PATH)
 
 
-@click.group(invoke_without_command=True, context_settings=CONTEXT_SETTINGS)
-@click.option('--verbose', '-v', is_flag=True, help='Show verbose output')
-@click.option('--list-pypes', '-l', is_flag=True, help='Print available pypes')
+@click.group(
+    invoke_without_command=True,
+    context_settings=dict(help_option_names=['-h', '--help'])
+)
+@click.option('--list-pypes', '-l', is_flag=True,
+              help='Print all available pypes')
 @click.pass_context
-def main(ctx, verbose, list_pypes):
-    PYPE_CORE.configure_logging(verbose)
+def main(ctx, list_pypes):
     if list_pypes:
         PYPE_CORE.list_pypes()
         return
