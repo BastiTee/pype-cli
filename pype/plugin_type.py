@@ -6,6 +6,7 @@ import importlib
 import inspect
 from os import path
 from re import sub
+from sys import path as syspath
 
 from pype.exceptions import PypeConfigurationException
 from pype.pype_type import Pype
@@ -14,16 +15,19 @@ from pype.util.iotools import get_immediate_subfiles
 
 class Plugin():
 
-    def __init__(self, plugin_name):
+    def __init__(self, plugin_config):
+        self.name = plugin_config['name']
+        syspath.append(plugin_config['path'])
         try:
-            py_module = importlib.import_module(plugin_name)
+            py_module = importlib.import_module(self.name)
         except ModuleNotFoundError as e:
             raise PypeConfigurationException(e)
-        self.name = plugin_name
+        self.abspath = path.join(
+            path.abspath(plugin_config['path']), self.name)
         self.module = py_module
-        self.abspath = path.dirname(inspect.getabsfile(py_module))
         self.pypes = [
-            Pype(path.join(self.abspath, subfile), subfile, plugin_name)
+            Pype(path.join(self.abspath, subfile),
+                 subfile, plugin_config)
             for subfile in
             get_immediate_subfiles(self.abspath, r'^(?!__).*(?!__)\.py$')
         ]

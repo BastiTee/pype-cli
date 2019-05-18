@@ -13,7 +13,7 @@ This project is currently a proof of concept.
 
 - [ ] Auto-complete custom pypes using Click
 - [ ] Allow separation of subcommand options and pype-internal options (e.g. `-h` option)
-- [ ] Move example pypes to dedicated folder and make path configurable
+- [x] Move example pypes to dedicated folder and make path configurable
 - [x] Find a way to re-use module and script documentation for CLI documentation
 - [x] Introduce verbosity option
 - [x] Introduce a logging framework
