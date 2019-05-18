@@ -11,8 +11,9 @@
 
 This project is currently a proof of concept.
 
-- [ ] Auto-complete custom pypes using Click
-- [ ] Allow separation of subcommand options and pype-internal options (e.g. `-h` option)
+- [ ] Create a docker image to test installation on a mint system
+- [x] Auto-complete custom pypes using Click
+- [x] Allow separation of subcommand options and pype-internal options (e.g. `-h` option)
 - [x] Move example pypes to dedicated folder and make path configurable
 - [x] Find a way to re-use module and script documentation for CLI documentation
 - [x] Introduce verbosity option
@@ -22,3 +23,10 @@ This project is currently a proof of concept.
 - [x] Introduce configuration file
 - [x] Check how to backward-support shell scripts
 - [x] Setup with python3 best-practices boilerplate
+
+## Important resources
+
+- <https://click.palletsprojects.com/en/7.x/>
+- <http://click.palletsprojects.com/en/7.x/commands/>
+- <https://click.palletsprojects.com/en/7.x/bashcomplete/>
+- <https://click.palletsprojects.com/en/7.x/api/#click.Context>
