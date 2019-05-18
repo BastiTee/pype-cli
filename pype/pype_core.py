@@ -72,11 +72,11 @@ class PypeCore():
 
     def print_docu(self):
         for plugin in self.plugins:
-            print('PLUGIN: {} ({})'.format(
-                plugin.name.upper(), plugin.doc))
+            print('PLUGIN: {} ({}) @ {}'.format(
+                plugin.name.upper(), plugin.doc, plugin.abspath))
             for pype in plugin.pypes:
-                print('\t{} - {}'.format(
-                    pype.name, pype.doc
+                print('\t{} - {}\n\t@ {}'.format(
+                    pype.name, pype.doc, pype.abspath
                 ))
             print()
 

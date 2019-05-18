@@ -18,19 +18,18 @@ class Plugin():
         self.name = plugin_config['name']
         syspath.append(path.abspath(plugin_config['path']))
         try:
-            py_module = importlib.import_module(self.name)
+            self.module = importlib.import_module(self.name)
         except ModuleNotFoundError as e:
             raise PypeConfigurationException(e)
+        self.doc = self.get_docu_or_default(self.module)
         self.abspath = path.join(
             path.abspath(plugin_config['path']), self.name)
-        self.module = py_module
         self.pypes = [
             Pype(path.join(self.abspath, subfile),
                  subfile, plugin_config)
             for subfile in
             get_immediate_subfiles(self.abspath, r'^(?!__).*(?!__)\.py$')
         ]
-        self.doc = self.get_docu_or_default(py_module)
 
     def get_docu_or_default(self, module):
         return (
