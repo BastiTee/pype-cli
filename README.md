@@ -5,17 +5,15 @@
 ## Development
 
 - Run `./make shell` to open a `pipenv` shell with the required shell configuration
-- Inside venv-shell run `pype` to operate locale development version (it will react to code changes)
-
-```shell
-eval "$(_PYPE_COMPLETE=source pype)"
-```
+- Inside venv-shell execute `eval "$(_PYPE_COMPLETE=source pype)"` for bash-completion
+- Run `pype` to operate locale development version (it will react to code changes)
 
 ## To-Do's
 
 This project is currently a proof of concept.
 
-- [ ] Create a docker image to test installation on a mint system
+- [ ] Internalize default pypes such as 'version'
+- [x] Create a docker image to test installation on a mint system
 - [x] Auto-complete custom pypes using Click
 - [x] Allow separation of subcommand options and pype-internal options (e.g. `-h` option)
 - [x] Move example pypes to dedicated folder and make path configurable

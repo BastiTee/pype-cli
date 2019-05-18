@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 """Print current pype version."""
 
-import subprocess
+import pkg_resources
+
 from pype.pype_core import get_pype_basepath
 
-subprocess.run("""\
-cd """ + get_pype_basepath() + """ && git rev-parse --verify --short HEAD
-""", shell=True)
+base_path = get_pype_basepath()
+version = pkg_resources.get_distribution("pype").version
+print('{} @ {}'.format(version, base_path))

@@ -9,8 +9,13 @@ import click
 
 from pype.pype_core import PypeCore
 
-CONFIG_FILE_PATH = path.join(
-    path.dirname(path.dirname(__file__)), 'config.json')
+# Load configuration file
+try:
+    CONFIG_FILE_PATH = environ['PYPE_CONFIG_JSON']
+except KeyError:
+    CONFIG_FILE_PATH = path.join(
+        path.dirname(path.dirname(__file__)), 'config.json')
+
 PYPE_CORE = PypeCore(CONFIG_FILE_PATH)
 
 

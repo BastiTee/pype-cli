@@ -63,7 +63,15 @@ build() {
 
 install() {
     # Install pype globally on host system
-    echo TODO
+    build
+    python3 -m pip install dist/*.whl
+}
+
+dockerize() {
+    # Install pype into a dockercontainer to test mint-installation
+    build
+    docker build -t $PROJECT_NAME .
+    docker run --rm -ti $PROJECT_NAME
 }
 
 # -----------------------------------------------------------------------------
