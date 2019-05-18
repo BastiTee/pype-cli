@@ -3,7 +3,6 @@
 """"""
 
 import importlib
-import inspect
 from os import path
 from re import sub
 from sys import path as syspath
