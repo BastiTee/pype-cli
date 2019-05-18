@@ -1,10 +1,9 @@
 #!/bin/sh
 cd "$( cd "$( dirname "$0" )"; pwd )"
 
-TARGET_PORT=9690
 PROJECT_NAME="pype"
-
 export PIPENV_VERBOSITY=-1  # suppress warning if pipenv is started inside venv
+export PIPENV_VENV_IN_PROJECT=1  # use relative .venv folder
 export PYTHONPATH=.  # include source code in any python subprocess
 export LC_ALL=C.UTF-8
 export LANG=C.UTF-8
@@ -16,11 +15,14 @@ init() {
         exit 1
     fi
     python3 -m pip install pipenv --upgrade
-	PIPENV_VENV_IN_PROJECT=1 pipenv install --dev --skip-lock
+	pipenv install --dev --skip-lock
 }
 
 shell() {
     # Initialize virtualenv and open a new shell using it
+    if [ ! -d ".venv" ]; then
+        ./make init
+    fi
     pipenv run pip install --editable .
     pipenv shell
 }
@@ -53,22 +55,15 @@ lint() {
 build() {
     # Run setup.py-based build process to package application
     rm -fr build dist .egg *.egg-info
+    test
+    coverage
+    lint
     pipenv run python setup.py bdist_wheel $@
 }
 
-publish() {
-    sudo -H pip install 'twine>=1.5.0'
-    build && twine upload dist/*
-}
-
-commit() {
-    # Run full build toolchain before executing a git commit
-    all && git commit
-}
-
-all() {
-    # Full build toolchain
-    init && test && lint && coverage && build
+install() {
+    # Install pype globally on host system
+    echo TODO
 }
 
 # -----------------------------------------------------------------------------
