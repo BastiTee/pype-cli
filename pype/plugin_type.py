@@ -18,9 +18,9 @@ class Plugin():
             # external pype
             self.name = plugin_config['name']
             self.internal = False
-            syspath.append(path.abspath(plugin_config['path']))
             self.abspath = path.join(
                 path.abspath(plugin_config['path']), self.name)
+            syspath.append(path.abspath(plugin_config['path']))
         else:
             # internal pype
             self.name = 'pype.' + plugin_config['name']

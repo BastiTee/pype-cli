@@ -1,25 +1,18 @@
 # -*- coding: utf-8 -*-
 
 import subprocess
-from os import environ, path
-from sys import executable
+from os import environ, path, remove
 from re import sub
-from sys import path as syspath
 from shutil import copyfile
+from sys import executable
+from sys import path as syspath
 
 import click
 
 from pype.pype_core import PypeCore
 from pype.util.iotools import open_with_default
 
-# Load configuration file
-try:
-    CONFIG_FILE_PATH = environ['PYPE_CONFIG_JSON']
-except KeyError:
-    CONFIG_FILE_PATH = path.join(
-        path.dirname(path.dirname(__file__)), 'config.json')
-
-PYPE_CORE = PypeCore(CONFIG_FILE_PATH)
+PYPE_CORE = PypeCore()
 OPEN_PYPE = False
 CREATE_PYPE = False
 
@@ -32,38 +25,34 @@ CREATE_PYPE = False
               help='Print all available pypes')
 @click.option('--open-pype', '-o', is_flag=True,
               help='Open selected pype in default editor')
+@click.option('--open-config', '-c', is_flag=True,
+              help='Open config file in default editor')
 @click.pass_context
-def main(ctx, list_pypes, open_pype):
+def main(ctx, list_pypes, open_pype, open_config):
+    if open_config:
+        open_with_default(PYPE_CORE.get_config_filepath())
+        return
     if list_pypes:
         PYPE_CORE.list_pypes()
         return
+
     global OPEN_PYPE
     OPEN_PYPE = open_pype
     if ctx.invoked_subcommand is None:
         print(ctx.get_help())
 
 
-def create_pype_from_template(pype_name, plugin):
-    if plugin.internal:
-        print('Creating internal pypes is not supported.')
-        return
-    target_name = sub('-', '_', sub(r'\.py$', '', pype_name))
-    target_name = path.join(plugin.abspath, target_name + '.py')
-    source_name = path.join(path.dirname(__file__), 'pype_template.py')
-    if path.isfile(target_name):
-        print('Pype already present')
-        return
-    copyfile(source_name, target_name)
-    print('Created new pype', target_name)
-
-
 def bind_plugin(name, plugin):
     @click.option('--create-pype', '-c',
                   help='Create new pype with provided name')
+    @click.option('--delete-pype', '-d',
+                  help='Deletes pype for provided name')
     @click.pass_context
-    def plugin_binding_function(ctx, create_pype):
+    def plugin_binding_function(ctx, create_pype, delete_pype):
         if (create_pype):
-            create_pype_from_template(create_pype, plugin)
+            PYPE_CORE.create_pype_from_template(create_pype, plugin)
+        elif (delete_pype):
+            PYPE_CORE.delete_pype_by_name(delete_pype, plugin)
     plugin_binding_function.__name__ = name
     return plugin_binding_function
 

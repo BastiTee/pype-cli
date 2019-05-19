@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Pype template file."""
+"""Not documented yet"""
 
 
 import click
