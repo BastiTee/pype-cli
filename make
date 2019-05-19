@@ -63,6 +63,11 @@ build() {
     pipenv run python setup.py bdist_wheel $@
 }
 
+publish() {
+    build
+    pipenv run twine upload dist/*
+}
+
 install() {
     # Install pype globally on host system
     build

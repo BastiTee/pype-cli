@@ -11,6 +11,7 @@
 
 This project is currently a proof of concept.
 
+- [ ] Find another name since pype is unavailable in PyPi `¯\_(ツ)_/¯`
 - [ ] Document how to install pype system-wide
 - [ ] Extend documentation of template pype
 - [ ] Validate config.json before using it

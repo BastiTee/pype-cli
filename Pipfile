@@ -11,9 +11,9 @@ flake8 = "*"
 detox = "*"
 requests = "*"
 rope = "*"
+twine = "*"
 
 [packages]
-requests = "*"
 click = "*"
 
 [requires]
