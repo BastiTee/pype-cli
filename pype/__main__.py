@@ -11,6 +11,9 @@ from pype.pype_core import PypeCore
 from pype.util.iotools import open_with_default
 
 PYPE_CORE = PypeCore()
+PYPE_CORE.resolve_environment()
+environ['LC_ALL'] = 'C.UTF-8'
+environ['LANG'] = 'C.UTF-8'
 
 
 @click.group(

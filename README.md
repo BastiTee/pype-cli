@@ -15,7 +15,7 @@ This project is currently a proof of concept.
 - [ ] Extend documentation of template pype
 - [ ] Validate config.json before using it
 - [ ] Transfer bash completion fixes etc to post-install step or similar
-- [ ] Improve config file resolving to envvar->homefile->currdir->default
+- [x] Improve config file resolving to envvar->homefile->currdir->default
 - [x] Add option to add/delete plugins via pype
 - [x] Add option to create a new pype via pype
 - [x] Add option to open a pype in default browser

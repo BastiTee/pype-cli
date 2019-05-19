@@ -3,7 +3,7 @@
 from importlib import import_module
 from json import load, dump
 from os import environ, remove
-from os.path import abspath, dirname, join, isfile
+from os.path import abspath, dirname, join, isfile, expanduser
 from sys import path as syspath
 from re import sub
 from shutil import copyfile
@@ -16,7 +16,13 @@ from pype.util.misc import get_or_default
 class PypeCore():
     """Pype core initializer."""
 
-    def __init__(self):
+    DEFAULT_CONFIG_FILE = join(expanduser('~'), '.pype-config.json')
+    LOCAL_CONFIG_FILE = join(dirname(dirname(__file__)), 'config.json')
+    DEFAULT_CONFIG = {
+        'plugins': []
+    }
+
+    def resolve_environment(self):
         self.resolve_config_file()
         # load all external plugins
         self.plugins = [
@@ -30,11 +36,17 @@ class PypeCore():
         }))
 
     def resolve_config_file(self):
+        self.config_filepath = None
         try:
             self.config_filepath = environ['PYPE_CONFIG_JSON']
         except KeyError:
-            self.config_filepath = join(
-                dirname(dirname(__file__)), 'config.json')
+            if isfile(self.DEFAULT_CONFIG_FILE):
+                self.config_filepath = self.DEFAULT_CONFIG_FILE
+            elif isfile(self.LOCAL_CONFIG_FILE):
+                self.config_filepath = self.LOCAL_CONFIG_FILE
+        if not self.config_filepath:
+            dump(self.DEFAULT_CONFIG, open(self.DEFAULT_CONFIG_FILE, 'w'))
+            self.config_filepath = self.DEFAULT_CONFIG_FILE
         self.config_json = load(open(self.config_filepath, 'r'))
 
     def get_plugins(self):

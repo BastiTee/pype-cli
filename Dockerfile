@@ -13,13 +13,6 @@ RUN python3 -m pip install /installer/*.whl
 RUN mkdir /pypes
 COPY example_pypes/basics /pypes/basics
 
-# Setup configuration file
-RUN echo "{ \"plugins\": [{ \"name\": \"basics\", \"path\": \"/pypes\" }]}" \
-    > pype_config.json
-ENV PYPE_CONFIG_JSON /pype_config.json
-ENV LC_ALL C.UTF-8
-ENV LANG C.UTF-8
-
 # Install bash completion
 RUN echo "eval \"\$(_PYPE_COMPLETE=source pype)\"" >> ~/.bashrc
 
