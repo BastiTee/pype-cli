@@ -11,7 +11,6 @@ from pype.pype_core import PypeCore
 from pype.util.iotools import open_with_default
 
 PYPE_CORE = PypeCore()
-CREATE_PYPE = False
 
 
 @click.group(
