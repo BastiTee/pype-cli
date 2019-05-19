@@ -12,7 +12,7 @@ with open(path.join(path.abspath(path.dirname(__file__)), 'README.md'),
 setup(
     # Basic project information
     name='pype-cli',
-    version='0.0.4-SNAPSHOT',
+    version='0.0.5-SNAPSHOT',
     # Authorship and online reference
     author='Basti Tee',
     author_email='basti.tee@posteo.de',
