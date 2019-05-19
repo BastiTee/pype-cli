@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import subprocess
-from os import environ, path, remove
-from re import sub
-from shutil import copyfile
+from os import environ, path
 from sys import executable
 from sys import path as syspath
 
@@ -13,7 +11,6 @@ from pype.pype_core import PypeCore
 from pype.util.iotools import open_with_default
 
 PYPE_CORE = PypeCore()
-OPEN_PYPE = False
 CREATE_PYPE = False
 
 
@@ -23,22 +20,16 @@ CREATE_PYPE = False
 )
 @click.option('--list-pypes', '-l', is_flag=True,
               help='Print all available pypes')
-@click.option('--open-pype', '-o', is_flag=True,
-              help='Open selected pype in default editor')
 @click.option('--open-config', '-c', is_flag=True,
               help='Open config file in default editor')
 @click.pass_context
-def main(ctx, list_pypes, open_pype, open_config):
+def main(ctx, list_pypes, open_config):
     if open_config:
         open_with_default(PYPE_CORE.get_config_filepath())
-        return
-    if list_pypes:
+    elif list_pypes:
         PYPE_CORE.list_pypes()
         return
-
-    global OPEN_PYPE
-    OPEN_PYPE = open_pype
-    if ctx.invoked_subcommand is None:
+    elif ctx.invoked_subcommand is None:
         print(ctx.get_help())
 
 
@@ -47,12 +38,25 @@ def bind_plugin(name, plugin):
                   help='Create new pype with provided name')
     @click.option('--delete-pype', '-d',
                   help='Deletes pype for provided name')
+    @click.option('--open-pype', '-o',
+                  help='Open selected pype in default editor')
     @click.pass_context
-    def plugin_binding_function(ctx, create_pype, delete_pype):
+    def plugin_binding_function(ctx, create_pype, delete_pype, open_pype):
         if (create_pype):
             PYPE_CORE.create_pype_from_template(create_pype, plugin)
         elif (delete_pype):
             PYPE_CORE.delete_pype_by_name(delete_pype, plugin)
+        elif (open_pype):
+            if plugin.internal:
+                print('Opening internal pypes is not supported.')
+                return
+            pype_abspath = PYPE_CORE.get_abspath_to_pype(plugin, open_pype)
+            if not pype_abspath:
+                print('Pype \'{}\' could not be found.'.format(open_pype))
+                return
+            open_with_default(pype_abspath)
+        elif ctx.invoked_subcommand is None:
+            print(ctx.get_help())
     plugin_binding_function.__name__ = name
     return plugin_binding_function
 
@@ -62,12 +66,6 @@ def bind_pype(name, plugin, pype):
     @click.argument('extra_args', nargs=-1, type=click.UNPROCESSED)
     @click.option('--help', '-h', is_flag=True)
     def pype_binding_function(ctx, extra_args, help):
-        if (OPEN_PYPE):
-            # If '-o' option was selected to open pype in default editor
-            if plugin.internal:
-                print('WARNING: Editing internal pypes can break stuff.')
-            open_with_default(pype.abspath)
-            return
         syspath.append(path.dirname(plugin.abspath))
         sub_environment = environ.copy()
         sub_environment['PYTHONPATH'] = ':'.join(syspath)

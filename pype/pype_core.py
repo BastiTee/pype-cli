@@ -87,6 +87,12 @@ class PypeCore():
             return
         print('Deleted pype', source_name)
 
+    def get_abspath_to_pype(self, plugin, name):
+        for pype in plugin.pypes:
+            if name == pype.name:
+                return pype.abspath
+        return None
+
 
 def load_module(name, path):
     syspath.append(abspath(path))
