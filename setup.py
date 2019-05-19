@@ -11,14 +11,14 @@ with open(path.join(path.abspath(path.dirname(__file__)), 'README.md'),
 
 setup(
     # Basic project information
-    name='pype',
-    version='0.0.1',
+    name='pype-cli',
+    version='0.0.2',
     # Authorship and online reference
     author='Basti Tee',
     author_email='basti.tee@posteo.de',
     url='https://github.com/BastiTee/pype',
     # Detailed description
-    description='A Python framework for command line tooling',
+    description='A command-line tool for command-line tools',
     long_description=long_description,
     long_description_content_type='text/markdown',
     keywords='development',

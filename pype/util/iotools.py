@@ -1,9 +1,9 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-""""""
+"""I/O utilities."""
 
 from os import path, listdir
 from re import match, IGNORECASE
+from subprocess import run
 
 
 def get_immediate_subfiles(file_path, pattern=None, ignorecase=False):
@@ -25,3 +25,11 @@ def get_immediate_subfiles(file_path, pattern=None, ignorecase=False):
         files.append(name)
     files.sort()
     return files
+
+
+def open_with_default(filepath):
+    """Opens the given filepath with the OS'es default editor."""
+    try:
+        run(['open', filepath], check=True)
+    except FileNotFoundError:
+        print('Open with default editor is not supported on this OS.')

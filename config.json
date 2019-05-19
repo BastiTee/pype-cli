@@ -1,10 +1,8 @@
 {
-    "core": {
-        "loglevel": "INFO",
-        "logformat": "%(message)s"
-    },
     "plugins": [
-        "pypes_internal",
-        "pypes_example"
+        {
+            "name": "basics",
+            "path": "./example_pypes"
+        }
     ]
 }

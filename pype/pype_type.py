@@ -1,11 +1,10 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-""""""
 
 from re import sub
 
 
 class Pype():
+    """Data structure defining a pype."""
 
     def __init__(self, abspath, filename, pype_name):
         self.name = sub(r'\.py$', '', filename)
