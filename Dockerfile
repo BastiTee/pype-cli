@@ -13,10 +13,8 @@ RUN python3 -m pip install /installer/*.whl
 RUN mkdir /pypes
 COPY example_pypes/basics /pypes/basics
 
-# Install bash completion
-RUN echo "eval \"\$(_PYPE_COMPLETE=source pype)\"" >> ~/.bashrc
-
 # Configure pype
 RUN pype pype.config plugin-register -n basics -p /pypes
+RUN pype pype.config install-autocomplete -s bash
 
 ENTRYPOINT [ "bash" ]
