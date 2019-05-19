@@ -12,7 +12,10 @@
 
 This project is currently a proof of concept.
 
+- [ ] Validate config.json before using it
 - [ ] Transfer bash completion fixes etc to post-install step
+- [x] Add option to create a new pype via pype
+- [x] Add option to open a pype in default browser
 - [x] Internalize default pypes such as 'version'
 - [x] Create a docker image to test installation on a mint system
 - [x] Auto-complete custom pypes using Click

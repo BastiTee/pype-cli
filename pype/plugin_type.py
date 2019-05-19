@@ -17,12 +17,14 @@ class Plugin():
         if 'path' in plugin_config:
             # external pype
             self.name = plugin_config['name']
+            self.internal = False
             syspath.append(path.abspath(plugin_config['path']))
             self.abspath = path.join(
                 path.abspath(plugin_config['path']), self.name)
         else:
             # internal pype
             self.name = 'pype.' + plugin_config['name']
+            self.internal = True
             self.abspath = path.join(path.dirname(
                 __file__), plugin_config['name'])
         try:
