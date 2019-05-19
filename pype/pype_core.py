@@ -10,7 +10,7 @@ from shutil import copyfile
 
 from pype.plugin_type import Plugin
 from pype.pype_exception import PypeException
-from pype.util.misc import get_or_default
+from pype.util.misc import get_from_json_or_default
 
 
 class PypeCore():
@@ -23,17 +23,22 @@ class PypeCore():
     }
 
     def resolve_environment(self):
+        self.set_environment_variables()
         self.resolve_config_file()
         # load all external plugins
         self.plugins = [
             Plugin(plugin)
-            for plugin in get_or_default(
+            for plugin in get_from_json_or_default(
                 self.config_json, 'plugins', [])
         ]
         # append internal plugins
         self.plugins.append(Plugin({
             'name': 'config'
         }))
+
+    def set_environment_variables(self):
+        environ['LC_ALL'] = 'C.UTF-8'
+        environ['LANG'] = 'C.UTF-8'
 
     def resolve_config_file(self):
         self.config_filepath = None

@@ -2,19 +2,19 @@
 
 > A command-line tool for command-line tools
 
-## Development
+## Development usage
 
 - Run `./make shell` to open a `pipenv` shell with the required shell configuration
-- Inside venv-shell execute `eval "$(_PYPE_COMPLETE=source pype)"` for bash-completion
 - Run `pype` to operate locale development version (it will react to code changes)
 
 ## To-Do's
 
 This project is currently a proof of concept.
 
+- [ ] Document how to install pype system-wide
 - [ ] Extend documentation of template pype
 - [ ] Validate config.json before using it
-- [ ] Transfer bash completion fixes etc to post-install step or similar
+- [ ] Auto-install bash/zsh completion
 - [x] Improve config file resolving to envvar->homefile->currdir->default
 - [x] Add option to add/delete plugins via pype
 - [x] Add option to create a new pype via pype

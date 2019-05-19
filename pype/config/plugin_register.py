@@ -20,6 +20,7 @@ def main(name, path):
               .format(name, path))
         exit(1)
     pype_core = PypeCore()
+    pype_core.resolve_config_file()
     config_json = pype_core.get_config_json()
     config_json['plugins'].append({
         'name': module.__name__,

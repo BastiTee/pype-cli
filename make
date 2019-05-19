@@ -16,6 +16,8 @@ init() {
     fi
     python3 -m pip install pipenv --upgrade
 	pipenv install --dev --skip-lock
+    # Install bash completion
+    echo "eval \"\$(_PYPE_COMPLETE=source pype)\"" >> .venv/bin/activate
 }
 
 shell() {

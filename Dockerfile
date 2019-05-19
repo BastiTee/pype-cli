@@ -16,4 +16,7 @@ COPY example_pypes/basics /pypes/basics
 # Install bash completion
 RUN echo "eval \"\$(_PYPE_COMPLETE=source pype)\"" >> ~/.bashrc
 
+# Configure pype
+RUN pype pype.config plugin-register -n basics -p /pypes
+
 ENTRYPOINT [ "bash" ]
