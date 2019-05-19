@@ -6,6 +6,11 @@ from re import match, IGNORECASE
 from subprocess import run
 
 
+def resolve_path(relative_path):
+    """Resolve path including home folder expanding."""
+    return path.abspath(path.expanduser(relative_path))
+
+
 def get_immediate_subfiles(file_path, pattern=None, ignorecase=False):
     """Return the sub-files of a given file path, but only the first level."""
 

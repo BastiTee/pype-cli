@@ -7,7 +7,7 @@ from sys import path as syspath
 
 from pype.pype_exception import PypeException
 from pype.pype_type import Pype
-from pype.util.iotools import get_immediate_subfiles
+from pype.util.iotools import get_immediate_subfiles, resolve_path
 
 
 class Plugin():
@@ -15,12 +15,12 @@ class Plugin():
 
     def __init__(self, plugin_config):
         if 'path' in plugin_config:
-            # external pype
+            # plugin pype
             self.name = plugin_config['name']
             self.internal = False
             self.abspath = path.join(
-                path.abspath(plugin_config['path']), self.name)
-            syspath.append(path.abspath(plugin_config['path']))
+                resolve_path(plugin_config['path']), self.name)
+            syspath.append(resolve_path(plugin_config['path']))
         else:
             # internal pype
             self.name = 'pype.' + plugin_config['name']
@@ -29,8 +29,9 @@ class Plugin():
                 __file__), plugin_config['name'])
         try:
             self.module = importlib.import_module(self.name)
-        except ModuleNotFoundError as e:
-            raise PypeException(e)
+        except ModuleNotFoundError:
+            raise PypeException('No module named \'{}\' found at {}'
+                                .format(self.name, self.abspath))
         self.doc = self.get_docu_or_default(self.module)
         self.pypes = [
             Pype(path.join(self.abspath, subfile),
