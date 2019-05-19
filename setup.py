@@ -11,7 +11,7 @@ with open(path.join(path.abspath(path.dirname(__file__)), 'README.md'),
 
 setup(
     # Basic project information
-    name='pype',
+    name='pype-cli',
     version='0.0.1-SNAPSHOT',
     # Authorship and online reference
     author='Basti Tee',
