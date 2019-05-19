@@ -11,10 +11,11 @@
 
 This project is currently a proof of concept.
 
+- [ ] Allow aliasing of pype chains
 - [ ] Document how to install pype system-wide
 - [ ] Extend documentation of template pype
 - [ ] Validate config.json before using it
-- [ ] Auto-install bash/zsh completion
+- [x] Auto-install bash/zsh completion
 - [x] Find another name since pype is unavailable in PyPi `¯\_(ツ)_/¯`
 - [x] Improve config file resolving to envvar->homefile->currdir->default
 - [x] Add option to add/delete plugins via pype
