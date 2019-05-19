@@ -12,6 +12,7 @@
 
 This project is currently a proof of concept.
 
+- [ ] Extend documentation of template pype
 - [ ] Validate config.json before using it
 - [ ] Transfer bash completion fixes etc to post-install step or similar
 - [ ] Improve config file resolving to envvar->homefile->currdir->default
