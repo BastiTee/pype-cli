@@ -16,7 +16,8 @@ PYPE_CORE.resolve_environment()
 
 @click.group(
     invoke_without_command=True,
-    context_settings=dict(help_option_names=['-h', '--help'])
+    context_settings=dict(help_option_names=['-h', '--help']),
+    help='PYPE - A command-line tool for command-line tools'
 )
 @click.option('--list-pypes', '-l', is_flag=True,
               help='Print all available pypes')
@@ -80,11 +81,12 @@ def bind_pype(name, plugin, pype):
 for plugin in PYPE_CORE.get_plugins():
     plugin_binding_function = bind_plugin(plugin.name, plugin)
     plugin_click_group = main.group(
-        invoke_without_command=True)(plugin_binding_function)
+        invoke_without_command=True, help=plugin.doc)(plugin_binding_function)
     ctx_settings = dict(
         ignore_unknown_options=True,
         allow_extra_args=True
     )
     for pype in plugin.pypes:
-        plugin_click_group.command(context_settings=ctx_settings)(
+        plugin_click_group.command(
+            context_settings=ctx_settings, help=pype.doc)(
             bind_pype(pype.name, plugin, pype))

@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 
 from importlib import import_module
-from json import load, dump
+from json import dump, load
 from os import environ, remove
-from os.path import abspath, dirname, join, isfile, expanduser
-from sys import path as syspath
+from os.path import abspath, dirname, expanduser, isfile, join
 from re import sub
 from shutil import copyfile
+from sys import path as syspath
 
 from pype.plugin_type import Plugin
 from pype.pype_exception import PypeException
@@ -43,12 +43,16 @@ class PypeCore():
     def resolve_config_file(self):
         self.config_filepath = None
         try:
+            # Priority 1: Environment variable
             self.config_filepath = environ['PYPE_CONFIG_JSON']
         except KeyError:
+            # Priority 2: ~/.pype-config.json
             if isfile(self.DEFAULT_CONFIG_FILE):
                 self.config_filepath = self.DEFAULT_CONFIG_FILE
+            # Priority 3: ./config.json
             elif isfile(self.LOCAL_CONFIG_FILE):
                 self.config_filepath = self.LOCAL_CONFIG_FILE
+        # Priority 4: Create a template config from scratch
         if not self.config_filepath:
             dump(self.DEFAULT_CONFIG, open(self.DEFAULT_CONFIG_FILE, 'w'))
             self.config_filepath = self.DEFAULT_CONFIG_FILE

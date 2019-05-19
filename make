@@ -8,7 +8,7 @@ export PYTHONPATH=.  # include source code in any python subprocess
 export LC_ALL=C.UTF-8
 export LANG=C.UTF-8
 
-init() {
+shell() {
     # Initialize virtualenv, i.e., install required packages etc.
     if [ -z "$( command -v python3 )" ]; then
         echo "python3 not available."
@@ -16,15 +16,8 @@ init() {
     fi
     python3 -m pip install pipenv --upgrade
 	pipenv install --dev --skip-lock
-    echo "eval \"\$(_PYPE_COMPLETE=source pype)\"" >> .venv/bin/activate
-}
-
-shell() {
-    # Initialize virtualenv and open a new shell using it
-    if [ ! -d ".venv" ]; then
-        ./make init
-    fi
     pipenv run pip install --editable .
+    echo "eval \"\$(_PYPE_COMPLETE=source pype)\"" >> .venv/bin/activate
     pipenv shell
 }
 

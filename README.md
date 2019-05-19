@@ -13,8 +13,9 @@ This project is currently a proof of concept.
 
 - [ ] Allow aliasing of pype chains
 - [ ] Document how to install pype system-wide
-- [ ] Extend documentation of template pype
 - [ ] Validate config.json before using it
+- [x] Extend documentation of template pype
+- [x] Add help texts to commands
 - [x] Auto-install bash/zsh completion
 - [x] Find another name since pype is unavailable in PyPi `¯\_(ツ)_/¯`
 - [x] Improve config file resolving to envvar->homefile->currdir->default
