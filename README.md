@@ -12,8 +12,8 @@
 
 This project is currently a proof of concept.
 
-- [ ] Internalize default pypes such as 'version'
 - [ ] Transfer bash completion fixes etc to post-install step
+- [x] Internalize default pypes such as 'version'
 - [x] Create a docker image to test installation on a mint system
 - [x] Auto-complete custom pypes using Click
 - [x] Allow separation of subcommand options and pype-internal options (e.g. `-h` option)

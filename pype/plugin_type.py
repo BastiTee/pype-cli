@@ -14,15 +14,22 @@ class Plugin():
     """Data structure defining a plugin, i.e., a set of pypes."""
 
     def __init__(self, plugin_config):
-        self.name = plugin_config['name']
-        syspath.append(path.abspath(plugin_config['path']))
+        if 'path' in plugin_config:
+            # external pype
+            self.name = plugin_config['name']
+            syspath.append(path.abspath(plugin_config['path']))
+            self.abspath = path.join(
+                path.abspath(plugin_config['path']), self.name)
+        else:
+            # internal pype
+            self.name = 'pype.' + plugin_config['name']
+            self.abspath = path.join(path.dirname(
+                __file__), plugin_config['name'])
         try:
             self.module = importlib.import_module(self.name)
         except ModuleNotFoundError as e:
             raise PypeException(e)
         self.doc = self.get_docu_or_default(self.module)
-        self.abspath = path.join(
-            path.abspath(plugin_config['path']), self.name)
         self.pypes = [
             Pype(path.join(self.abspath, subfile),
                  subfile, plugin_config)

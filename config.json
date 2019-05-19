@@ -3,10 +3,6 @@
         {
             "name": "basics",
             "path": "./example_pypes"
-        },
-        {
-            "name": "internal",
-            "path": "./example_pypes"
         }
     ]
 }

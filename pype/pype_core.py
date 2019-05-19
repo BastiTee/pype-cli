@@ -11,10 +11,16 @@ class PypeCore():
     """Pype core initializer."""
 
     def __init__(self, config_file):
+        config_json = load(open(config_file, 'r'))
+        # add internal pypes
+        config_json['plugins'].append({
+            'name': 'config'
+        })
+        # load all plugins
         self.plugins = [
             Plugin(plugin)
             for plugin in get_or_default(
-                load(open(config_file, 'r')), 'plugins', [])
+                config_json, 'plugins', [])
         ]
 
     def get_plugins(self):

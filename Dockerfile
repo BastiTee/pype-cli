@@ -11,10 +11,10 @@ RUN python3 -m pip install /installer/*.whl
 
 # Install default pypes
 RUN mkdir /pypes
-COPY example_pypes/internal /pypes/internal
+COPY example_pypes/basics /pypes/basics
 
 # Setup configuration file
-RUN echo "{ \"plugins\": [{ \"name\": \"internal\", \"path\": \"/pypes\" }]}" \
+RUN echo "{ \"plugins\": [{ \"name\": \"basics\", \"path\": \"/pypes\" }]}" \
     > pype_config.json
 ENV PYPE_CONFIG_JSON /pype_config.json
 ENV LC_ALL C.UTF-8
