@@ -12,8 +12,8 @@
 This project is currently a proof of concept.
 
 - [ ] Allow aliasing of pype chains
-- [ ] Document how to install pype system-wide
-- [ ] Validate config.json before using it
+- [ ] Allow creating plugins on the fly
+- [ ] Validate config.json before using it (see <https://pypi.org/project/jsonschema/>)
 - [x] Extend documentation of template pype
 - [x] Add help texts to commands
 - [x] Auto-install bash/zsh completion
