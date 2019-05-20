@@ -1,6 +1,6 @@
 # pype
-
 > A command-line tool for command-line tools
+<img align="right" src="res/icon.png" alt="alt text" width="150" height="150">
 
 ## Development usage
 
@@ -43,3 +43,9 @@ This project is currently a proof of concept.
 - <http://click.palletsprojects.com/en/7.x/commands/>
 - <https://click.palletsprojects.com/en/7.x/bashcomplete/>
 - <https://click.palletsprojects.com/en/7.x/api/#click.Context>
+
+## License and attribution
+
+This software is licensed under [Apache License 2.0](LICENSE.txt).
+
+Icon made by [Freepik](https://www.freepik.com/) from [Flaticon](https://www.flaticon.com/) is licensed by [CC 3.0 BY](http://creativecommons.org/licenses/by/3.0/).
