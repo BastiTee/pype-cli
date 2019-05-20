@@ -14,6 +14,7 @@ This project is currently a proof of concept.
 - [ ] Allow aliasing of pype chains
 - [ ] Allow creating plugins on the fly
 - [ ] Validate config.json before using it (see <https://pypi.org/project/jsonschema/>)
+- [x] Add coloring library
 - [x] Extend documentation of template pype
 - [x] Add help texts to commands
 - [x] Auto-install bash/zsh completion
