@@ -5,7 +5,11 @@
 # Visit <https://click.palletsprojects.com> for details.
 import click
 # For colored output pype includes the colorama library
-from colorama import init, Fore, Style
+from colorama import Fore, Style, init
+
+# You can also call pype's own utility functions
+from pype.util.iotools import run_interactive
+
 
 # Decorators to initialize a CLI-command with options
 @click.command()
@@ -16,6 +20,9 @@ def main(option, verbose):
     # Print out something in shiny colors
     print(Fore.RED + '- option:  ' + Style.DIM + Fore.GREEN + option)
     print(Fore.RED + '- verbose: ' + Style.DIM + Fore.GREEN + str(verbose))
+
+    # Use a pype utility
+    run_interactive('ls -la')
 
     # Your code goes here ...
 
