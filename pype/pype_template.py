@@ -4,19 +4,22 @@
 # Pype's go-to library to create command-line interfaces.
 # Visit <https://click.palletsprojects.com> for details.
 import click
+# For colored output pype includes the colorama library
+from colorama import init, Fore, Style
 
-# Decorator to initialize a CLI-command with options
+# Decorators to initialize a CLI-command with options
 @click.command()
-# A typical option that requires another argument, e.g., a string option
 @click.option('--option', '-o', default='default', help='An option')
-# A typical toggle-option
 @click.option('--verbose', '-v', is_flag=True, help='A toggle')
 def main(option, verbose):
-    print('- option:', option)
-    print('- verbose:', verbose)
+
+    # Print out something in shiny colors
+    print(Fore.RED + '- option:  ' + Style.DIM + Fore.GREEN + option)
+    print(Fore.RED + '- verbose: ' + Style.DIM + Fore.GREEN + str(verbose))
 
     # Your code goes here ...
 
 
 if __name__ == "__main__":  # Only invoke main if called directly
+    init(autoreset=True)  # Enables colored input with resets after each print
     main()  # pylint: disable=no-value-for-parameter

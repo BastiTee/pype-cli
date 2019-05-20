@@ -14,6 +14,7 @@ shell() {
         echo "python3 not available."
         exit 1
     fi
+    rm -rf .venv # Since it's not very expensive we create it everytime
     python3 -m pip install pipenv --upgrade
 	pipenv install --dev --skip-lock
     pipenv run pip install --editable .
