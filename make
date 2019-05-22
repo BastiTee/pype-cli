@@ -18,7 +18,6 @@ shell() {
     python3 -m pip install pipenv --upgrade
 	pipenv install --dev --skip-lock
     pipenv run pip install --editable .
-    echo "eval \"\$(_PYPE_COMPLETE=source pype)\"" >> .venv/bin/activate
     pipenv shell
 }
 

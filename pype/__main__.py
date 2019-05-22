@@ -13,6 +13,7 @@ from pype.util.iotools import open_with_default
 
 PYPE_CORE = PypeCore()
 PYPE_CORE.resolve_environment()
+PYPE_ALIAS = None
 
 
 @click.group(
@@ -24,8 +25,15 @@ PYPE_CORE.resolve_environment()
               help='Print all available pypes')
 @click.option('--open-config', '-o', is_flag=True,
               help='Open config file in default editor')
+@click.option(
+    '--alias', '-a', metavar='ALIAS', help='Register alias for upcoming pype')
 @click.pass_context
-def main(ctx, list_pypes, open_config):
+def main(ctx, list_pypes, open_config, alias):
+    if alias and (open_config or list_pypes):
+        print('--alias/-a cannot be combined with other options.')
+        return
+    global PYPE_ALIAS
+    PYPE_ALIAS = alias
     if open_config:
         open_with_default(PYPE_CORE.get_config_filepath())
     elif list_pypes:
@@ -69,6 +77,10 @@ def bind_pype(name, plugin, pype):
     @click.argument('extra_args', nargs=-1, type=click.UNPROCESSED)
     @click.option('--help', '-h', is_flag=True)
     def pype_binding_function(ctx, extra_args, help):
+        global PYPE_ALIAS
+        if PYPE_ALIAS:
+            PYPE_CORE.install_alias(ctx, extra_args, PYPE_ALIAS)
+            return
         syspath.append(path.dirname(plugin.abspath))
         sub_environment = environ.copy()
         sub_environment['PYTHONPATH'] = ':'.join(syspath)

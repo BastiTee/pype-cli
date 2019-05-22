@@ -114,6 +114,16 @@ class PypeCore():
                 return pype.abspath
         return None
 
+    def install_alias(self, ctx, extra_args, alias):
+        if not alias:
+            return
+        cmd_line = (
+            ctx.parent.command.name + ' '
+        )
+        print(ctx.parent.params)
+        print('Installing alias \'{}\' for pype \'{}\''.format(
+            alias, cmd_line))
+
 
 def load_module(name, path):
     syspath.append(abspath(path))
