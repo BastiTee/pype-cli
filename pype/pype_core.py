@@ -118,9 +118,11 @@ class PypeCore():
         if not alias:
             return
         cmd_line = (
-            ctx.parent.command.name + ' '
+            ctx.parent.command.name + ' ' +
+            ctx.command.name + ' '
+
         )
-        print(ctx.parent.params)
+        print(ctx.command_path + ' ' + ' '.join(extra_args))
         print('Installing alias \'{}\' for pype \'{}\''.format(
             alias, cmd_line))
 
