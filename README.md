@@ -11,10 +11,9 @@
 
 This project is currently a proof of concept.
 
-- [ ] Check <https://pexpect.readthedocs.io/en/stable/> for automation
-- [ ] Allow aliasing of pype chains
-- [ ] Allow creating plugins on the fly
+- [ ] Allow aliasing of pype calls
 - [ ] Validate config.json before using it (see <https://pypi.org/project/jsonschema/>)
+- [x] Allow creating plugins on the fly
 - [x] Add coloring library
 - [x] Extend documentation of template pype
 - [x] Add help texts to commands
