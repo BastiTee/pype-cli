@@ -2,6 +2,7 @@
 
 import subprocess
 from os import environ, path
+from re import sub
 from sys import executable
 from sys import path as syspath
 
@@ -21,7 +22,7 @@ PYPE_CORE.resolve_environment()
 )
 @click.option('--list-pypes', '-l', is_flag=True,
               help='Print all available pypes')
-@click.option('--open-config', '-c', is_flag=True,
+@click.option('--open-config', '-o', is_flag=True,
               help='Open config file in default editor')
 @click.pass_context
 def main(ctx, list_pypes, open_config):
@@ -51,6 +52,7 @@ def bind_plugin(name, plugin):
             if plugin.internal:
                 print('Opening internal pypes is not supported.')
                 return
+            open_pype = sub('-', '_', open_pype)
             pype_abspath = PYPE_CORE.get_abspath_to_pype(plugin, open_pype)
             if not pype_abspath:
                 print('Pype \'{}\' could not be found.'.format(open_pype))

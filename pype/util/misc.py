@@ -9,6 +9,7 @@ from pygments.formatters.terminal import TerminalFormatter
 
 
 def get_from_json_or_default(json, path, default_value):
+    """Try to load a key breadcrumb from a JSON object or return default."""
     if not path:
         return default_value
     json = json if json else {}
@@ -21,6 +22,7 @@ def get_from_json_or_default(json, path, default_value):
 
 
 def beautify_json_string(json_string, colorize=False, sort_keys=False):
+    """Beautify JSON string with optional coloring."""
     json_obj = json.loads(json_string)
     formatted_json = json.dumps(json_obj, sort_keys=sort_keys, indent=4)
     if not colorize:
@@ -28,23 +30,8 @@ def beautify_json_string(json_string, colorize=False, sort_keys=False):
     return highlight(formatted_json, JsonLexer(), TerminalFormatter())
 
 
-def get_key_or_none(object, key):
-    try:
-        return object[key]
-    except KeyError:
-        return None
-
-
 def query_yes_no(question, default="yes"):
-    """Ask a yes/no question via raw_input() and return their answer.
-
-    "question" is a string that is presented to the user.
-    "default" is the presumed answer if the user just hits <Enter>.
-        It must be "yes" (the default), "no" or None (meaning
-        an answer is required of the user).
-
-    The "answer" return value is True for "yes" or False for "no".
-    """
+    """Ask a yes/no question via raw_input() and return their answer."""
     valid = {"yes": True, "y": True, "ye": True,
              "no": False, "n": False}
     if default is None:

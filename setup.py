@@ -36,7 +36,7 @@ setup(
     include_package_data=True,
     python_requires=">=3.6",
     install_requires=[
-        'click', 'tabulate', 'colorama', 'pygments'],
+        'click', 'tabulate', 'colorama', 'pygments', 'requests'],
     entry_points='''
         [console_scripts]
         pype=pype.__main__:main
