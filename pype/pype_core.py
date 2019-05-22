@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from importlib import import_module
-from json import dump, load
+from json import dump, load, dumps, loads
 from os import environ, remove
 from os.path import abspath, dirname, expanduser, isfile, join
 from re import sub
@@ -57,6 +57,8 @@ class PypeCore():
             dump(self.DEFAULT_CONFIG, open(self.DEFAULT_CONFIG_FILE, 'w'))
             self.config_filepath = self.DEFAULT_CONFIG_FILE
         self.config_json = load(open(self.config_filepath, 'r'))
+        # Store to environment
+        environ['PYPE_CONFIG'] = dumps(self.config_json)
 
     def get_plugins(self):
         return self.plugins
@@ -117,14 +119,9 @@ class PypeCore():
     def install_alias(self, ctx, extra_args, alias):
         if not alias:
             return
-        cmd_line = (
-            ctx.parent.command.name + ' ' +
-            ctx.command.name + ' '
-
-        )
-        print(ctx.command_path + ' ' + ' '.join(extra_args))
-        print('Installing alias \'{}\' for pype \'{}\''.format(
-            alias, cmd_line))
+        cmd_line = ctx.command_path + ' ' + ' '.join(extra_args)
+        alias_cmd = '{}="{}"'.format(alias, cmd_line)
+        print('Installing alias \'{}\''.format(alias_cmd))
 
 
 def load_module(name, path):
@@ -137,3 +134,7 @@ def load_module(name, path):
 
 def get_pype_basepath():
     return dirname(dirname(__file__))
+
+
+def get_configuration():
+    return loads(environ['PYPE_CONFIG'])

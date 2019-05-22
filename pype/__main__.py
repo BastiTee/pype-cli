@@ -25,8 +25,8 @@ PYPE_ALIAS = None
               help='Print all available pypes')
 @click.option('--open-config', '-o', is_flag=True,
               help='Open config file in default editor')
-@click.option(
-    '--alias', '-a', metavar='ALIAS', help='Register alias for upcoming pype')
+@click.option('--alias', '-a', metavar='ALIAS',
+              help='Register alias for upcoming pype')
 @click.pass_context
 def main(ctx, list_pypes, open_config, alias):
     if alias and (open_config or list_pypes):
