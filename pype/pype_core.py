@@ -38,6 +38,8 @@ class PypeCore():
             for plugin in get_from_json_or_default(
                 self.config.get_json(), 'plugins', [])
         ]
+        # filter plugins not valid for current environment
+        self.plugins = [plugin for plugin in self.plugins if plugin.active]
         # append internal plugins
         self.plugins.append(Plugin({
             'name': 'config'

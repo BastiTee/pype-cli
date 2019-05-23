@@ -57,7 +57,10 @@ If you have selected a __pype__ from a __plugin__ you can set __aliases__ for it
 
 This project is currently a proof of concept.
 
+* [ ] How to handle plugin dependencies in other packages?
+* [ ] Add a filter to limit plugins to hostnames
 * [ ] Validate config.json before using it (see <https://pypi.org/project/jsonschema/>)
+* [x] Add a filter to limit plugins to usernames
 * [x] Allow aliasing of pype calls
 * [x] Allow creating plugins on the fly
 * [x] Add coloring library
