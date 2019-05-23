@@ -8,6 +8,7 @@ Install using `python3 -m pip install pype-cli` or `pip3 install pype-cli`
 
 ## Usage
 
+__pype-cli__ is a dynamically configurable command-line tool to orchestrate sets of other command-line tools. It simplifies the creation, orchestration and access of Python scripts that you need for your daily development work or process automation.
 __pype-cli__ builds upon __plugins__ and __pypes__. A __pype__ is a single Python script whereas a __plugin__ is basically a Python module that extens __pype-cli__ with a collection of __pypes__.
 __pype-cli__ ships with one built-in __plugin__ called `pype.config` that is used to configure __pype-cli__. All of the required information will be stored to a local configuration file.
 
@@ -48,7 +49,7 @@ If you have selected a __pype__ from a __plugin__ you can set __aliases__ for it
 ## Development
 
 * Run `./make shell` to open a `pipenv` shell with the required shell configuration
-* Run __pype__ to operate locale development version (it will react to code changes)
+* Run `pype` to operate locale development version (it will react to code changes)
 
 ## To-Do's
 
