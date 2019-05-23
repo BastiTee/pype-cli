@@ -12,7 +12,6 @@ from pype.pype_core import PypeCore
 def main(name):
     # Try to load the module to verify the configuration
     pype_core = PypeCore()
-    pype_core.resolve_config_file()
     config_json = pype_core.get_config_json()
     new_plugins = [
         plugin for plugin in config_json['plugins']

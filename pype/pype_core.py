@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 
 from importlib import import_module
-from json import dump, load, dumps, loads
 from os import environ, remove
-from os.path import abspath, dirname, expanduser, isfile, join
+from os.path import abspath, dirname, expanduser, isfile, join, basename
 from re import sub
 from shutil import copyfile
 from sys import path as syspath
 
 from pype.plugin_type import Plugin
+from pype.pype_config import PypeConfig
 from pype.pype_exception import PypeException
 from pype.util.misc import get_from_json_or_default
 
@@ -16,20 +16,26 @@ from pype.util.misc import get_from_json_or_default
 class PypeCore():
     """Pype core initializer."""
 
-    DEFAULT_CONFIG_FILE = join(expanduser('~'), '.pype-config.json')
-    LOCAL_CONFIG_FILE = join(dirname(dirname(__file__)), 'config.json')
-    DEFAULT_CONFIG = {
-        'plugins': []
+    SHELL_INIT_PREFIX = '.pype-initfile'
+    SUPPORTED_SHELLS = {
+        'bash': {
+            'init_file': join(expanduser('~'), SHELL_INIT_PREFIX + '-bash'),
+            'source_cmd': 'eval "$(_PYPE_COMPLETE=source pype)"'
+        },
+        'zsh': {
+            'init_file': join(expanduser('~'), SHELL_INIT_PREFIX + '-zsh'),
+            'source_cmd': 'eval "$(_PYPE_COMPLETE=source_zsh pype)"'
+        }
     }
 
-    def resolve_environment(self):
+    def __init__(self):
         self.set_environment_variables()
-        self.resolve_config_file()
+        self.config = PypeConfig()
         # load all external plugins
         self.plugins = [
             Plugin(plugin)
             for plugin in get_from_json_or_default(
-                self.config_json, 'plugins', [])
+                self.config.get_json(), 'plugins', [])
         ]
         # append internal plugins
         self.plugins.append(Plugin({
@@ -40,39 +46,17 @@ class PypeCore():
         environ['LC_ALL'] = 'C.UTF-8'
         environ['LANG'] = 'C.UTF-8'
 
-    def resolve_config_file(self):
-        self.config_filepath = None
-        try:
-            # Priority 1: Environment variable
-            self.config_filepath = environ['PYPE_CONFIG_JSON']
-        except KeyError:
-            # Priority 2: ~/.pype-config.json
-            if isfile(self.DEFAULT_CONFIG_FILE):
-                self.config_filepath = self.DEFAULT_CONFIG_FILE
-            # Priority 3: ./config.json
-            elif isfile(self.LOCAL_CONFIG_FILE):
-                self.config_filepath = self.LOCAL_CONFIG_FILE
-        # Priority 4: Create a template config from scratch
-        if not self.config_filepath:
-            dump(self.DEFAULT_CONFIG, open(self.DEFAULT_CONFIG_FILE, 'w'))
-            self.config_filepath = self.DEFAULT_CONFIG_FILE
-        self.config_json = load(open(self.config_filepath, 'r'))
-        # Store to environment
-        environ['PYPE_CONFIG'] = dumps(self.config_json)
-
     def get_plugins(self):
         return self.plugins
 
     def get_config_json(self):
-        return self.config_json
+        return self.config.get_json()
+
+    def set_config_json(self, json):
+        self.config.set_json(json)
 
     def get_config_filepath(self):
-        return self.config_filepath
-
-    def set_config_json(self, config_json):
-        self.config_json = config_json
-        # always update config file as well
-        dump(self.config_json, open(self.config_filepath, 'w'), indent=4)
+        return self.config.get_filepath()
 
     def list_pypes(self):
         for plugin in self.plugins:
@@ -84,7 +68,7 @@ class PypeCore():
                 ))
             print()
 
-    def create_pype_from_template(self, pype_name, plugin):
+    def create_pype(self, pype_name, plugin):
         if plugin.internal:
             print('Creating internal pypes is not supported.')
             return
@@ -97,7 +81,7 @@ class PypeCore():
         copyfile(source_name, target_name)
         print('Created new pype', target_name)
 
-    def delete_pype_by_name(self, pype_name, plugin):
+    def delete_pype(self, pype_name, plugin):
         if plugin.internal:
             print('Deleting internal pypes is not supported.')
             return
@@ -116,12 +100,91 @@ class PypeCore():
                 return pype.abspath
         return None
 
-    def install_alias(self, ctx, extra_args, alias):
+    def install_to_shell(self, shell_config):
+        aliases = get_from_json_or_default(
+            self.config.get_json(), 'aliases', [])
+        print('Writing init-file', shell_config['init_file'])
+        with open(shell_config['init_file'], 'w+') as ifile:
+            # Write pype sourcing command
+            ifile.write('if [ ! -z "$( command -v pype )" ]; then\n')
+            ifile.write('\t' + shell_config['source_cmd'] + '\n')
+            # Write configured aliases
+            for alias in aliases:
+                alias_cmd = '\talias {}="{}"\n'.format(alias, aliases[alias])
+                ifile.write(alias_cmd)
+            ifile.write('fi\n')
+        # Only add source link to target file if not present yet
+        target_file = shell_config.get('target_file', None)
+        if not target_file:
+            return
+        try:
+            rc_file_content = open(
+                target_file, 'r').readlines()
+        except FileNotFoundError:
+            rc_file_content = []
+        already_present = [line for line in rc_file_content
+                           if self.SHELL_INIT_PREFIX in line]
+        if not already_present:
+            print('Adding init-file sourcing to', target_file)
+            with open(target_file, 'a+') as rc_file_handle:
+                rc_file_handle.write('. ' + shell_config['init_file'] + '\n')
+
+    def uninstall_from_shell(self, shell_config):
+        if isfile(shell_config['init_file']):
+            remove(shell_config['init_file'])
+        if not isfile(shell_config['target_file']):
+            return
+        with open(shell_config['target_file'], 'r') as f:
+            lines = f.readlines()
+        with open(shell_config['target_file'], 'w') as f:
+            for line in lines:
+                if self.SHELL_INIT_PREFIX not in line.strip('\n'):
+                    f.write(line)
+
+    def register_alias(self, ctx, extra_args, alias):
         if not alias:
             return
-        cmd_line = ctx.command_path + ' ' + ' '.join(extra_args)
+        cmd_line = ctx.command_path + ' '.join(extra_args)
         alias_cmd = '{}="{}"'.format(alias, cmd_line)
-        print('Installing alias \'{}\''.format(alias_cmd))
+        # store to internal config
+        config_json = self.config.get_json()
+        if not config_json.get('aliases', None):
+            config_json['aliases'] = {}
+        if config_json.get('aliases').get(alias, None):
+            print('Alias already registered.')
+            return
+        config_json.get('aliases')[alias] = cmd_line
+        self.config.set_json(config_json)
+        # update install script
+        self.install_to_shell(self.get_shell_config())
+        print('Installed alias \'{}\''.format(alias_cmd))
+
+    def unregister_alias(self, alias):
+        if not alias:
+            return
+        # store to internal config
+        config_json = self.config.get_json()
+        if not config_json.get('aliases', None):
+            print('No aliases registered.')
+            return
+        if not config_json.get('aliases').get(alias, None):
+            print('Alias not registered.')
+            return
+        del config_json['aliases'][alias]
+        self.config.set_json(config_json)
+        # update install script
+        self.install_to_shell(self.get_shell_config())
+        print('Uninstalled alias \'{}\''.format(alias))
+
+    def get_shell_config(self):
+        shell = basename(environ.get('SHELL', None))
+        if not any(
+            [supported for supported in self.SUPPORTED_SHELLS
+             if shell == supported]
+        ):
+            print('Unsupported shell \'{}\'.'.format(shell))
+            return None
+        return self.SUPPORTED_SHELLS[shell]
 
 
 def load_module(name, path):
@@ -134,7 +197,3 @@ def load_module(name, path):
 
 def get_pype_basepath():
     return dirname(dirname(__file__))
-
-
-def get_configuration():
-    return loads(environ['PYPE_CONFIG'])
