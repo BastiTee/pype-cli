@@ -18,6 +18,8 @@ To configure a custom configuration file use the environment variable `PYPE_CONF
 
 ### Install pype autocompletion and aliases
 
+__pype-cli__'s main benefit is that is is extendable with custom __plugins__ and that it will allow you to immediatelly browse newly created and existing __plugins__/__pypes__ by using the `<TAB>` key and by configuring short __aliases__. To enable this you need to install a source-script to your shell's rc-file that will be executed on opening another shell.
+
 * Run `pype pype.config install-shell -t ~/.bashrc` for bash shells
 * Run `pype pype.config install-shell -t ~/.zshrc` for zsh shells
 
@@ -35,7 +37,7 @@ To create a new pype you need to decide to which plugin you want to add the pype
 * Open a __pype__ in your default editor: `pype myplugin -o mypype`
 * Delete a __pype__: `pype myplugin -d mypype`
 
-### Un-/register pype aliases
+### Un-/register aliases
 
 If you have selected a __pype__ from a __plugin__ you can set __aliases__ for it. Afterwards you need to start a new shell session to activate the __aliases__. They will be stored to your configuration file as well.
 
