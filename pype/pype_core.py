@@ -2,7 +2,7 @@
 
 from importlib import import_module
 from os import environ, remove
-from os.path import abspath, dirname, expanduser, isfile, join, basename
+from os.path import abspath, basename, dirname, expanduser, isfile, join
 from re import sub
 from shutil import copyfile
 from sys import path as syspath
@@ -10,6 +10,7 @@ from sys import path as syspath
 from pype.plugin_type import Plugin
 from pype.pype_config import PypeConfig
 from pype.pype_exception import PypeException
+from pype.util.iotools import resolve_path
 from pype.util.misc import get_from_json_or_default
 
 
@@ -101,10 +102,12 @@ class PypeCore():
         return None
 
     def install_to_shell(self, shell_config):
-        aliases = get_from_json_or_default(
-            self.config.get_json(), 'aliases', [])
-        print('Writing init-file', shell_config['init_file'])
-        with open(shell_config['init_file'], 'w+') as ifile:
+        config_json = self.config.get_json()
+        init_file = get_from_json_or_default(
+            config_json, 'initfile', shell_config['init_file'])
+        aliases = get_from_json_or_default(config_json, 'aliases', [])
+        print('Writing init-file', init_file)
+        with open(resolve_path(init_file), 'w+') as ifile:
             # Write pype sourcing command
             ifile.write('if [ ! -z "$( command -v pype )" ]; then\n')
             ifile.write('\t' + shell_config['source_cmd'] + '\n')
@@ -123,11 +126,11 @@ class PypeCore():
         except FileNotFoundError:
             rc_file_content = []
         already_present = [line for line in rc_file_content
-                           if self.SHELL_INIT_PREFIX in line]
+                           if basename(init_file) in line]
         if not already_present:
             print('Adding init-file sourcing to', target_file)
             with open(target_file, 'a+') as rc_file_handle:
-                rc_file_handle.write('. ' + shell_config['init_file'] + '\n')
+                rc_file_handle.write('. ' + init_file + '\n')
 
     def uninstall_from_shell(self, shell_config):
         if isfile(shell_config['init_file']):
