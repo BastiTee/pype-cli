@@ -62,10 +62,10 @@ If your __plugin__ contains shared code over all __pypes__ you can simply put it
 This project is currently a proof of concept.
 
 * [ ] Add a template with less boilerplate for advanced users
-* [ ] Allow creation and opening of pypes in one request
+* [ ] Allow creation and opening of pypes in one request
 * [ ] Introduce more strict linting, e.g., on scripts using `-` instead of `_` and import order
 * [ ] How to handle plugin dependencies in other packages?
-* [ ] Add a filter to limit plugins to hostnames
+* [ ] Add a filter to limit plugins to hostnames
 * [ ] Validate config.json before using it (see <https://pypi.org/project/jsonschema/>)
 * [x] Add a filter to limit plugins to usernames
 * [x] Allow aliasing of pype calls
