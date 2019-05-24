@@ -30,6 +30,12 @@ def beautify_json_string(json_string, colorize=False, sort_keys=False):
     return highlight(formatted_json, JsonLexer(), TerminalFormatter())
 
 
+def truncate_with_ellipsis(string, length):
+    """Truncate a string at the given length or return it."""
+    string = string if string else ''
+    return (string[:length] + '..') if len(string) > length else string
+
+
 def query_yes_no(question, default="yes"):
     """Ask a yes/no question via raw_input() and return their answer."""
     valid = {"yes": True, "y": True, "ye": True,
