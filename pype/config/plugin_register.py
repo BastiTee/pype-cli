@@ -2,20 +2,23 @@
 """Register a new pype plugin."""
 
 
+import getpass
+from os import mkdir
+from os.path import isdir, join
+
 import click
 
-from pype.pype_core import load_module, PypeCore
+from pype.pype_core import PypeCore, load_module
 from pype.pype_exception import PypeException
 from pype.util.iotools import resolve_path
-from os.path import isdir, join
-from os import mkdir
 
 
 @click.command()
 @click.option('--name', '-n', help='Plugin module name', required=True)
 @click.option('--path', '-p', help='Module directory', required=True)
 @click.option('--create', '-c', help='Create on the fly', is_flag=True)
-def main(name, path, create):
+@click.option('--user-only', '-u', help='Just for current user', is_flag=True)
+def main(name, path, create, user_only):
     if create:
         create_on_the_fly(name, path)
     # Try to load the module to verify the configuration
@@ -27,9 +30,11 @@ def main(name, path, create):
         exit(1)
     pype_core = PypeCore()
     config_json = pype_core.get_config_json()
+    users = [getpass.getuser()] if user_only else []
     config_json['plugins'].append({
         'name': module.__name__,
-        'path': path
+        'path': path,
+        'users': users
     })
     pype_core.set_config_json(config_json)
     print('Plugin \'{}\' successfully registered.'.format(name))
