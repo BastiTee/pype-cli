@@ -61,37 +61,37 @@ If your __plugin__ contains shared code over all __pypes__ you can simply put it
 
 This project is currently a proof of concept.
 
-* [ ] Add a template with less boilerplate for advanced users
-* [ ] Allow creation and opening of pypes in one request
-* [ ] Introduce more strict linting, e.g., on scripts using `-` instead of `_` and import order
-* [ ] How to handle plugin dependencies in other packages
-* [ ] Add a filter to limit plugins to hostnames
-* [ ] Validate config.json before using it (see <https://pypi.org/project/jsonschema/>)
-* [x] Add a filter to limit plugins to usernames
-* [x] Allow aliasing of pype calls
-* [x] Allow creating plugins on the fly
-* [x] Add coloring library
-* [x] Extend documentation of template pype
-* [x] Add help texts to commands
-* [x] Auto-install bash/zsh completion
-* [x] Find another name since pype is unavailable in PyPi `¯\_(ツ)_/¯`
-* [x] Improve config file resolving to envvar->homefile->currdir->default
-* [x] Add option to add/delete plugins via pype
-* [x] Add option to create a new pype via pype
-* [x] Add option to open a pype in default browser
-* [x] Internalize default pypes such as 'version'
-* [x] Create a docker image to test installation on a mint system
-* [x] Auto-complete custom pypes using Click
-* [x] Allow separation of subcommand options and pype-internal options (e.g. `-h` option)
-* [x] Move example pypes to dedicated folder and make path configurable
-* [x] Find a way to re-use module and script documentation for CLI documentation
-* [x] Introduce verbosity option
-* [x] Introduce a logging framework
-* [x] Add auto-listing of configured pypes
-* [x] Allow configuring custom pypes via configuration file
-* [x] Introduce configuration file
-* [x] Check how to backward-support shell scripts
-* [x] Setup with python3 best-practices boilerplate
+⬜️ Add a template with less boilerplate for advanced users
+⬜️ Allow creation and opening of pypes in one request
+⬜️ Introduce more strict linting, e.g., on scripts using `-` instead of `_` and import order
+⬜️ How to handle plugin dependencies in other packages
+⬜️ Add a filter to limit plugins to hostnames
+⬜️ Validate config.json before using it (see <https://pypi.org/project/jsonschema/>)
+✅ Add a filter to limit plugins to usernames
+✅ Allow aliasing of pype calls
+✅ Allow creating plugins on the fly
+✅ Add coloring library
+✅ Extend documentation of template pype
+✅ Add help texts to commands
+✅ Auto-install bash/zsh completion
+✅ Find another name since pype is unavailable in PyPi `¯\_(ツ)_/¯`
+✅ Improve config file resolving to envvar->homefile->currdir->default
+✅ Add option to add/delete plugins via pype
+✅ Add option to create a new pype via pype
+✅ Add option to open a pype in default browser
+✅ Internalize default pypes such as 'version'
+✅ Create a docker image to test installation on a mint system
+✅ Auto-complete custom pypes using Click
+✅ Allow separation of subcommand options and pype-internal options (e.g. `-h` option)
+✅ Move example pypes to dedicated folder and make path configurable
+✅ Find a way to re-use module and script documentation for CLI documentation
+✅ Introduce verbosity option
+✅ Introduce a logging framework
+✅ Add auto-listing of configured pypes
+✅ Allow configuring custom pypes via configuration file
+✅ Introduce configuration file
+✅ Check how to backward-support shell scripts
+✅ Setup with python3 best-practices boilerplate
 
 ## Important resources
 
