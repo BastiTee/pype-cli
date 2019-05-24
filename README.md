@@ -48,6 +48,10 @@ If you have selected a __pype__ from a __plugin__ you can set __aliases__ for it
 * Register an __alias with options__: `pype -r mm myplugin mypype -o opt1 -v` → `alias mm="pype myplugin mypype -o opt1 -v"`
 * Unregister an __alias__: `pype -u mm`
 
+### Shared code for plugins
+
+If your __plugin__ contains shared code over all __pypes__ you can simply put it into a subpackage or into a file prefixed with `__`, e.g., `__commons__.py`. __pype-cli__ will only scan / consider top-level Python scripts in your __plugins__ as __pypes__.
+
 ## Development
 
 * Run `./make shell` to open a `pipenv` shell with the required shell configuration
