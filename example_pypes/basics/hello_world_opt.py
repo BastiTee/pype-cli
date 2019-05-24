@@ -4,7 +4,7 @@
 import click
 
 
-@click.command()
+@click.command(help=__doc__)
 @click.option('--message', '-m', default='Hello World!',
               help='Alternative message')
 def main(message):

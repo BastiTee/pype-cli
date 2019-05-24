@@ -7,7 +7,7 @@ import click
 from pype.pype_core import PypeCore
 
 
-@click.command()
+@click.command(help=__doc__)
 @click.option('--name', '-n', help='Plugin module name', required=True)
 def main(name):
     # Try to load the module to verify the configuration

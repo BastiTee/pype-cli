@@ -12,7 +12,7 @@ from pype.util.iotools import run_interactive
 
 
 # Decorators to initialize a CLI-command with options
-@click.command()
+@click.command(help=__doc__)
 @click.option('--option', '-o', default='default', help='An option')
 @click.option('--verbose', '-v', is_flag=True, help='A toggle')
 def main(option, verbose):

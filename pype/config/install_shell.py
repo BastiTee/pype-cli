@@ -7,7 +7,7 @@ from pype.pype_core import PypeCore
 from pype.util.iotools import resolve_path
 
 
-@click.command()
+@click.command(help=__doc__)
 @click.option('--target-file', '-t', help='Target RC-file', required=True)
 @click.option('--reverse', '-r', help='Uninstall autocompletion', is_flag=True)
 def main(target_file, reverse):
