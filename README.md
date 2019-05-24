@@ -50,7 +50,7 @@ If you have selected a __pype__ from a __plugin__ you can set __aliases__ for it
 
 ### Shared code for plugins
 
-If your __plugin__ contains shared code over all __pypes__ you can simply put it into a subpackage or into a file prefixed with `__`, e.g., `__commons__.py`. __pype-cli__ will only scan / consider top-level Python scripts in your __plugins__ as __pypes__.
+If your __plugin__ contains shared code over all __pypes__ you can simply put it into a subpackage or into a file prefixed with `__`, e.g., `__commons__.py`. __pype-cli__ will only scan / consider top-level Python scripts that are not prefixed in your __plugins__ as __pypes__.
 
 ## Development
 
