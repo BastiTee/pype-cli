@@ -2,6 +2,8 @@
 > A command-line tool for command-line tools
 <img align="right" src="res/icon.png" alt="alt text" width="150" height="150">
 
+__Disclaimer: This project is an early POC and interfaces can change anytime.__
+
 ## In a nutshell
 
 __pype-cli__ is a CLI-configurable command-line tool to orchestrate sets of other command-line tools. It simplifies the creation, orchestration and access of Python scripts that you require for your development work, process automation, etc.
@@ -62,13 +64,9 @@ If your __plugin__ contains shared code over all __pypes__ you can simply put it
 
 ## To-Do's
 
-This project is currently a proof of concept.
-
+* ⬜️ Find out why library paths in .venv differ from global install including broken imports in editor
 * ⬜️ Add a template with less boilerplate for advanced users
-* ⬜️ Allow creation and opening of pypes in one request
 * ⬜️ Introduce more strict linting, e.g., on scripts using `-` instead of `_` and import order
-* ⬜️ How to handle plugin dependencies in other packages
-* ⬜️ Add a filter to limit plugins to hostnames
 * ⬜️ Validate config.json before using it (see <https://pypi.org/project/jsonschema/>)
 * ✅ Add a filter to limit plugins to usernames
 * ✅ Allow aliasing of pype calls
