@@ -149,7 +149,7 @@ class PypeCore():
     def register_alias(self, ctx, extra_args, alias):
         if not alias:
             return
-        cmd_line = ctx.command_path + ' '.join(extra_args)
+        cmd_line = ctx.command_path + ' ' + ' '.join(extra_args)
         alias_cmd = '{}="{}"'.format(alias, cmd_line)
         # store to internal config
         config_json = self.config.get_json()
