@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+"""Pype core initializer."""
 
 from importlib import import_module
 from os import environ, remove
@@ -30,13 +31,14 @@ class PypeCore():
     }
 
     def __init__(self):
-        self.set_environment_variables()
-        self.config = PypeConfig()
+        """Public constructor."""
+        self.__set_environment_variables()
+        self.__config = PypeConfig()
         # load all external plugins
         self.plugins = [
             Plugin(plugin)
             for plugin in get_from_json_or_default(
-                self.config.get_json(), 'plugins', [])
+                self.__config.get_json(), 'plugins', [])
         ]
         # filter plugins not valid for current environment
         self.plugins = [plugin for plugin in self.plugins if plugin.active]
@@ -45,23 +47,28 @@ class PypeCore():
             'name': 'config'
         }))
 
-    def set_environment_variables(self):
+    def __set_environment_variables(self):
         environ['LC_ALL'] = 'C.UTF-8'
         environ['LANG'] = 'C.UTF-8'
 
     def get_plugins(self):
+        """Get list of configured plugins."""
         return self.plugins
 
     def get_config_json(self):
-        return self.config.get_json()
+        """Get pype configuration as JSON object."""
+        return self.__config.get_json()
 
     def set_config_json(self, json):
-        self.config.set_json(json)
+        """Set configuration from JSON object."""
+        self.__config.set_json(json)
 
     def get_config_filepath(self):
-        return self.config.get_filepath()
+        """Get absolute filepath to configuration JSON file."""
+        return self.__config.get_filepath()
 
     def list_pypes(self):
+        """Print list of pypes to console."""
         for plugin in self.plugins:
             print('PLUGIN: {} ({}) @ {}'.format(
                 plugin.name.upper(), plugin.doc, plugin.abspath))
@@ -72,6 +79,7 @@ class PypeCore():
             print()
 
     def create_pype(self, pype_name, plugin):
+        """Create a new pype inside the given plugin."""
         if plugin.internal:
             print('Creating internal pypes is not supported.')
             return
@@ -85,6 +93,7 @@ class PypeCore():
         print('Created new pype', target_name)
 
     def delete_pype(self, pype_name, plugin):
+        """Delete pype from the given plugin."""
         if plugin.internal:
             print('Deleting internal pypes is not supported.')
             return
@@ -98,13 +107,15 @@ class PypeCore():
         print('Deleted pype', source_name)
 
     def get_abspath_to_pype(self, plugin, name):
+        """Get absoulte path to pype Python script."""
         for pype in plugin.pypes:
             if name == pype.name:
                 return pype.abspath
         return None
 
     def install_to_shell(self, shell_config):
-        config_json = self.config.get_json()
+        """Install current configuration to shell."""
+        config_json = self.__config.get_json()
         init_file = get_from_json_or_default(
             config_json, 'initfile', shell_config['init_file'])
         aliases = get_from_json_or_default(config_json, 'aliases', [])
@@ -135,6 +146,7 @@ class PypeCore():
                 rc_file_handle.write('. ' + init_file + '\n')
 
     def uninstall_from_shell(self, shell_config):
+        """Remove current configuration from shell."""
         if isfile(shell_config['init_file']):
             remove(shell_config['init_file'])
         if not isfile(shell_config['target_file']):
@@ -147,28 +159,30 @@ class PypeCore():
                     f.write(line)
 
     def register_alias(self, ctx, extra_args, alias):
+        """Register a new alias."""
         if not alias:
             return
         cmd_line = ctx.command_path + ' ' + ' '.join(extra_args)
         alias_cmd = '{}="{}"'.format(alias, cmd_line)
         # store to internal config
-        config_json = self.config.get_json()
+        config_json = self.__config.get_json()
         if not config_json.get('aliases', None):
             config_json['aliases'] = {}
         if config_json.get('aliases').get(alias, None):
             print('Alias already registered.')
             return
         config_json.get('aliases')[alias] = cmd_line
-        self.config.set_json(config_json)
+        self.__config.set_json(config_json)
         # update install script
         self.install_to_shell(self.get_shell_config())
         print('Installed alias \'{}\''.format(alias_cmd))
 
     def unregister_alias(self, alias):
+        """Unregister the provided alias."""
         if not alias:
             return
         # store to internal config
-        config_json = self.config.get_json()
+        config_json = self.__config.get_json()
         if not config_json.get('aliases', None):
             print('No aliases registered.')
             return
@@ -176,12 +190,13 @@ class PypeCore():
             print('Alias not registered.')
             return
         del config_json['aliases'][alias]
-        self.config.set_json(config_json)
+        self.__config.set_json(config_json)
         # update install script
         self.install_to_shell(self.get_shell_config())
         print('Uninstalled alias \'{}\''.format(alias))
 
     def get_shell_config(self):
+        """Construct a shell configuration by guessing the running shell."""
         shell = basename(environ.get('SHELL', None))
         if not any(
             [supported for supported in self.SUPPORTED_SHELLS
@@ -193,6 +208,7 @@ class PypeCore():
 
 
 def load_module(name, path):
+    """Try to import the module at the provided path using classloader."""
     syspath.append(abspath(path))
     try:
         return import_module(name)
@@ -201,4 +217,5 @@ def load_module(name, path):
 
 
 def get_pype_basepath():
+    """Get directory filename of this pype installation."""
     return dirname(dirname(__file__))

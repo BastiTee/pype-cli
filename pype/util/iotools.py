@@ -14,7 +14,7 @@ def get_environ_without_pythonpath():
 
 
 def run_interactive(cmdline, reset_pythonpath=False, *args, **kwargs):
-    """Calls to an interactive shell."""
+    """Call to an interactive shell."""
     if not isinstance(cmdline, str):
         cmdline = ' '.join(cmdline)
     env = get_environ_without_pythonpath() if reset_pythonpath else environ
@@ -25,14 +25,14 @@ def run_interactive(cmdline, reset_pythonpath=False, *args, **kwargs):
 
 
 def run_and_get_output(cmdline, reset_pythonpath=False, *args, **kwargs):
-    """Runs a cmdline non-interactive and returns both stdout and stderr."""
+    """Run a cmdline non-interactive and returns both stdout and stderr."""
     env = get_environ_without_pythonpath() if reset_pythonpath else environ
     proc = run(cmdline, capture_output=True, env=env, *args, **kwargs)
     return proc.stdout.decode('utf-8'), proc.stderr.decode('utf-8')
 
 
 def open_with_default(filepath):
-    """Opens the given filepath with the OS'es default editor."""
+    """Open the given filepath with the OS'es default editor."""
     try:
         run(['open', filepath], check=True)
     except FileNotFoundError:
@@ -53,7 +53,6 @@ def get_immediate_subdirs(file_path, pattern=None, ignorecase=False):
 def get_immediate_subfiles(
         file_path, pattern=None, ignorecase=False, is_file=True):
     """Return the immediate subfiles of a path."""
-
     if not file_path:
         raise TypeError('file_path not provided.')
 
@@ -75,4 +74,4 @@ def get_immediate_subfiles(
 
 def clear_screen():
     """Clear terminal window."""
-    _ = call('clear' if name == 'posix' else 'cls')
+    call('clear' if name == 'posix' else 'cls')

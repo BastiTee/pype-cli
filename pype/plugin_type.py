@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+"""Data structure defining a plugin, i.e., a set of pypes."""
 
 import getpass
 import importlib
@@ -15,8 +16,9 @@ class Plugin():
     """Data structure defining a plugin, i.e., a set of pypes."""
 
     def __init__(self, plugin_config):
+        """Activate plugins for the provided configuration."""
         self.active = False
-        if not self.valid_for_user(plugin_config):
+        if not self.__valid_for_user(plugin_config):
             return
         if 'path' in plugin_config:
             # plugin pype
@@ -36,7 +38,7 @@ class Plugin():
         except ModuleNotFoundError:
             raise PypeException('No module named \'{}\' found at {}'
                                 .format(self.name, self.abspath))
-        self.doc = self.get_docu_or_default(self.module)
+        self.doc = self.__get_docu_or_default(self.module)
         self.pypes = [
             Pype(path.join(self.abspath, subfile),
                  subfile, plugin_config)
@@ -45,13 +47,13 @@ class Plugin():
         ]
         self.active = True
 
-    def get_docu_or_default(self, module):
+    def __get_docu_or_default(self, module):
         return (
             sub(r'[\.]+$', '', module.__doc__)  # replace trailing dots
             if module.__doc__ else 'Not documented yet'
         )
 
-    def valid_for_user(self, plugin_config):
+    def __valid_for_user(self, plugin_config):
         plugin_users = plugin_config.get('users', [])
         if len(plugin_users) == 0:
             return True

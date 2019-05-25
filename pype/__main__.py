@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+"""Pype main entry point."""
 
 import subprocess
 from os import environ, path
@@ -28,7 +29,8 @@ from pype.util.iotools import open_with_default
               help='Register alias for following pype')
 @click.pass_context
 def main(ctx, list_pypes, open_config, register_alias, unregister_alias):
-    if not __process_alias_configuration__(
+    """Pype main entry point."""
+    if not __process_alias_configuration(
             ctx, list_pypes, open_config, register_alias, unregister_alias):
         print(ctx.get_help())
         return
@@ -41,28 +43,28 @@ def main(ctx, list_pypes, open_config, register_alias, unregister_alias):
         PYPE_CORE.unregister_alias(unregister_alias)
         return
     elif ctx.invoked_subcommand is None:
-        __print_red__('No pype selected.')
+        __print_red('No pype selected.')
         print(ctx.get_help())
 
 
-def __process_alias_configuration__(
+def __process_alias_configuration(
         ctx, list_pypes, open_config, register_alias, unregister_alias):
     if register_alias and unregister_alias:
-        __print_red__('Options -r and -u cannot be combined.')
+        __print_red('Options -r and -u cannot be combined.')
         return False
     other_options = open_config or list_pypes
     if register_alias and other_options:
-        __print_red__('Option -r cannot be combined with other options.')
+        __print_red('Option -r cannot be combined with other options.')
         return False
     if unregister_alias and other_options:
-        __print_red__('Option -u cannot be combined with other options.')
+        __print_red('Option -u cannot be combined with other options.')
         return False
     # piggy-back context
     ctx.register_alias = register_alias
     return True
 
 
-def __bind_plugin__(name, plugin):
+def __bind_plugin(name, plugin):
     @click.option('--create-pype', '-c',
                   help='Create new pype with provided name')
     @click.option('--delete-pype', '-d',
@@ -70,33 +72,33 @@ def __bind_plugin__(name, plugin):
     @click.option('--open-pype', '-o',
                   help='Open selected pype in default editor')
     @click.pass_context
-    def __plugin_binding_function__(ctx, create_pype, delete_pype, open_pype):
+    def __plugin_bind_function(ctx, create_pype, delete_pype, open_pype):
         if create_pype:
             PYPE_CORE.create_pype(create_pype, plugin)
         elif delete_pype:
             PYPE_CORE.delete_pype(delete_pype, plugin)
         elif open_pype:
             if plugin.internal:
-                __print_red__('Opening internal pypes is not supported.')
+                __print_red('Opening internal pypes is not supported.')
                 return
             open_pype = sub('-', '_', open_pype)
             pype_abspath = PYPE_CORE.get_abspath_to_pype(plugin, open_pype)
             if not pype_abspath:
-                __print_red__(
+                __print_red(
                     'Pype \'{}\' could not be found.'.format(open_pype))
                 return
             open_with_default(pype_abspath)
         elif ctx.invoked_subcommand is None:
             print(ctx.get_help())
-    __plugin_binding_function__.__name__ = name
-    return __plugin_binding_function__
+    __plugin_bind_function.__name__ = name
+    return __plugin_bind_function
 
 
-def __bind_pype__(name, plugin, pype):
+def __bind_pype(name, plugin, pype):
     @click.pass_context
     @click.argument('extra_args', nargs=-1, type=click.UNPROCESSED)
     @click.option('--help', '-h', is_flag=True)
-    def __pype_binding_function__(ctx, extra_args, help):
+    def __pype_bind_function(ctx, extra_args, help):
         if ctx.parent.parent.register_alias:
             PYPE_CORE.register_alias(
                 ctx, extra_args, ctx.parent.parent.register_alias)
@@ -109,11 +111,11 @@ def __bind_pype__(name, plugin, pype):
         command = [executable, '-m', plugin.name +
                    '.' + pype.name] + extra_args
         subprocess.run(command, env=sub_environment)
-    __pype_binding_function__.__name__ = name
-    return __pype_binding_function__
+    __pype_bind_function.__name__ = name
+    return __pype_bind_function
 
 
-def __print_red__(message):
+def __print_red(message):
     print(Fore.RED + message)
 
 
@@ -122,10 +124,10 @@ PYPE_CORE = PypeCore()
 
 # Go through all configured plugins and their pypes and setup command groups
 for plugin in PYPE_CORE.get_plugins():
-    __plugin_binding_function__ = __bind_plugin__(plugin.name, plugin)
+    __plugin_bind_function = __bind_plugin(plugin.name, plugin)
     plugin_click_group = main.group(
         invoke_without_command=True, help=plugin.doc)(
-            __plugin_binding_function__)
+            __plugin_bind_function)
     ctx_settings = dict(
         ignore_unknown_options=True,
         allow_extra_args=True
@@ -133,4 +135,4 @@ for plugin in PYPE_CORE.get_plugins():
     for pype in plugin.pypes:
         plugin_click_group.command(
             context_settings=ctx_settings, help=pype.doc)(
-            __bind_pype__(pype.name, plugin, pype))
+            __bind_pype(pype.name, plugin, pype))

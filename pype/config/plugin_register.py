@@ -19,8 +19,9 @@ from pype.util.iotools import resolve_path
 @click.option('--create', '-c', help='Create on the fly', is_flag=True)
 @click.option('--user-only', '-u', help='Just for current user', is_flag=True)
 def main(name, path, create, user_only):
+    """Script's main entry point."""
     if create:
-        create_on_the_fly(name, path)
+        __create_on_the_fly(name, path)
     # Try to load the module to verify the configuration
     try:
         module = load_module(name, path)
@@ -40,7 +41,7 @@ def main(name, path, create, user_only):
     print('Plugin \'{}\' successfully registered.'.format(name))
 
 
-def create_on_the_fly(name, path):
+def __create_on_the_fly(name, path):
     abspath = resolve_path(path)
     if not isdir(abspath):
         print('Path {} does not point to a directoy.'.format(abspath))

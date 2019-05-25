@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+"""Pype configuration handler."""
 
 from json import dump, load
 from os import environ
@@ -18,10 +19,12 @@ class PypeConfig():
     }
 
     def __init__(self):
+        """Construct a default configuaration handler."""
         self.config = None
         self.filepath = None
 
     def resolve_config_file(self):
+        """Resolve the configuration using various options."""
         try:
             # Priority 1: Environment variable
             self.filepath = environ['PYPE_CONFIGURATION_FILE']
@@ -39,16 +42,19 @@ class PypeConfig():
         self.config = load(open(self.filepath, 'r'))
 
     def get_json(self):
+        """Get pype configuration as JSON object."""
         if not self.config:
             self.resolve_config_file()
         return self.config
 
     def get_filepath(self):
+        """Get absolute filepath to configuration JSON file."""
         if not self.config:
             self.resolve_config_file()
         return self.filepath
 
     def set_json(self, config):
+        """Set and persist configuration from JSON object."""
         self.config = config
         # always update config file as well
         dump(self.config, open(self.filepath, 'w+'), indent=4)

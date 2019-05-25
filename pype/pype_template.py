@@ -16,7 +16,7 @@ from pype.util.iotools import run_interactive
 @click.option('--option', '-o', default='default', help='An option')
 @click.option('--verbose', '-v', is_flag=True, help='A toggle')
 def main(option, verbose):
-
+    """Script's main entry point."""
     # Print out something in shiny colors
     print(Fore.RED + '- option:  ' + Style.DIM + Fore.GREEN + option)
     print(Fore.RED + '- verbose: ' + Style.DIM + Fore.GREEN + str(verbose))

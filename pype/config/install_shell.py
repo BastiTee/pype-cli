@@ -11,7 +11,7 @@ from pype.util.iotools import resolve_path
 @click.option('--target-file', '-t', help='Target RC-file', required=True)
 @click.option('--reverse', '-r', help='Uninstall autocompletion', is_flag=True)
 def main(target_file, reverse):
-
+    """Script's main entry point."""
     pype_core = PypeCore()
     shell_config = pype_core.get_shell_config()
     shell_config['target_file'] = resolve_path(target_file)
