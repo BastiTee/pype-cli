@@ -26,6 +26,7 @@ shell() {
 clean() {
     # Clean project base by deleting any non-VC files
     echo " === CLEAN === "
+    rm -fr build dist .egg *.egg-info
 	git clean -fdx
 }
 
@@ -53,14 +54,20 @@ lint() {
     pipenv run flake8 pype tests $@  ||exit 1
 }
 
+package() {
+    # Run package setup
+    echo " === PACKAGE === "
+    pipenv run python setup.py bdist_wheel $@
+}
+
 build() {
     # Run setup.py-based build process to package application
     echo " === BUILD === "
-    rm -fr build dist .egg *.egg-info
+    clean
     test
     coverage
     lint
-    pipenv run python setup.py bdist_wheel $@
+    package
 }
 
 publish() {

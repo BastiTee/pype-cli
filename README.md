@@ -76,8 +76,8 @@ If your __plugin__ contains shared code over all __pypes__ you can simply put it
 
 ## To-Do's
 
-* ⬜️ Fix pipenv issue on travis CI
 * ⬜️ Validate config.json before using it (see <https://pypi.org/project/jsonschema/>)
+* ✅️ Fix pipenv issue on travis CI
 * ✅️ Fix travis build for Python 3.5
 * ✅️ Fix travis build for Python 3.7
 * ✅️ Add free continuous integration
