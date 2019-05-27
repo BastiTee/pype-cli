@@ -11,5 +11,5 @@ def main():
     # Your code goes here ...
 
 
-if __name__ == "__main__":
-    main()  # pylint: disable=no-value-for-parameter
+if __name__ == '__main__':
+    main()

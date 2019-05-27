@@ -26,7 +26,7 @@ def main(name, path, create, user_only):
     try:
         module = load_module(name, path)
     except PypeException:
-        print('Could not find a python module \'{}\' at {}'
+        print('Could not find a python module "{}" at {}'
               .format(name, path))
         exit(1)
     pype_core = PypeCore()
@@ -38,7 +38,7 @@ def main(name, path, create, user_only):
         'users': users
     })
     pype_core.set_config_json(config_json)
-    print('Plugin \'{}\' successfully registered.'.format(name))
+    print('Plugin "{}" successfully registered.'.format(name))
 
 
 def __create_on_the_fly(name, path):
@@ -54,9 +54,9 @@ def __create_on_the_fly(name, path):
     mkdir(plugin_dir)
     with open(plugin_init_file, 'w+') as init:
         init.write('"""Not documented yet."""\n')
-    print('Plugin \'{}\' successfully created at {}'.format(
+    print('Plugin "{}" successfully created at {}'.format(
         name, abspath))
 
 
-if __name__ == "__main__":
-    main()  # pylint: disable=no-value-for-parameter
+if __name__ == '__main__':
+    main()

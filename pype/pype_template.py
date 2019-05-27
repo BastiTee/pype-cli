@@ -4,6 +4,7 @@
 # Pype's go-to library to create command-line interfaces.
 # Visit <https://click.palletsprojects.com> for details.
 import click
+
 # For colored output pype includes the colorama library
 from colorama import Fore, Style, init
 
@@ -27,6 +28,6 @@ def main(option, verbose):
     # Your code goes here ...
 
 
-if __name__ == "__main__":  # Only invoke main if called directly
+if __name__ == '__main__':  # Only invoke main if called directly
     init(autoreset=True)  # Enables colored input with resets after each print
-    main()  # pylint: disable=no-value-for-parameter
+    main()

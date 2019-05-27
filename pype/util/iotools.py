@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 """I/O utilities."""
 
-from os import path, listdir, name, environ
-from re import match, IGNORECASE
-from subprocess import run, call
+from os import environ, listdir, name, path
+from re import IGNORECASE, match
+from subprocess import call, run
 
 
 def get_environ_without_pythonpath():

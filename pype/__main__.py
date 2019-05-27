@@ -8,6 +8,7 @@ from sys import executable
 from sys import path as syspath
 
 import click
+
 from colorama import Fore, init
 
 from pype.pype_core import PypeCore
@@ -69,10 +70,10 @@ def __bind_plugin(name, plugin):
                   help='Create new pype with provided name')
     @click.option('--minimal', '-m', is_flag=True,
                   help='Use a minimal template with less boilerplate '
-                  + '(only used along with \'-c\' option')
+                  + '(only used along with "-c" option')
     @click.option('--edit', '-e', is_flag=True,
                   help='Open new pype immediatly for editing '
-                  + '(only used along with \'-c\' option')
+                  + '(only used along with "-c" option')
     @click.option('--delete-pype', '-d',
                   help='Deletes pype for provided name')
     @click.option('--open-pype', '-o',
@@ -83,7 +84,7 @@ def __bind_plugin(name, plugin):
         # Validate command line TODO This might be click-native
         if (minimal or edit) and not create_pype:
             __print_red(
-                '\'-m\' and \'-e\' can only be used with \'-c\' option.')
+                '"-m" and "-e" can only be used with "-c" option.')
             print(ctx.get_help())
             return
         toggle_invoked = False
@@ -104,7 +105,7 @@ def __bind_plugin(name, plugin):
                 if open_pype else created_pype_abspath)
             if not pype_abspath:
                 __print_red(
-                    'Pype \'{}\' could not be found.'.format(open_pype))
+                    'Pype "{}" could not be found.'.format(open_pype))
                 return
             open_with_default(pype_abspath)
             toggle_invoked = True
@@ -119,7 +120,7 @@ def __bind_pype(name, plugin, pype):
     @click.pass_context
     @click.argument('extra_args', nargs=-1, type=click.UNPROCESSED)
     @click.option('--help', '-h', is_flag=True)
-    def __pype_bind_function(ctx, extra_args, help):
+    def __pype_bind_function(ctx, extra_args, help):  # noqa: A002
         if ctx.parent.parent.register_alias:
             PYPE_CORE.register_alias(
                 ctx, extra_args, ctx.parent.parent.register_alias)

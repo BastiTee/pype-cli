@@ -2,10 +2,10 @@
 """Utility functions."""
 
 import json
-import sys
+
 from pygments import highlight
-from pygments.lexers.data import JsonLexer
 from pygments.formatters.terminal import TerminalFormatter
+from pygments.lexers.data import JsonLexer
 
 
 def get_from_json_or_default(json, path, default_value):
@@ -36,26 +36,25 @@ def truncate_with_ellipsis(string, length):
     return (string[:length] + '..') if len(string) > length else string
 
 
-def query_yes_no(question, default="yes"):
+def query_yes_no(question, default='yes'):
     """Ask a yes/no question via raw_input() and return their answer."""
-    valid = {"yes": True, "y": True, "ye": True,
-             "no": False, "n": False}
+    valid = {'yes': True, 'y': True, 'ye': True,
+             'no': False, 'n': False}
     if default is None:
-        prompt = " [y/n] "
-    elif default == "yes":
-        prompt = " [Y/n] "
-    elif default == "no":
-        prompt = " [y/N] "
+        prompt = ' [y/n] '
+    elif default == 'yes':
+        prompt = ' [Y/n] '
+    elif default == 'no':
+        prompt = ' [y/N] '
     else:
-        raise ValueError("invalid default answer: '%s'" % default)
+        raise ValueError('invalid default answer: {}'.format(default))
 
     while True:
-        sys.stdout.write(question + prompt)
+        print(question + prompt)
         choice = input().lower()
         if default is not None and choice == '':
             return valid[default]
         elif choice in valid:
             return valid[choice]
         else:
-            sys.stdout.write("Please respond with 'yes' or 'no' "
-                             "(or 'y' or 'n').\n")
+            print('Please respond with "yes" or "no" (or "y" or "n").')

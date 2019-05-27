@@ -22,5 +22,5 @@ def main(target_file, reverse):
     print('Done. Please reload shell session.')
 
 
-if __name__ == "__main__":
-    main()  # pylint: disable=no-value-for-parameter
+if __name__ == '__main__':
+    main()

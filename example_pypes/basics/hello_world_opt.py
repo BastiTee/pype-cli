@@ -8,8 +8,9 @@ import click
 @click.option('--message', '-m', default='Hello World!',
               help='Alternative message')
 def main(message):
+    """Script's main entry point."""
     print(message)
 
 
-if __name__ == "__main__":
-    main()  # pylint: disable=no-value-for-parameter
+if __name__ == '__main__':
+    main()

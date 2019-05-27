@@ -43,7 +43,7 @@ coverage() {
 
 lint() {
     # Run linter / code formatting checks against source code base
-    pipenv run flake8 $PROJECT_NAME $@
+    pipenv run flake8 $PROJECT_NAME $@  ||exit 1
 }
 
 build() {

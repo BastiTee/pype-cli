@@ -36,7 +36,7 @@ class Plugin():
         try:
             self.module = importlib.import_module(self.name)
         except ModuleNotFoundError:
-            raise PypeException('No module named \'{}\' found at {}'
+            raise PypeException('No module named "{}" found at {}'
                                 .format(self.name, self.abspath))
         self.doc = self.__get_docu_or_default(self.module)
         self.pypes = [

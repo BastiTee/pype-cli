@@ -19,12 +19,12 @@ def main(name):
         if plugin['name'] != name
     ]
     if config_json['plugins'] == new_plugins:
-        print('Plugin \'{}\' not found. Nothing to do.'.format(name))
+        print('Plugin "{}" not found. Nothing to do.'.format(name))
         return
     config_json['plugins'] = new_plugins
     pype_core.set_config_json(config_json)
-    print('Plugin \'{}\' successfully unregistered.'.format(name))
+    print('Plugin "{}" successfully unregistered.'.format(name))
 
 
-if __name__ == "__main__":
-    main()  # pylint: disable=no-value-for-parameter
+if __name__ == '__main__':
+    main()

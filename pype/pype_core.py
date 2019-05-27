@@ -181,7 +181,7 @@ class PypeCore():
         self.__config.set_json(config_json)
         # update install script
         self.install_to_shell(self.get_shell_config())
-        print('Installed alias \'{}\''.format(alias_cmd))
+        print('Installed alias "{}"'.format(alias_cmd))
 
     def unregister_alias(self, alias):
         """Unregister the provided alias."""
@@ -199,7 +199,7 @@ class PypeCore():
         self.__config.set_json(config_json)
         # update install script
         self.install_to_shell(self.get_shell_config())
-        print('Uninstalled alias \'{}\''.format(alias))
+        print('Uninstalled alias "{}"'.format(alias))
 
     def get_shell_config(self):
         """Construct a shell configuration by guessing the running shell."""
@@ -208,7 +208,7 @@ class PypeCore():
             [supported for supported in self.SUPPORTED_SHELLS
              if shell == supported]
         ):
-            print('Unsupported shell \'{}\'.'.format(shell))
+            print('Unsupported shell "{}".'.format(shell))
             return None
         return self.SUPPORTED_SHELLS[shell]
 
