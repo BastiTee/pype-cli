@@ -8,53 +8,53 @@ export PYTHONPATH=.  # include source code in any python subprocess
 export LC_ALL=C.UTF-8
 export LANG=C.UTF-8
 
-init() {
+shell() {
     # Initialize virtualenv, i.e., install required packages etc.
+    echo " === SHELL === "
     if [ -z "$( command -v python3 )" ]; then
         echo "python3 not available."
         exit 1
     fi
+    rm -rf .venv # Since it's not very expensive we create it everytime
     python3 -m pip install pipenv --upgrade
 	pipenv install --dev --skip-lock
-    echo "eval \"\$(_PYPE_COMPLETE=source pype)\"" >> .venv/bin/activate
-}
-
-shell() {
-    # Initialize virtualenv and open a new shell using it
-    if [ ! -d ".venv" ]; then
-        ./make init
-    fi
     pipenv run pip install --editable .
     pipenv shell
 }
 
 clean() {
     # Clean project base by deleting any non-VC files
+    echo " === CLEAN === "
 	git clean -fdx
 }
 
 test() {
     # Run all tests in default virtualenv
-    pipenv run py.test $@
+    echo " === TEST === "
+    pipenv run py.test $@ ||exit 1
 }
 
 testall() {
     # Run all tests against all virtualenvs defined in tox.ini
-    pipenv run detox $@
+    echo " === TESTALL === "
+    pipenv run detox $@ ||exit 1
 }
 
 coverage() {
     # Run test coverage checks
-    pipenv run py.test -c .coveragerc --verbose tests $@
+    echo " === COVERAGE === "
+    pipenv run py.test -c .coveragerc --verbose tests $@ ||exit 1
 }
 
 lint() {
     # Run linter / code formatting checks against source code base
-    pipenv run flake8 $PROJECT_NAME $@
+    echo " === LINT === "
+    pipenv run flake8 pype tests $@  ||exit 1
 }
 
 build() {
     # Run setup.py-based build process to package application
+    echo " === BUILD === "
     rm -fr build dist .egg *.egg-info
     test
     coverage
@@ -63,6 +63,8 @@ build() {
 }
 
 publish() {
+    # Publish pype to pypi.org
+    echo " === PUBLISH === "
     branch=$( git rev-parse --abbrev-ref HEAD )
     if [ $branch != "master" ]; then
         echo "Only publish released master branches! Currently on $branch"
@@ -74,12 +76,14 @@ publish() {
 
 install() {
     # Install pype globally on host system
+    echo " === INSTALL === "
     build
     python3 -m pip install dist/*.whl
 }
 
 dockerize() {
     # Install pype into a dockercontainer to test mint-installation
+    echo " === DOCKERIZE === "
     build
     docker build -t $PROJECT_NAME .
     docker run --rm -ti $PROJECT_NAME
