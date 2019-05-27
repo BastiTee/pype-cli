@@ -66,9 +66,9 @@ If your __plugin__ contains shared code over all __pypes__ you can simply put it
 
 ## To-Do's
 
-* ⬜️ Find out why library paths in .venv differ from global install including broken imports in editor
-* ⬜️ Introduce more strict linting, e.g., on scripts using `-` instead of `_` and import order
+* ⬜️ Add free continuous integration
 * ⬜️ Validate config.json before using it (see <https://pypi.org/project/jsonschema/>)
+* ✅ Introduce more strict linting, e.g., on scripts using `-` instead of `_` and import order
 * ✅ Allow immediate editing of new pypes
 * ✅️ Add a template with less boilerplate for advanced users
 * ✅ Add a filter to limit plugins to usernames

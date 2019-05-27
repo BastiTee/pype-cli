@@ -28,22 +28,22 @@ clean() {
 
 test() {
     # Run all tests in default virtualenv
-    pipenv run py.test $@
+    pipenv run py.test $@ ||exit 1
 }
 
 testall() {
     # Run all tests against all virtualenvs defined in tox.ini
-    pipenv run detox $@
+    pipenv run detox $@ ||exit 1
 }
 
 coverage() {
     # Run test coverage checks
-    pipenv run py.test -c .coveragerc --verbose tests $@
+    pipenv run py.test -c .coveragerc --verbose tests $@ ||exit 1
 }
 
 lint() {
     # Run linter / code formatting checks against source code base
-    pipenv run flake8 $PROJECT_NAME $@  ||exit 1
+    pipenv run flake8 pype tests $@  ||exit 1
 }
 
 build() {

@@ -1,14 +1,17 @@
 # -*- coding: utf-8 -*-
+"""Pype configuration tests."""
 
-from pype.pype_config import PypeConfig
+from json import dumps
 from os import environ, remove
 from tempfile import NamedTemporaryFile
-from json import dumps
+
+from pype.pype_config import PypeConfig
 
 
 class TestPypeConfig:
+    """Pype configuration tests."""
 
-    def create_temporary_config_file(self, json):
+    def _create_temporary_config_file(self, json):
         temp = NamedTemporaryFile()
         if json:
             temp.write(bytes(dumps(json), 'utf-8'))
@@ -16,7 +19,8 @@ class TestPypeConfig:
         return temp
 
     def test_resolve_config_file_withenv(self):
-        tmpf = self.create_temporary_config_file({'key': 'env'})
+        """Config file found via environment variable."""
+        tmpf = self._create_temporary_config_file({'key': 'env'})
         environ['PYPE_CONFIGURATION_FILE'] = tmpf.name
         pype_config = PypeConfig()
         pype_config.resolve_config_file()
@@ -25,7 +29,8 @@ class TestPypeConfig:
         del environ['PYPE_CONFIGURATION_FILE']  # cleanup
 
     def test_resolve_config_file_withdefaultfile(self):
-        tmpf = self.create_temporary_config_file({'key': 'default'})
+        """Config file found from default file path."""
+        tmpf = self._create_temporary_config_file({'key': 'default'})
         pype_config = PypeConfig()
         pype_config.DEFAULT_CONFIG_FILE = tmpf.name
         pype_config.LOCAL_CONFIG_FILE = '/does/not/exist'
@@ -34,7 +39,8 @@ class TestPypeConfig:
         assert pype_config.get_json() == {'key': 'default'}
 
     def test_resolve_config_file_withlocalfile(self):
-        tmpf = self.create_temporary_config_file({'key': 'local'})
+        """Config file found from custom local file."""
+        tmpf = self._create_temporary_config_file({'key': 'local'})
         pype_config = PypeConfig()
         pype_config.DEFAULT_CONFIG_FILE = '/does/not/exist'
         pype_config.LOCAL_CONFIG_FILE = tmpf.name
@@ -43,6 +49,7 @@ class TestPypeConfig:
         assert pype_config.get_json() == {'key': 'local'}
 
     def test_resolve_config_file_withontheflycreation(self):
+        """Config file not found and created on the fly."""
         pype_config = PypeConfig()
         pype_config.DEFAULT_CONFIG_FILE = 'test_config.json'
         pype_config.LOCAL_CONFIG_FILE = '/does/not/exist'

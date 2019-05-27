@@ -4,7 +4,6 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
-pytest = "*" # Python base-testing library
 autopep8 = "*" # Code formatter
 flake8 = "*" # Base-linter module
 flake8-quotes = "*" # flake8-extension to lint bad quoting
@@ -13,6 +12,7 @@ flake8-builtins = "*" # flake8-ext to check python builtins used as vars etc.
 flake8-import-order = "*" # flake8-ext to cleanup imports
 flake8-eradicate = "*" # flake8-ext to find dead code
 # flake8-fixme = "*" # flake8-ext to find todo notes (not yet used)
+pytest = "*" # Python base-testing library
 detox = "*" # Distributed tox for multi-python tests
 rope = "*" # Refactoring library
 twine = "*" # Interoperability with pypi.org
