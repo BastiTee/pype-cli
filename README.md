@@ -42,6 +42,8 @@ __pype-cli__'s main benefit is that is is extendable with custom __plugins__ and
 To create a new pype you need to decide to which plugin you want to add the pype, e.g., `myplugin`.
 
 * Create a new __pype__ from a template: `pype myplugin -c mypype`
+* Create a new __pype__ from a template with less boilerplate: `pype myplugin --minimal -c mypype` or `pype myplugin -mc mypype`
+* Create a new __pype__ from minimal template and open immediately: `pype myplugin --minimal --edit -c mypype` or `pype myplugin -mec mypype`
 * Open a __pype__ in your default editor: `pype myplugin -o mypype`
 * Delete a __pype__: `pype myplugin -d mypype`
 
@@ -65,9 +67,10 @@ If your __plugin__ contains shared code over all __pypes__ you can simply put it
 ## To-Do's
 
 * ⬜️ Find out why library paths in .venv differ from global install including broken imports in editor
-* ⬜️ Add a template with less boilerplate for advanced users
 * ⬜️ Introduce more strict linting, e.g., on scripts using `-` instead of `_` and import order
 * ⬜️ Validate config.json before using it (see <https://pypi.org/project/jsonschema/>)
+* ✅ Allow immediate editing of new pypes
+* ✅️ Add a template with less boilerplate for advanced users
 * ✅ Add a filter to limit plugins to usernames
 * ✅ Allow aliasing of pype calls
 * ✅ Allow creating plugins on the fly

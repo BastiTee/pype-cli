@@ -78,19 +78,25 @@ class PypeCore():
                 ))
             print()
 
-    def create_pype(self, pype_name, plugin):
+    def create_pype_or_exit(self, pype_name, plugin, minimal):
         """Create a new pype inside the given plugin."""
         if plugin.internal:
             print('Creating internal pypes is not supported.')
-            return
+            exit(1)
+        # Normalize filename to be PEP8-conform
         target_name = sub('-', '_', sub(r'\.py$', '', pype_name))
-        target_name = join(plugin.abspath, target_name + '.py')
-        source_name = join(dirname(__file__), 'pype_template.py')
-        if isfile(target_name):
+        # Create absolute path
+        target_file = join(plugin.abspath, target_name + '.py')
+        if isfile(target_file):
             print('Pype already present')
-            return
-        copyfile(source_name, target_name)
-        print('Created new pype', target_name)
+            exit(1)
+        # Depending on user input create a documented or simple template
+        template_name = ('pype_template_minimal.py' if minimal
+                         else 'pype_template.py')
+        source_name = join(dirname(__file__), template_name)
+        copyfile(source_name, target_file)
+        print('Created new pype', target_file)
+        return target_file
 
     def delete_pype(self, pype_name, plugin):
         """Delete pype from the given plugin."""

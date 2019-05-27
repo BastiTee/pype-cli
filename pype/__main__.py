@@ -67,28 +67,49 @@ def __process_alias_configuration(
 def __bind_plugin(name, plugin):
     @click.option('--create-pype', '-c',
                   help='Create new pype with provided name')
+    @click.option('--minimal', '-m', is_flag=True,
+                  help='Use a minimal template with less boilerplate '
+                  + '(only used along with \'-c\' option')
+    @click.option('--edit', '-e', is_flag=True,
+                  help='Open new pype immediatly for editing '
+                  + '(only used along with \'-c\' option')
     @click.option('--delete-pype', '-d',
                   help='Deletes pype for provided name')
     @click.option('--open-pype', '-o',
                   help='Open selected pype in default editor')
     @click.pass_context
-    def __plugin_bind_function(ctx, create_pype, delete_pype, open_pype):
-        if create_pype:
-            PYPE_CORE.create_pype(create_pype, plugin)
-        elif delete_pype:
+    def __plugin_bind_function(
+            ctx, create_pype, minimal, edit, delete_pype, open_pype):
+        # Validate command line TODO This might be click-native
+        if (minimal or edit) and not create_pype:
+            __print_red(
+                '\'-m\' and \'-e\' can only be used with \'-c\' option.')
+            print(ctx.get_help())
+            return
+        toggle_invoked = False
+        if create_pype:  # Handle creation of pypes
+            created_pype_abspath = PYPE_CORE.create_pype_or_exit(
+                create_pype, plugin, minimal)
+            toggle_invoked = True
+        if delete_pype:  # Handle deletion of pypes
             PYPE_CORE.delete_pype(delete_pype, plugin)
-        elif open_pype:
+            toggle_invoked = True
+        if open_pype or edit:  # Handle opening existing or new pypes
             if plugin.internal:
                 __print_red('Opening internal pypes is not supported.')
                 return
-            open_pype = sub('-', '_', open_pype)
-            pype_abspath = PYPE_CORE.get_abspath_to_pype(plugin, open_pype)
+            # Resolve either an existing or a newly created pype
+            pype_abspath = (PYPE_CORE.get_abspath_to_pype(
+                plugin, sub('-', '_', open_pype))
+                if open_pype else created_pype_abspath)
             if not pype_abspath:
                 __print_red(
                     'Pype \'{}\' could not be found.'.format(open_pype))
                 return
             open_with_default(pype_abspath)
-        elif ctx.invoked_subcommand is None:
+            toggle_invoked = True
+        # Handle case that no toggles were used and no commands selected
+        if not toggle_invoked and not ctx.invoked_subcommand:
             print(ctx.get_help())
     __plugin_bind_function.__name__ = name
     return __plugin_bind_function
