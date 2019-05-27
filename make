@@ -10,6 +10,7 @@ export LANG=C.UTF-8
 
 shell() {
     # Initialize virtualenv, i.e., install required packages etc.
+    echo -e "\n === SHELL === \n"
     if [ -z "$( command -v python3 )" ]; then
         echo "python3 not available."
         exit 1
@@ -23,31 +24,37 @@ shell() {
 
 clean() {
     # Clean project base by deleting any non-VC files
+    echo -e "\n === CLEAN === \n"
 	git clean -fdx
 }
 
 test() {
     # Run all tests in default virtualenv
+    echo -e "\n === TEST === \n"
     pipenv run py.test $@ ||exit 1
 }
 
 testall() {
     # Run all tests against all virtualenvs defined in tox.ini
+    echo -e "\n === TESTALL === \n"
     pipenv run detox $@ ||exit 1
 }
 
 coverage() {
     # Run test coverage checks
+    echo -e "\n === COVERAGE === \n"
     pipenv run py.test -c .coveragerc --verbose tests $@ ||exit 1
 }
 
 lint() {
     # Run linter / code formatting checks against source code base
+    echo -e "\n === LINT === \n"
     pipenv run flake8 pype tests $@  ||exit 1
 }
 
 build() {
     # Run setup.py-based build process to package application
+    echo -e "\n === BUILD === \n"
     rm -fr build dist .egg *.egg-info
     test
     coverage
@@ -56,6 +63,8 @@ build() {
 }
 
 publish() {
+    # Publish pype to pypi.org
+    echo -e "\n === PUBLISH === \n"
     branch=$( git rev-parse --abbrev-ref HEAD )
     if [ $branch != "master" ]; then
         echo "Only publish released master branches! Currently on $branch"
@@ -67,12 +76,14 @@ publish() {
 
 install() {
     # Install pype globally on host system
+    echo -e "\n === INSTALL === \n"
     build
     python3 -m pip install dist/*.whl
 }
 
 dockerize() {
     # Install pype into a dockercontainer to test mint-installation
+    echo -e "\n === DOCKERIZE === \n"
     build
     docker build -t $PROJECT_NAME .
     docker run --rm -ti $PROJECT_NAME
