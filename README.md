@@ -68,12 +68,18 @@ If your __plugin__ contains shared code over all __pypes__ you can simply put it
 * Run `./make shell` to open a `pipenv` shell with the required shell configuration
 * Run `pype` to operate locale development version (it will react to code changes)
 
+### New virtual environments for python
+
+* `CFLAGS="-I$(xcrun --show-sdk-path)/usr/include"  pyenv install 3.6.8` to install pyenv
+* `pyenv install 3.5.7` to install another Python version (change version according to needs)
+* Change `PYTHON_VERSION` variable in make-File
+
 ## To-Do's
 
 * ⬜️ Fix pipenv issue on travis CI
 * ⬜️ Fix travis build for Python 3.5
-* ⬜️ Fix travis build for Python 3.7
 * ⬜️ Validate config.json before using it (see <https://pypi.org/project/jsonschema/>)
+* ✅️ Fix travis build for Python 3.7
 * ✅️ Add free continuous integration
 * ✅ Introduce more strict linting, e.g., on scripts using `-` instead of `_` and import order
 * ✅ Allow immediate editing of new pypes

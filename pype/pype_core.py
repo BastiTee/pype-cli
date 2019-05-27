@@ -218,7 +218,7 @@ def load_module(name, path):
     syspath.append(abspath(path))
     try:
         return import_module(name)
-    except ModuleNotFoundError as e:
+    except ModuleNotFoundError as e:  # noqa: F821
         raise PypeException(e)
 
 

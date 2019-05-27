@@ -2,6 +2,7 @@
 cd "$( cd "$( dirname "$0" )"; pwd )"
 
 PROJECT_NAME="pype"
+export PYTHON_VERSION=3.7  # Pipenv python version
 export PIPENV_VERBOSITY=-1  # suppress warning if pipenv is started inside venv
 export PIPENV_VENV_IN_PROJECT=1  # use relative .venv folder
 export PYTHONPATH=.  # include source code in any python subprocess
@@ -17,7 +18,7 @@ shell() {
     fi
     rm -rf .venv # Since it's not very expensive we create it everytime
     python3 -m pip install pipenv --upgrade
-	pipenv install --dev --skip-lock
+	pipenv install --python $PYTHON_VERSION --dev --skip-lock ||exit 1
     pipenv run pip install --editable .
     pipenv shell
 }
