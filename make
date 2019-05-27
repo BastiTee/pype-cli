@@ -10,7 +10,7 @@ export LANG=C.UTF-8
 
 shell() {
     # Initialize virtualenv, i.e., install required packages etc.
-    echo -e "\n === SHELL === \n"
+    echo " === SHELL === "
     if [ -z "$( command -v python3 )" ]; then
         echo "python3 not available."
         exit 1
@@ -24,37 +24,37 @@ shell() {
 
 clean() {
     # Clean project base by deleting any non-VC files
-    echo -e "\n === CLEAN === \n"
+    echo " === CLEAN === "
 	git clean -fdx
 }
 
 test() {
     # Run all tests in default virtualenv
-    echo -e "\n === TEST === \n"
+    echo " === TEST === "
     pipenv run py.test $@ ||exit 1
 }
 
 testall() {
     # Run all tests against all virtualenvs defined in tox.ini
-    echo -e "\n === TESTALL === \n"
+    echo " === TESTALL === "
     pipenv run detox $@ ||exit 1
 }
 
 coverage() {
     # Run test coverage checks
-    echo -e "\n === COVERAGE === \n"
+    echo " === COVERAGE === "
     pipenv run py.test -c .coveragerc --verbose tests $@ ||exit 1
 }
 
 lint() {
     # Run linter / code formatting checks against source code base
-    echo -e "\n === LINT === \n"
+    echo " === LINT === "
     pipenv run flake8 pype tests $@  ||exit 1
 }
 
 build() {
     # Run setup.py-based build process to package application
-    echo -e "\n === BUILD === \n"
+    echo " === BUILD === "
     rm -fr build dist .egg *.egg-info
     test
     coverage
@@ -64,7 +64,7 @@ build() {
 
 publish() {
     # Publish pype to pypi.org
-    echo -e "\n === PUBLISH === \n"
+    echo " === PUBLISH === "
     branch=$( git rev-parse --abbrev-ref HEAD )
     if [ $branch != "master" ]; then
         echo "Only publish released master branches! Currently on $branch"
@@ -76,14 +76,14 @@ publish() {
 
 install() {
     # Install pype globally on host system
-    echo -e "\n === INSTALL === \n"
+    echo " === INSTALL === "
     build
     python3 -m pip install dist/*.whl
 }
 
 dockerize() {
     # Install pype into a dockercontainer to test mint-installation
-    echo -e "\n === DOCKERIZE === \n"
+    echo " === DOCKERIZE === "
     build
     docker build -t $PROJECT_NAME .
     docker run --rm -ti $PROJECT_NAME
