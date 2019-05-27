@@ -1,8 +1,10 @@
 # pype
+
 > A command-line tool for command-line tools
 <img align="right" src="res/icon.png" alt="alt text" width="150" height="150">
 
 [![Build Status](https://travis-ci.org/BastiTee/pype.svg?branch=develop)](https://travis-ci.org/BastiTee/pype)
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/pype-cli.svg)
 
 __Disclaimer: This project is an early POC and interfaces can change anytime.__
 
@@ -68,8 +70,11 @@ If your __plugin__ contains shared code over all __pypes__ you can simply put it
 
 ## To-Do's
 
-* ⬜️ Add free continuous integration
+* ⬜️ Fix pipenv issue on travis CI
+* ⬜️ Fix travis build for Python 3.5
+* ⬜️ Fix travis build for Python 3.6
 * ⬜️ Validate config.json before using it (see <https://pypi.org/project/jsonschema/>)
+* ✅️ Add free continuous integration
 * ✅ Introduce more strict linting, e.g., on scripts using `-` instead of `_` and import order
 * ✅ Allow immediate editing of new pypes
 * ✅️ Add a template with less boilerplate for advanced users

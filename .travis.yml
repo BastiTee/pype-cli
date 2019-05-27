@@ -1,12 +1,6 @@
 language: python
 python:
-    - 3.5
     - 3.6
-# Enable 3.7 without globally enabling sudo and dist: xenial for other jobs
-matrix:
-  include:
-    - python: 3.7
-      sudo: true
 install:
   - pip install pipenv
   - pipenv install --dev --skip-lock
