@@ -2,6 +2,8 @@
 > A command-line tool for command-line tools
 <img align="right" src="res/icon.png" alt="alt text" width="150" height="150">
 
+[![Build Status](https://travis-ci.org/BastiTee/pype.svg?branch=develop)](https://travis-ci.org/BastiTee/pype)
+
 __Disclaimer: This project is an early POC and interfaces can change anytime.__
 
 ## In a nutshell
