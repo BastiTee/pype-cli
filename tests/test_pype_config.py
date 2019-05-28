@@ -88,13 +88,13 @@ class TestPypeConfig():
     def test_validate_config_noneInput_raiseTypeError(self):
         """Config validation without input."""
         pype_config = PypeConfig()
-        with raises(TypeError):
+        with raises(PypeException):
             pype_config.validate_config(None)
 
     def test_validate_config_emptyInput_raiseTypeError(self):
         """Config validation with empty input."""
         pype_config = PypeConfig()
-        with raises(TypeError):
+        with raises(PypeException):
             pype_config.validate_config({})
 
     def test_validate_config_validFullJson(self):

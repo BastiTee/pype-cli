@@ -71,8 +71,6 @@ class PypeConfig():
 
     def validate_config(self, config):
         """Validate given config file against schema definition."""
-        if not config:
-            raise TypeError('None-input for pype configuration.')
         try:
             validate(instance=config, schema=self.CONFIG_SCHEMA)
         except ValidationError as err:
