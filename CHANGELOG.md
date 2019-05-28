@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 0.1.1
+
+- Fixed missing jsonschema dependency in setup.py
+
 ## Version 0.1.0
 
 - Stabilized interfaces
