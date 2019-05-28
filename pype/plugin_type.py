@@ -35,7 +35,7 @@ class Plugin():
                 __file__), plugin_config['name'])
         try:
             self.module = importlib.import_module(self.name)
-        except ModuleNotFoundError:
+        except ModuleNotFoundError:  # noqa: F821
             raise PypeException('No module named "{}" found at {}'
                                 .format(self.name, self.abspath))
         self.doc = self.__get_docu_or_default(self.module)

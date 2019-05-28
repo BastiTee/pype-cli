@@ -1,0 +1,57 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title": "Schema for pype configuration files",
+    "type": "object",
+    "properties": {
+        "plugins": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "path": {
+                        "type": "string"
+                    },
+                    "users": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "required": [
+                    "name",
+                    "path",
+                    "users"
+                ]
+            }
+        },
+        "aliases": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "alias": {
+                        "type": "string"
+                    },
+                    "command": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "alias",
+                    "command"
+                ]
+            }
+        },
+        "initfile": {
+            "type": "string"
+        }
+    },
+    "required": [
+        "plugins",
+        "aliases"
+    ]
+}

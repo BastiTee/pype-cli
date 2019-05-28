@@ -15,6 +15,6 @@ COPY example_pypes/basics /pypes/basics
 
 # Configure pype
 RUN pype pype.config plugin-register -n basics -p /pypes
-RUN pype pype.config install-autocomplete -s bash
+RUN pype pype.config install-shell -t ~/.bashrc
 
 ENTRYPOINT [ "bash" ]
