@@ -39,7 +39,7 @@ setup(
     include_package_data=True,
     python_requires='>=3.5',
     install_requires=[
-        'click', 'tabulate', 'colorama', 'pygments', 'requests'],
+        'click', 'tabulate', 'colorama', 'pygments', 'requests', 'jsonschema'],
     entry_points="""
         [console_scripts]
         pype=pype.__main__:main
