@@ -13,4 +13,4 @@ matrix:
 install:
   - pip install pipenv
   - pipenv install --dev --skip-lock
-script: ./make build
+script: ./make clean && ./make build

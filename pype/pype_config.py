@@ -4,6 +4,9 @@
 from json import dump, load
 from os import environ
 from os.path import dirname, isfile, join
+from sys import stderr
+
+from jsonschema import ValidationError, validate
 
 from pype.util.iotools import resolve_path
 
@@ -17,6 +20,7 @@ class PypeConfig():
         'plugins': [],
         'aliases': []
     }
+    CONFIG_SCHEMA = load(open(join(dirname(__file__), 'config-schema.json')))
 
     def __init__(self):
         """Construct a default configuaration handler."""
@@ -58,3 +62,14 @@ class PypeConfig():
         self.config = config
         # always update config file as well
         dump(self.config, open(self.filepath, 'w+'), indent=4)
+
+    def validate_config(self, config):
+        """Validate given config file against schema definition."""
+        if not config:
+            raise TypeError('None-input for pype configuration.')
+        try:
+            validate(instance=config, schema=self.CONFIG_SCHEMA)
+        except ValidationError as err:
+            print(err, file=stderr)
+            return False
+        return True

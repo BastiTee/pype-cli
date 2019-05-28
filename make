@@ -63,7 +63,6 @@ package() {
 build() {
     # Run setup.py-based build process to package application
     echo " === BUILD === "
-    clean
     test
     coverage
     lint

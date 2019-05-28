@@ -4,7 +4,7 @@
 from pype.util.misc import get_from_json_or_default
 
 
-class TestUtils:
+class TestUtils():
     """Pype miscellaneous utils tests."""
 
     def test_get_from_json_or_default__noneInput(self):
