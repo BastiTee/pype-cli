@@ -8,6 +8,7 @@ export PIPENV_VENV_IN_PROJECT=1  # use relative .venv folder
 export PYTHONPATH=.  # include source code in any python subprocess
 export LC_ALL=C.UTF-8
 export LANG=C.UTF-8
+export SHELL_RC=".venv/bin/activate"
 
 shell() {
     # Initialize virtualenv, i.e., install required packages etc.
@@ -16,10 +17,16 @@ shell() {
         echo "python3 not available."
         exit 1
     fi
-    rm -rf .venv # Since it's not very expensive we create it everytime
+    # Since it's not very expensive we recreate the venv everytime
+    rm -rf .venv
+    # Install basic venv and pype codebase
     python3 -m pip install pipenv --upgrade
 	pipenv install --python $PYTHON_VERSION --dev --skip-lock ||exit 1
     pipenv run pip install --editable .
+    # Configure shell to use custom config
+    echo "export PYPE_CONFIGURATION_FILE=\"$( pwd )/config.json\"" >> $SHELL_RC
+    pipenv run pype pype.config install-shell -t $SHELL_RC
+    # Spawn a venv shell
     pipenv shell
 }
 

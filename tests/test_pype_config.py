@@ -7,6 +7,7 @@ from os import environ, remove
 from tempfile import NamedTemporaryFile
 
 from pype.pype_config import PypeConfig
+from pype.pype_exception import PypeException
 
 from pytest import raises
 
@@ -23,37 +24,54 @@ class TestPypeConfig():
         temp.seek(0)
         return temp
 
+    VALID_CONFIG = {
+        'plugins': [
+            {
+                'name': 'plugin_name',
+                'path': '~/some/path',
+                'users': ['someuser']
+            }
+        ],
+        'aliases': [
+            {
+                'alias': 'alias_name',
+                'command': 'pype myplugin mypype'
+            }
+        ],
+        'initfile': '~/.pype-initfile'
+    }
+
     # PypeConfig.resolve_config_file()
 
     def test_resolve_config_file_withenv(self):
         """Config file found via environment variable."""
-        tmpf = self._create_temporary_config_file({'key': 'env'})
+        tmpf = self._create_temporary_config_file(self.VALID_CONFIG)
         environ['PYPE_CONFIGURATION_FILE'] = tmpf.name
         pype_config = PypeConfig()
         pype_config.resolve_config_file()
         assert pype_config.get_filepath() == tmpf.name
-        assert pype_config.get_json() == {'key': 'env'}
+        assert pype_config.get_json() == self.VALID_CONFIG
         del environ['PYPE_CONFIGURATION_FILE']  # cleanup
 
     def test_resolve_config_file_withdefaultfile(self):
         """Config file found from default file path."""
-        tmpf = self._create_temporary_config_file({'key': 'default'})
+        tmpf = self._create_temporary_config_file(self.VALID_CONFIG)
         pype_config = PypeConfig()
         pype_config.DEFAULT_CONFIG_FILE = tmpf.name
         pype_config.LOCAL_CONFIG_FILE = '/does/not/exist'
         pype_config.resolve_config_file()
         assert pype_config.get_filepath() == tmpf.name
-        assert pype_config.get_json() == {'key': 'default'}
+        assert pype_config.get_json() == self.VALID_CONFIG
 
     def test_resolve_config_file_withlocalfile(self):
         """Config file found from custom local file."""
-        tmpf = self._create_temporary_config_file({'key': 'local'})
+        tmpf = self._create_temporary_config_file(self.VALID_CONFIG)
         pype_config = PypeConfig()
         pype_config.DEFAULT_CONFIG_FILE = '/does/not/exist'
         pype_config.LOCAL_CONFIG_FILE = tmpf.name
         pype_config.resolve_config_file()
         assert pype_config.get_filepath() == tmpf.name
-        assert pype_config.get_json() == {'key': 'local'}
+        assert pype_config.get_json() == self.VALID_CONFIG
 
     def test_resolve_config_file_withontheflycreation(self):
         """Config file not found and created on the fly."""
@@ -97,7 +115,8 @@ class TestPypeConfig():
         input_config = {
             'plugins': []
         }
-        assert not pype_config.validate_config(input_config)
+        with raises(PypeException):
+            pype_config.validate_config(input_config)
 
     def test_validate_config_misconfiguredPlugin(self):
         """Config validation with missing roots."""
@@ -106,7 +125,8 @@ class TestPypeConfig():
         input_config['plugins'].append({
             'name': 'new_plugin'
         })
-        assert not pype_config.validate_config(input_config)
+        with raises(PypeException):
+            pype_config.validate_config(input_config)
 
     def test_validate_config_configuredPlugin(self):
         """Config validation with correctly configured additional plugin."""
@@ -128,7 +148,8 @@ class TestPypeConfig():
             'path': '/some/path',
             'users': [42]
         })
-        assert not pype_config.validate_config(input_config)
+        with raises(PypeException):
+            pype_config.validate_config(input_config)
 
     def test_validate_config_configuredAlias(self):
         """Config validation with correctly configured additional alias."""
@@ -148,7 +169,8 @@ class TestPypeConfig():
             'aliass': 'al',
             'commando': 'pype test'
         })
-        assert not pype_config.validate_config(input_config)
+        with raises(PypeException):
+            pype_config.validate_config(input_config)
 
     def test_validate_config_configuredInitfile(self):
         """Config validation with configured initfile."""
@@ -162,21 +184,5 @@ class TestPypeConfig():
         pype_config = PypeConfig()
         input_config = copy.deepcopy(self.VALID_CONFIG)
         input_config['initfile'] = {}
-        assert not pype_config.validate_config(input_config)
-
-    VALID_CONFIG = {
-        'plugins': [
-            {
-                'name': 'plugin_name',
-                'path': '~/some/path',
-                'users': ['someuser']
-            }
-        ],
-        'aliases': [
-            {
-                'alias': 'alias_name',
-                'command': 'pype myplugin mypype'
-            }
-        ],
-        'initfile': '~/.pype-initfile'
-    }
+        with raises(PypeException):
+            pype_config.validate_config(input_config)

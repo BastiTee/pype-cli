@@ -6,8 +6,11 @@ from os import environ
 from os.path import dirname, isfile, join
 from sys import stderr
 
+from colorama import Fore, Style
+
 from jsonschema import ValidationError, validate
 
+from pype.pype_exception import PypeException
 from pype.util.iotools import resolve_path
 
 
@@ -20,7 +23,8 @@ class PypeConfig():
         'plugins': [],
         'aliases': []
     }
-    CONFIG_SCHEMA = load(open(join(dirname(__file__), 'config-schema.json')))
+    CONFIG_SCHEMA_PATH = join(dirname(__file__), 'config-schema.json')
+    CONFIG_SCHEMA = load(open(CONFIG_SCHEMA_PATH))
 
     def __init__(self):
         """Construct a default configuaration handler."""
@@ -44,6 +48,7 @@ class PypeConfig():
             dump(self.DEFAULT_CONFIG, open(self.DEFAULT_CONFIG_FILE, 'w+'))
             self.filepath = self.DEFAULT_CONFIG_FILE
         self.config = load(open(self.filepath, 'r'))
+        self.validate_config(self.config)
 
     def get_json(self):
         """Get pype configuration as JSON object."""
@@ -58,7 +63,8 @@ class PypeConfig():
         return self.filepath
 
     def set_json(self, config):
-        """Set and persist configuration from JSON object."""
+        """Validate, set and persist configuration from JSON object."""
+        self.validate_config(config)
         self.config = config
         # always update config file as well
         dump(self.config, open(self.filepath, 'w+'), indent=4)
@@ -70,6 +76,9 @@ class PypeConfig():
         try:
             validate(instance=config, schema=self.CONFIG_SCHEMA)
         except ValidationError as err:
-            print(err, file=stderr)
-            return False
+            print(Fore.RED + str(err) + Style.RESET_ALL + '\n', file=stderr)
+            raise PypeException(
+                'Configuration file is not valid. See above for details ' +
+                'and refer to the schema file at {}'.format(
+                    self.CONFIG_SCHEMA_PATH))
         return True

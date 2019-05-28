@@ -2,7 +2,15 @@
     "plugins": [
         {
             "name": "basics",
-            "path": "./example_pypes"
+            "path": "./example_pypes",
+            "users": []
         }
-    ]
+    ],
+    "aliases": [
+        {
+            "alias": "pypec",
+            "command": "pype pype.config"
+        }
+    ],
+    "initfile": "~/.pype-initfile-dev"
 }

@@ -44,7 +44,8 @@ class PypeCore():
         self.plugins = [plugin for plugin in self.plugins if plugin.active]
         # append internal plugins
         self.plugins.append(Plugin({
-            'name': 'config'
+            'name': 'config',
+            'users': []
         }))
 
     def __set_environment_variables(self):
@@ -132,7 +133,8 @@ class PypeCore():
             ifile.write('\t' + shell_config['source_cmd'] + '\n')
             # Write configured aliases
             for alias in aliases:
-                alias_cmd = '\talias {}="{}"\n'.format(alias, aliases[alias])
+                alias_cmd = '\talias {}="{}"\n'.format(
+                    alias['alias'], alias['command'])
                 ifile.write(alias_cmd)
             ifile.write('fi\n')
         # Only add source link to target file if not present yet
@@ -169,15 +171,18 @@ class PypeCore():
         if not alias:
             return
         cmd_line = ctx.command_path + ' ' + ' '.join(extra_args)
-        alias_cmd = '{}="{}"'.format(alias, cmd_line)
+        alias_cmd = '{}="{}"'.format(alias, cmd_line.strip())
         # store to internal config
         config_json = self.__config.get_json()
         if not config_json.get('aliases', None):
-            config_json['aliases'] = {}
-        if config_json.get('aliases').get(alias, None):
+            config_json['aliases'] = []
+        if self._alias_present(config_json, alias):
             print('Alias already registered.')
             return
-        config_json.get('aliases')[alias] = cmd_line
+        config_json.get('aliases').append({
+            'alias': alias,
+            'command': cmd_line
+        })
         self.__config.set_json(config_json)
         # update install script
         self.install_to_shell(self.get_shell_config())
@@ -192,14 +197,22 @@ class PypeCore():
         if not config_json.get('aliases', None):
             print('No aliases registered.')
             return
-        if not config_json.get('aliases').get(alias, None):
+        if not self._alias_present(config_json, alias):
             print('Alias not registered.')
             return
-        del config_json['aliases'][alias]
+        for obj in enumerate(config_json['aliases']):
+            if obj[1]['alias'] != alias:
+                continue
+            del config_json['aliases'][obj[0]]
         self.__config.set_json(config_json)
         # update install script
         self.install_to_shell(self.get_shell_config())
         print('Uninstalled alias "{}"'.format(alias))
+
+    def _alias_present(self, config_json, alias):
+        return any(
+            [existing_alias for existing_alias in config_json.get('aliases')
+             if existing_alias['alias'] == alias])
 
     def get_shell_config(self):
         """Construct a shell configuration by guessing the running shell."""

@@ -12,6 +12,7 @@ import click
 from colorama import Fore, init
 
 from pype.pype_core import PypeCore
+from pype.pype_exception import PypeException
 from pype.util.iotools import open_with_default
 
 
@@ -142,7 +143,11 @@ def __print_red(message):
 
 
 init(autoreset=True)
-PYPE_CORE = PypeCore()
+try:
+    PYPE_CORE = PypeCore()
+except PypeException as err:
+    print(err)
+    exit(1)
 
 # Go through all configured plugins and their pypes and setup command groups
 for plugin in PYPE_CORE.get_plugins():
