@@ -103,6 +103,15 @@ dockerize() {
     docker run --rm -ti $PROJECT_NAME
 }
 
+changelog() {
+    # Return changelog since last version tag
+    echo " === CHANGELOG === "
+    last_version=$( git tag | sort --version-sort -r | head -n1 )
+    version_hash=$( git show-ref -s $last_version )
+    echo "--- $last_version $version_hash"
+    git log --pretty=format:"%s" $version_hash..HEAD
+}
+
 # -----------------------------------------------------------------------------
 
 coms=$( cat $0 | egrep "\(\) {" |tr "(" " " |awk '{print $1}' |tr "\n" " " )
