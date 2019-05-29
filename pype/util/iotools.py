@@ -34,9 +34,17 @@ def run_and_get_output(cmdline, reset_pythonpath=False, *args, **kwargs):
 def open_with_default(filepath):
     """Open the given filepath with the OS'es default editor."""
     try:
+        # Use open command
         run(['open', filepath], check=True)
     except FileNotFoundError:
-        print('Open with default editor is not supported on this OS.')
+        # If not possible try to find $EDITOR or $VISUAL environment var
+        editor = environ.get('EDITOR', None)
+        if not editor:
+            editor = environ.get('VISUAL', None)
+        if not editor:
+            print('Open with default editor is not supported on this OS.')
+            exit(1)
+        run_interactive([editor, filepath])
 
 
 def resolve_path(relative_path):

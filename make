@@ -34,7 +34,6 @@ clean() {
     # Clean project base by deleting any non-VC files
     echo " === CLEAN === "
     rm -fr build dist .egg *.egg-info
-	git clean -fdx
 }
 
 test() {
@@ -98,6 +97,7 @@ install() {
 dockerize() {
     # Install pype into a dockercontainer to test mint-installation
     echo " === DOCKERIZE === "
+    clean
     build
     docker build -t $PROJECT_NAME .
     docker run --rm -ti $PROJECT_NAME
