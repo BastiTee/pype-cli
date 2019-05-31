@@ -60,6 +60,12 @@ lint() {
     pipenv run flake8 pype tests $@  ||exit 1
 }
 
+profile() {
+    # Run a profiler to analyse the runtime
+    python3 -m profile -o tests/profile.obj pype/__main__.py >/dev/null
+    python3 tests/run_pstats.py
+}
+
 package() {
     # Run package setup
     echo " === PACKAGE === "
