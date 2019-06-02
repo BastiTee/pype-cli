@@ -69,51 +69,6 @@ If your __plugin__ contains shared code over all __pypes__ you can simply put it
 * Run `./make shell` to open a `pipenv` shell with the required shell configuration
 * Run `pype` to operate locale development version (it will react to code changes)
 
-## To-Do's
-
-* ✅️ Make console-script name `pype` configurable
-* ✅️ Consolidate environment variables to a constant container
-* ✅️ Validate config.json before using it (see <https://pypi.org/project/jsonschema/>)
-* ✅️ Fix pipenv issue on travis CI
-* ✅️ Fix travis build for Python 3.5
-* ✅️ Fix travis build for Python 3.7
-* ✅️ Add free continuous integration
-* ✅ Introduce more strict linting, e.g., on scripts using `-` instead of `_` and import order
-* ✅ Allow immediate editing of new pypes
-* ✅️ Add a template with less boilerplate for advanced users
-* ✅ Add a filter to limit plugins to usernames
-* ✅ Allow aliasing of pype calls
-* ✅ Allow creating plugins on the fly
-* ✅ Add coloring library
-* ✅ Extend documentation of template pype
-* ✅ Add help texts to commands
-* ✅ Auto-install bash/zsh completion
-* ✅ Find another name since pype is unavailable in PyPi `¯\_(ツ)_/¯`
-* ✅ Improve config file resolving to envvar->homefile->currdir->default
-* ✅ Add option to add/delete plugins via pype
-* ✅ Add option to create a new pype via pype
-* ✅ Add option to open a pype in default browser
-* ✅ Internalize default pypes such as 'version'
-* ✅ Create a docker image to test installation on a mint system
-* ✅ Auto-complete custom pypes using Click
-* ✅ Allow separation of subcommand options and pype-internal options (e.g. `-h` option)
-* ✅ Move example pypes to dedicated folder and make path configurable
-* ✅ Find a way to re-use module and script documentation for CLI documentation
-* ✅ Introduce verbosity option
-* ✅ Introduce a logging framework
-* ✅ Add auto-listing of configured pypes
-* ✅ Allow configuring custom pypes via configuration file
-* ✅ Introduce configuration file
-* ✅ Check how to backward-support shell scripts
-* ✅ Setup with python3 best-practices boilerplate
-
-## Important resources
-
-* <https://click.palletsprojects.com/en/7.x/>
-* <http://click.palletsprojects.com/en/7.x/commands/>
-* <https://click.palletsprojects.com/en/7.x/bashcomplete/>
-* <https://click.palletsprojects.com/en/7.x/api/#click.Context>
-
 ## License and attribution
 
 This software is licensed under [Apache License 2.0](LICENSE.txt).
