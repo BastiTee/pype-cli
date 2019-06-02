@@ -19,7 +19,7 @@ def run_interactive(cmdline, reset_pythonpath=False, *args, **kwargs):
         cmdline = ' '.join(cmdline)
     env = get_environ_without_pythonpath() if reset_pythonpath else environ
     try:
-        call(cmdline, shell=True, env=env, *args, **kwargs)
+        return call(cmdline, shell=True, env=env, *args, **kwargs)
     except KeyboardInterrupt:
         pass
 
@@ -27,6 +27,11 @@ def run_interactive(cmdline, reset_pythonpath=False, *args, **kwargs):
 def run_and_get_output(cmdline, reset_pythonpath=False, *args, **kwargs):
     """Run a cmdline non-interactive and returns both stdout and stderr."""
     env = get_environ_without_pythonpath() if reset_pythonpath else environ
+    if isinstance(cmdline, str):
+        # For convenvience we split str-cmdlines into a list which is
+        # required for run(). Note that this might not work due to
+        # quoted arguments etc.
+        cmdline = cmdline.split(' ')
     proc = run(cmdline, capture_output=True, env=env, *args, **kwargs)
     return proc.stdout.decode('utf-8'), proc.stderr.decode('utf-8')
 
@@ -34,9 +39,17 @@ def run_and_get_output(cmdline, reset_pythonpath=False, *args, **kwargs):
 def open_with_default(filepath):
     """Open the given filepath with the OS'es default editor."""
     try:
+        # Use open command
         run(['open', filepath], check=True)
     except FileNotFoundError:
-        print('Open with default editor is not supported on this OS.')
+        # If not possible try to find $EDITOR or $VISUAL environment var
+        editor = environ.get('EDITOR', None)
+        if not editor:
+            editor = environ.get('VISUAL', None)
+        if not editor:
+            print('Open with default editor is not supported on this OS.')
+            exit(1)
+        run_interactive([editor, filepath])
 
 
 def resolve_path(relative_path):

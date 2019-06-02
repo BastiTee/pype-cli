@@ -14,7 +14,7 @@ with open(path.join(path.abspath(path.dirname(__file__)), 'README.md'),
 setup(
     # Basic project information
     name='pype-cli',
-    version='0.1.1',
+    version='0.1.2',
     # Authorship and online reference
     author='Basti Tee',
     author_email='basti.tee@posteo.de',
@@ -26,8 +26,9 @@ setup(
     keywords='development',
     classifiers=[
         'Development Status :: 4 - Beta',
-        'Intended Audience :: Developers',
         'Natural Language :: English',
+        'Environment :: Console',
+        'Intended Audience :: Developers',
         'License :: OSI Approved :: Apache Software License',
         'Programming Language :: Python',
         'Programming Language :: Python :: 3.5',
@@ -39,7 +40,14 @@ setup(
     include_package_data=True,
     python_requires='>=3.5',
     install_requires=[
-        'click', 'tabulate', 'colorama', 'pygments', 'requests', 'jsonschema'],
+        'click',
+        'tabulate',
+        'colorama',
+        'pygments',
+        'requests',
+        'jsonschema',
+        'progress'
+    ],
     entry_points="""
         [console_scripts]
         pype=pype.__main__:main

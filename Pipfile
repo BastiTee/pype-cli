@@ -24,6 +24,7 @@ pygments = "*" # Syntax highlighter
 tabulate = "*" # Table-formatter
 requests = "*" # HTTP backend
 jsonschema = "*" # JSON schema validation
+progress = "*" # Easy-to-use progress bars
 
 [requires]
 # Please check https://github.com/pypa/pipenv/issues/1050 why we don't set

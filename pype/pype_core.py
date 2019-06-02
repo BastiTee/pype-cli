@@ -8,6 +8,8 @@ from re import sub
 from shutil import copyfile
 from sys import path as syspath
 
+from colorama import Fore, Style
+
 from pype.plugin_type import Plugin
 from pype.pype_config import PypeConfig
 from pype.pype_exception import PypeException
@@ -71,11 +73,14 @@ class PypeCore():
     def list_pypes(self):
         """Print list of pypes to console."""
         for plugin in self.plugins:
-            print('PLUGIN: {} ({}) @ {}'.format(
-                plugin.name.upper(), plugin.doc, plugin.abspath))
+            print('{}{}– {}{}\n{}\n@ {}'.format(
+                Style.BRIGHT, Fore.RED, plugin.name.upper(),
+                Fore.LIGHTBLACK_EX, plugin.doc,
+                'Built-in' if plugin.internal else plugin.abspath))
             for pype in plugin.pypes:
-                print('\t{} - {}'.format(
-                    pype.name, pype.doc
+                print('{}{}{}{} – {}'.format(
+                    Style.BRIGHT, Fore.RED, sub('_', '-', pype.name),
+                    Style.RESET_ALL, pype.doc
                 ))
             print()
 

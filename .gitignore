@@ -1,5 +1,6 @@
 .dockerignore
 Pipfile.lock
+profile.obj
 
 # Byte-compiled / optimized / DLL files
 *.py[cod]

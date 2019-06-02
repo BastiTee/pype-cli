@@ -163,3 +163,7 @@ for plugin in PYPE_CORE.get_plugins():
         plugin_click_group.command(
             context_settings=ctx_settings, help=pype.doc)(
             __bind_pype(pype.name, plugin, pype))
+
+
+if __name__ == '__main__':
+    main()

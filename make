@@ -34,7 +34,6 @@ clean() {
     # Clean project base by deleting any non-VC files
     echo " === CLEAN === "
     rm -fr build dist .egg *.egg-info
-	git clean -fdx
 }
 
 test() {
@@ -59,6 +58,12 @@ lint() {
     # Run linter / code formatting checks against source code base
     echo " === LINT === "
     pipenv run flake8 pype tests $@  ||exit 1
+}
+
+profile() {
+    # Run a profiler to analyse the runtime
+    python3 -m profile -o tests/profile.obj pype/__main__.py >/dev/null
+    python3 tests/run_pstats.py
 }
 
 package() {
@@ -98,6 +103,7 @@ install() {
 dockerize() {
     # Install pype into a dockercontainer to test mint-installation
     echo " === DOCKERIZE === "
+    clean
     build
     docker build -t $PROJECT_NAME .
     docker run --rm -ti $PROJECT_NAME
