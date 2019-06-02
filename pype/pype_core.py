@@ -12,6 +12,7 @@ from colorama import Fore, Style
 
 from pype.plugin_type import Plugin
 from pype.pype_config import PypeConfig
+from pype.pype_constants import ENV_SHELL_COMMAND
 from pype.pype_exception import PypeException
 from pype.util.iotools import resolve_path
 from pype.util.misc import get_from_json_or_default
@@ -20,15 +21,18 @@ from pype.util.misc import get_from_json_or_default
 class PypeCore():
     """Pype core initializer."""
 
+    SHELL_COMMAND = environ.get(ENV_SHELL_COMMAND, 'pype')
     SHELL_INIT_PREFIX = '.pype-initfile'
     SUPPORTED_SHELLS = {
         'bash': {
             'init_file': join(expanduser('~'), SHELL_INIT_PREFIX + '-bash'),
-            'source_cmd': 'eval "$(_PYPE_COMPLETE=source pype)"'
+            'source_cmd': 'eval "$(_' + SHELL_COMMAND.upper() +
+            '_COMPLETE=source ' + SHELL_COMMAND + ')"'
         },
         'zsh': {
             'init_file': join(expanduser('~'), SHELL_INIT_PREFIX + '-zsh'),
-            'source_cmd': 'eval "$(_PYPE_COMPLETE=source_zsh pype)"'
+            'source_cmd': 'eval "$(_' + SHELL_COMMAND.upper() +
+            '_COMPLETE=source_zsh ' + SHELL_COMMAND + ')"'
         }
     }
 
@@ -134,7 +138,8 @@ class PypeCore():
         print('Writing init-file', init_file)
         with open(resolve_path(init_file), 'w+') as ifile:
             # Write pype sourcing command
-            ifile.write('if [ ! -z "$( command -v pype )" ]; then\n')
+            ifile.write('if [ ! -z "$( command -v ' +
+                        self.SHELL_COMMAND + ' )" ]; then\n')
             ifile.write('\t' + shell_config['source_cmd'] + '\n')
             # Write configured aliases
             for alias in aliases:
