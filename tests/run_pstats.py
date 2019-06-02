@@ -13,4 +13,4 @@ if __name__ == '__main__':
     src_file = path.join(
         path.dirname(path.abspath(__file__)), 'profile.obj')
     p = pstats.Stats(src_file)
-    p.strip_dirs().sort_stats(SortKey.CUMULATIVE).print_stats(25)
+    p.strip_dirs().sort_stats(SortKey.TIME).print_stats(35)
