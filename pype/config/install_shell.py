@@ -3,7 +3,7 @@
 
 import click
 
-from pype.pype_core import PypeCore
+from pype.core import PypeCore
 from pype.util.iotools import resolve_path
 
 
@@ -12,13 +12,13 @@ from pype.util.iotools import resolve_path
 @click.option('--reverse', '-r', help='Uninstall autocompletion', is_flag=True)
 def main(target_file, reverse):
     """Script's main entry point."""
-    pype_core = PypeCore()
-    shell_config = pype_core.get_shell_config()
+    core = PypeCore()
+    shell_config = core.get_shell_config()
     shell_config['target_file'] = resolve_path(target_file)
     if reverse:
-        pype_core.uninstall_from_shell(shell_config)
+        core.uninstall_from_shell(shell_config)
     else:
-        pype_core.install_to_shell(shell_config)
+        core.install_to_shell(shell_config)
     print('Done. Please reload shell session.')
 
 

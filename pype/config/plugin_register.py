@@ -8,8 +8,8 @@ from os.path import isdir, join
 
 import click
 
-from pype.pype_core import PypeCore, load_module
-from pype.pype_exception import PypeException
+from pype.core import PypeCore, load_module
+from pype.exceptions import PypeException
 from pype.util.iotools import resolve_path
 
 
@@ -29,15 +29,15 @@ def main(name, path, create, user_only):
         print('Could not find a python module "{}" at {}'
               .format(name, path))
         exit(1)
-    pype_core = PypeCore()
-    config_json = pype_core.get_config_json()
+    core = PypeCore()
+    config_json = core.get_config_json()
     users = [getpass.getuser()] if user_only else []
     config_json['plugins'].append({
         'name': module.__name__,
         'path': path,
         'users': users
     })
-    pype_core.set_config_json(config_json)
+    core.set_config_json(config_json)
     print('Plugin "{}" successfully registered.'.format(name))
 
 

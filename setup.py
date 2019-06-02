@@ -5,7 +5,7 @@
 from io import open
 from os import environ, path
 
-from pype.pype_constants import ENV_SHELL_COMMAND
+from pype.constants import ENV_SHELL_COMMAND
 
 from setuptools import find_packages, setup
 

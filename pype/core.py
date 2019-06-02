@@ -10,10 +10,10 @@ from sys import path as syspath
 
 from colorama import Fore, Style
 
-from pype.plugin_type import Plugin
-from pype.pype_config import PypeConfig
-from pype.pype_constants import ENV_SHELL_COMMAND
-from pype.pype_exception import PypeException
+from pype.config_handler import PypeConfigHandler
+from pype.constants import ENV_SHELL_COMMAND
+from pype.exceptions import PypeException
+from pype.type_plugin import Plugin
 from pype.util.iotools import resolve_path
 from pype.util.misc import get_from_json_or_default
 
@@ -39,7 +39,7 @@ class PypeCore():
     def __init__(self):
         """Public constructor."""
         self.__set_environment_variables()
-        self.__config = PypeConfig()
+        self.__config = PypeConfigHandler()
         # load all external plugins
         self.plugins = [
             Plugin(plugin)
@@ -101,8 +101,8 @@ class PypeCore():
             print('Pype already present')
             exit(1)
         # Depending on user input create a documented or simple template
-        template_name = ('pype_template_minimal.py' if minimal
-                         else 'pype_template.py')
+        template_name = ('template_minimal.py' if minimal
+                         else 'template.py')
         source_name = join(dirname(__file__), template_name)
         copyfile(source_name, target_file)
         print('Created new pype', target_file)

@@ -6,7 +6,7 @@ from os import environ
 
 import click
 
-from pype.pype_constants import ENV_CONFIG_FILE
+from pype.constants import ENV_CONFIG_FILE
 
 from tabulate import tabulate
 

@@ -10,12 +10,12 @@ from colorama import Fore, Style
 
 from jsonschema import ValidationError, validate
 
-from pype.pype_constants import ENV_CONFIG_FILE
-from pype.pype_exception import PypeException
+from pype.constants import ENV_CONFIG_FILE
+from pype.exceptions import PypeException
 from pype.util.iotools import resolve_path
 
 
-class PypeConfig():
+class PypeConfigHandler():
     """Pype configuration handler."""
 
     DEFAULT_CONFIG_FILE = resolve_path('~/.pype-config.json')

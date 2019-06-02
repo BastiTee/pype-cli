@@ -11,8 +11,8 @@ import click
 
 from colorama import Fore, init
 
-from pype.pype_core import PypeCore
-from pype.pype_exception import PypeException
+from pype.core import PypeCore
+from pype.exceptions import PypeException
 from pype.util.iotools import open_with_default
 
 
