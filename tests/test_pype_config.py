@@ -7,6 +7,7 @@ from os import environ, remove
 from tempfile import NamedTemporaryFile
 
 from pype.pype_config import PypeConfig
+from pype.pype_constants import ENV_CONFIG_FILE
 from pype.pype_exception import PypeException
 
 from pytest import raises
@@ -46,12 +47,12 @@ class TestPypeConfig():
     def test_resolve_config_file_withenv(self):
         """Config file found via environment variable."""
         tmpf = self._create_temporary_config_file(self.VALID_CONFIG)
-        environ['PYPE_CONFIGURATION_FILE'] = tmpf.name
+        environ[ENV_CONFIG_FILE] = tmpf.name
         pype_config = PypeConfig()
         pype_config.resolve_config_file()
         assert pype_config.get_filepath() == tmpf.name
         assert pype_config.get_json() == self.VALID_CONFIG
-        del environ['PYPE_CONFIGURATION_FILE']  # cleanup
+        del environ[ENV_CONFIG_FILE]  # cleanup
 
     def test_resolve_config_file_withdefaultfile(self):
         """Config file found from default file path."""

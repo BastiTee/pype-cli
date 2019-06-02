@@ -10,6 +10,7 @@ from colorama import Fore, Style
 
 from jsonschema import ValidationError, validate
 
+from pype.pype_constants import ENV_CONFIG_FILE
 from pype.pype_exception import PypeException
 from pype.util.iotools import resolve_path
 
@@ -35,7 +36,7 @@ class PypeConfig():
         """Resolve the configuration using various options."""
         try:
             # Priority 1: Environment variable
-            self.filepath = environ['PYPE_CONFIGURATION_FILE']
+            self.filepath = environ[ENV_CONFIG_FILE]
         except KeyError:
             # Priority 2: ~/.pype-config.json
             if isfile(self.DEFAULT_CONFIG_FILE):

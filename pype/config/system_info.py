@@ -6,6 +6,8 @@ from os import environ
 
 import click
 
+from pype.pype_constants import ENV_CONFIG_FILE
+
 from tabulate import tabulate
 
 
@@ -23,7 +25,7 @@ def main():
     infos.append(['SYSTEM', platform.system()])
     infos.append(['SHELL', environ.get('SHELL', UNSET)])
     infos.append(['CONFIG FILE', environ.get(
-        'PYPE_CONFIGURATION_FILE', UNSET)])
+        ENV_CONFIG_FILE, UNSET)])
     print(tabulate(infos))
 
 

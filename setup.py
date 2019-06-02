@@ -3,13 +3,17 @@
 """Package installer script."""
 
 from io import open
-from os import path
+from os import environ, path
+
+from pype.pype_constants import ENV_SHELL_COMMAND
 
 from setuptools import find_packages, setup
 
 with open(path.join(path.abspath(path.dirname(__file__)), 'README.md'),
           encoding='utf-8') as f:
     long_description = f.read()
+
+shell_command = environ.get(ENV_SHELL_COMMAND, 'pype')
 
 setup(
     # Basic project information
@@ -50,7 +54,7 @@ setup(
     ],
     entry_points="""
         [console_scripts]
-        pype=pype.__main__:main
+        """ + shell_command + """=pype.__main__:main
     """,
     # Licensing and copyright
     license='Apache 2.0'
