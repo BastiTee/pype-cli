@@ -86,31 +86,31 @@ class TestPypeConfigHandler():
 
     # PypeConfigHandler.validate_config()
 
-    def test_validate_config_noneInput_raiseTypeError(self):
+    def test_validate_config_noneinput_raisetypeerror(self):
         """Config validation without input."""
         config = PypeConfigHandler()
         with raises(PypeException):
             config.validate_config(None)
 
-    def test_validate_config_emptyInput_raiseTypeError(self):
+    def test_validate_config_emptyinput_raisetypeerror(self):
         """Config validation with empty input."""
         config = PypeConfigHandler()
         with raises(PypeException):
             config.validate_config({})
 
-    def test_validate_config_validFullJson(self):
+    def test_validate_config_validfulljson(self):
         """Config validation with valid JSON."""
         config = PypeConfigHandler()
         assert config.validate_config(self.VALID_CONFIG)
 
-    def test_validate_config_validFullJsonWithExtensions(self):
+    def test_validate_config_validfulljsonwithextensions(self):
         """Config validation with valid JSON and more properties."""
         config = PypeConfigHandler()
         input_config = copy.deepcopy(self.VALID_CONFIG)
         input_config['additional_property'] = {}
         assert config.validate_config(input_config)
 
-    def test_validate_config_missingAliasesAttribute(self):
+    def test_validate_config_missingaliasesattribute(self):
         """Config validation with missing roots."""
         config = PypeConfigHandler()
         input_config = {
@@ -119,7 +119,7 @@ class TestPypeConfigHandler():
         with raises(PypeException):
             config.validate_config(input_config)
 
-    def test_validate_config_misconfiguredPlugin(self):
+    def test_validate_config_misconfiguredplugin(self):
         """Config validation with missing roots."""
         config = PypeConfigHandler()
         input_config = copy.deepcopy(self.VALID_CONFIG)
@@ -129,7 +129,7 @@ class TestPypeConfigHandler():
         with raises(PypeException):
             config.validate_config(input_config)
 
-    def test_validate_config_configuredPlugin(self):
+    def test_validate_config_configuredplugin(self):
         """Config validation with correctly configured additional plugin."""
         config = PypeConfigHandler()
         input_config = copy.deepcopy(self.VALID_CONFIG)
@@ -140,7 +140,7 @@ class TestPypeConfigHandler():
         })
         assert config.validate_config(input_config)
 
-    def test_validate_config_misconfiguredUserInPlugin(self):
+    def test_validate_config_misconfigureduserinplugin(self):
         """Config validation with misconfigured additional plugin."""
         config = PypeConfigHandler()
         input_config = copy.deepcopy(self.VALID_CONFIG)
@@ -152,7 +152,7 @@ class TestPypeConfigHandler():
         with raises(PypeException):
             config.validate_config(input_config)
 
-    def test_validate_config_configuredAlias(self):
+    def test_validate_config_configuredalias(self):
         """Config validation with correctly configured additional alias."""
         config = PypeConfigHandler()
         input_config = copy.deepcopy(self.VALID_CONFIG)
@@ -162,7 +162,7 @@ class TestPypeConfigHandler():
         })
         assert config.validate_config(input_config)
 
-    def test_validate_config_misconfiguredAlias(self):
+    def test_validate_config_misconfiguredalias(self):
         """Config validation with misconfigured additional alias."""
         config = PypeConfigHandler()
         input_config = copy.deepcopy(self.VALID_CONFIG)
@@ -173,14 +173,14 @@ class TestPypeConfigHandler():
         with raises(PypeException):
             config.validate_config(input_config)
 
-    def test_validate_config_configuredInitfile(self):
+    def test_validate_config_configuredinitfile(self):
         """Config validation with configured initfile."""
         config = PypeConfigHandler()
         input_config = copy.deepcopy(self.VALID_CONFIG)
         input_config['initfile'] = '/some/path'
         assert config.validate_config(input_config)
 
-    def test_validate_config_misconfiguredInitfile(self):
+    def test_validate_config_misconfiguredinitfile(self):
         """Config validation with misconfigured initfile."""
         config = PypeConfigHandler()
         input_config = copy.deepcopy(self.VALID_CONFIG)

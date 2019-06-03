@@ -21,7 +21,7 @@ from pype.util.iotools import resolve_path
 def main(name, path, create, user_only):
     """Script's main entry point."""
     if create:
-        __create_on_the_fly(name, path)
+        _create_on_the_fly(name, path)
     # Try to load the module to verify the configuration
     try:
         module = load_module(name, path)
@@ -41,7 +41,7 @@ def main(name, path, create, user_only):
     print('Plugin "{}" successfully registered.'.format(name))
 
 
-def __create_on_the_fly(name, path):
+def _create_on_the_fly(name, path):
     abspath = resolve_path(path)
     if not isdir(abspath):
         print('Path {} does not point to a directoy.'.format(abspath))

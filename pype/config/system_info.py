@@ -14,7 +14,7 @@ from tabulate import tabulate
 @click.command(help=__doc__)
 def main():
     """Script's main entry point."""
-    UNSET = 'Not set'
+    unset = 'Not set'
     print('PYPE SYSTEM ENVIRONMENT')
     infos = []
     infos.append(['MACHINE', platform.machine()])
@@ -23,9 +23,8 @@ def main():
     infos.append(['VERSION', platform.version()])
     infos.append(['RELEASE', platform.release()])
     infos.append(['SYSTEM', platform.system()])
-    infos.append(['SHELL', environ.get('SHELL', UNSET)])
-    infos.append(['CONFIG FILE', environ.get(
-        ENV_CONFIG_FILE, UNSET)])
+    infos.append(['SHELL', environ.get('SHELL', unset)])
+    infos.append(['CONFIG FILE', environ.get(ENV_CONFIG_FILE, unset)])
     print(tabulate(infos))
 
 
