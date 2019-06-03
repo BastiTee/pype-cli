@@ -133,7 +133,10 @@ def __bind_pype(name, plugin, pype):
         extra_args = ['--help'] if help else list(ctx.params['extra_args'])
         command = [executable, '-m', plugin.name +
                    '.' + pype.name] + extra_args
-        subprocess.run(command, env=sub_environment)
+        try:
+            subprocess.run(command, env=sub_environment)
+        except KeyboardInterrupt:
+            pass  # Be silent if keyboard interrupt was catched
     __pype_bind_function.__name__ = name
     return __pype_bind_function
 
