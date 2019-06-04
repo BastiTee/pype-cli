@@ -1,5 +1,14 @@
 # Changelog
 
+## Version 0.2.0
+
+- Extended pype.config.system-info
+- Alternative shell command (instead of `pype`)  configurable via config file entry `core_config.shell_command`
+- Normalization of command names
+- Add flake8-blind-except linter
+- Make keyboard interrupt silent on subprocess
+- Internal class renaming for consistency
+
 ## Version 0.1.2
 
 - Add <https://pypi.org/project/progress/> as external dependency
