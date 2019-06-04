@@ -7,7 +7,7 @@
 ![PyPU - Version](https://img.shields.io/pypi/v/pype-cli.svg)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/pype-cli.svg)
 
-__Disclaimer: This project is an early POC and interfaces can change anytime__
+__Disclaimer: This project is an early POC and interfaces can change anytime.__
 
 ## In a nutshell
 
