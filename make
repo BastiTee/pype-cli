@@ -20,9 +20,6 @@ shell() {
     # Install basic venv and pype codebase
     python3 -m pip install pipenv --upgrade
 	pipenv install --dev --skip-lock ||exit 1
-    # Configure shell to use custom config
-    # echo "export PYPE_CONFIGURATION_FILE=\"$( pwd )/config.json\"" \
-    # >> ".venv/bin/activate"
     # Install and configure pype
     pipenv run pip install --editable .
     pipenv run pype pype.config install-shell -t ".venv/bin/activate"
