@@ -46,12 +46,13 @@
                 ]
             }
         },
-        "initfile": {
-            "type": "string"
+        "core_config": {
+            "type": "object"
         }
     },
     "required": [
         "plugins",
-        "aliases"
+        "aliases",
+        "core_config"
     ]
 }

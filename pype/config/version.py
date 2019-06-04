@@ -3,7 +3,7 @@
 
 import pkg_resources
 
-from pype.pype_core import get_pype_basepath
+from pype.core import get_pype_basepath
 
 base_path = get_pype_basepath()
 version = pkg_resources.get_distribution('pype-cli').version

@@ -4,7 +4,7 @@
 
 import click
 
-from pype.pype_core import PypeCore
+from pype.core import PypeCore
 
 
 @click.command(help=__doc__)
@@ -12,8 +12,8 @@ from pype.pype_core import PypeCore
 def main(name):
     """Script's main entry point."""
     # Try to load the module to verify the configuration
-    pype_core = PypeCore()
-    config_json = pype_core.get_config_json()
+    core = PypeCore()
+    config_json = core.get_config_json()
     new_plugins = [
         plugin for plugin in config_json['plugins']
         if plugin['name'] != name
@@ -22,7 +22,7 @@ def main(name):
         print('Plugin "{}" not found. Nothing to do.'.format(name))
         return
     config_json['plugins'] = new_plugins
-    pype_core.set_config_json(config_json)
+    core.set_config_json(config_json)
     print('Plugin "{}" successfully unregistered.'.format(name))
 
 

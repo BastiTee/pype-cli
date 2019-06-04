@@ -10,18 +10,20 @@ from colorama import Fore, Style
 
 from jsonschema import ValidationError, validate
 
-from pype.pype_exception import PypeException
+from pype.constants import ENV_CONFIG_FILE
+from pype.exceptions import PypeException
 from pype.util.iotools import resolve_path
 
 
-class PypeConfig():
+class PypeConfigHandler():
     """Pype configuration handler."""
 
     DEFAULT_CONFIG_FILE = resolve_path('~/.pype-config.json')
     LOCAL_CONFIG_FILE = join(dirname(dirname(__file__)), 'config.json')
     DEFAULT_CONFIG = {
         'plugins': [],
-        'aliases': []
+        'aliases': [],
+        'core_config': {}
     }
     CONFIG_SCHEMA_PATH = join(dirname(__file__), 'config-schema.json')
     CONFIG_SCHEMA = load(open(CONFIG_SCHEMA_PATH))
@@ -35,7 +37,7 @@ class PypeConfig():
         """Resolve the configuration using various options."""
         try:
             # Priority 1: Environment variable
-            self.filepath = environ['PYPE_CONFIGURATION_FILE']
+            self.filepath = environ[ENV_CONFIG_FILE]
         except KeyError:
             # Priority 2: ~/.pype-config.json
             if isfile(self.DEFAULT_CONFIG_FILE):

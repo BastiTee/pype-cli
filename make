@@ -1,14 +1,12 @@
 #!/bin/sh
 cd "$( cd "$( dirname "$0" )"; pwd )"
 
-PROJECT_NAME="pype"
-export PYTHON_VERSION=3.7  # Pipenv python version
 export PIPENV_VERBOSITY=-1  # suppress warning if pipenv is started inside venv
 export PIPENV_VENV_IN_PROJECT=1  # use relative .venv folder
 export PYTHONPATH=.  # include source code in any python subprocess
 export LC_ALL=C.UTF-8
 export LANG=C.UTF-8
-export SHELL_RC=".venv/bin/activate"
+export PYPE_CONFIGURATION_FILE="$( pwd )/config.json"
 
 shell() {
     # Initialize virtualenv, i.e., install required packages etc.
@@ -21,11 +19,10 @@ shell() {
     rm -rf .venv
     # Install basic venv and pype codebase
     python3 -m pip install pipenv --upgrade
-	pipenv install --python $PYTHON_VERSION --dev --skip-lock ||exit 1
+	pipenv install --dev --skip-lock ||exit 1
+    # Install and configure pype
     pipenv run pip install --editable .
-    # Configure shell to use custom config
-    echo "export PYPE_CONFIGURATION_FILE=\"$( pwd )/config.json\"" >> $SHELL_RC
-    pipenv run pype pype.config install-shell -t $SHELL_RC
+    pipenv run pype pype.config install-shell -t ".venv/bin/activate"
     # Spawn a venv shell
     pipenv shell
 }
@@ -62,8 +59,9 @@ lint() {
 
 profile() {
     # Run a profiler to analyse the runtime
-    python3 -m profile -o tests/profile.obj pype/__main__.py >/dev/null
-    python3 tests/run_pstats.py
+    pipenv run python -m profile -o tests/profile.obj pype/__main__.py \
+    >/dev/null
+    pipenv run python tests/run_pstats.py
 }
 
 package() {
@@ -105,8 +103,8 @@ dockerize() {
     echo " === DOCKERIZE === "
     clean
     build
-    docker build -t $PROJECT_NAME .
-    docker run --rm -ti $PROJECT_NAME
+    docker build -t "pype-docker" .
+    docker run --rm -ti "pype-docker"
 }
 
 changelog() {

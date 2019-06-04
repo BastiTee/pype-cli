@@ -8,8 +8,8 @@ from os.path import isdir, join
 
 import click
 
-from pype.pype_core import PypeCore, load_module
-from pype.pype_exception import PypeException
+from pype.core import PypeCore, load_module
+from pype.exceptions import PypeException
 from pype.util.iotools import resolve_path
 
 
@@ -21,7 +21,7 @@ from pype.util.iotools import resolve_path
 def main(name, path, create, user_only):
     """Script's main entry point."""
     if create:
-        __create_on_the_fly(name, path)
+        _create_on_the_fly(name, path)
     # Try to load the module to verify the configuration
     try:
         module = load_module(name, path)
@@ -29,19 +29,19 @@ def main(name, path, create, user_only):
         print('Could not find a python module "{}" at {}'
               .format(name, path))
         exit(1)
-    pype_core = PypeCore()
-    config_json = pype_core.get_config_json()
+    core = PypeCore()
+    config_json = core.get_config_json()
     users = [getpass.getuser()] if user_only else []
     config_json['plugins'].append({
         'name': module.__name__,
         'path': path,
         'users': users
     })
-    pype_core.set_config_json(config_json)
+    core.set_config_json(config_json)
     print('Plugin "{}" successfully registered.'.format(name))
 
 
-def __create_on_the_fly(name, path):
+def _create_on_the_fly(name, path):
     abspath = resolve_path(path)
     if not isdir(abspath):
         print('Path {} does not point to a directoy.'.format(abspath))

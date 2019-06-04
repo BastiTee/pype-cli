@@ -7,8 +7,8 @@ from os import path
 from re import sub
 from sys import path as syspath
 
-from pype.pype_exception import PypeException
-from pype.pype_type import Pype
+from pype.exceptions import PypeException
+from pype.type_pype import Pype
 from pype.util.iotools import get_immediate_subfiles, resolve_path
 
 

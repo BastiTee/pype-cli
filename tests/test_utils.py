@@ -7,34 +7,34 @@ from pype.util.misc import get_from_json_or_default
 class TestUtils():
     """Pype miscellaneous utils tests."""
 
-    def test_get_from_json_or_default__noneInput(self):
+    def test_get_from_json_or_default__noneinput(self):
         """get_from_json_or_default called with none-inputs."""
         value = get_from_json_or_default(None, None, None)
         assert not value
 
-    def test_get_from_json_or_default__noneInputWithEmptyBreadcrumb(self):
+    def test_get_from_json_or_default__noneinputwithemptybreadcrumb(self):
         """get_from_json_or_default called with empty breadcrumb."""
         value = get_from_json_or_default(None, '', None)
         assert not value
 
-    def test_get_from_json_or_default__noneInputWithBreadcrumb(self):
+    def test_get_from_json_or_default__noneinputwithbreadcrumb(self):
         """get_from_json_or_default called with breadcrumb but empty JSON."""
         value = get_from_json_or_default(None, 'test', None)
         assert not value
 
-    def test_get_from_json_or_default__noneInputWithBreadcrumbCustom(self):
+    def test_get_from_json_or_default__noneinputwithbreadcrumbcustom(self):
         """get_from_json_or_default called w/ crumb, empy JSON and default."""
         value = get_from_json_or_default(None, 'test', 'custom')
         assert value == 'custom'
 
-    def test_get_from_json_or_default__firstLevelBreadcrumb(self):
+    def test_get_from_json_or_default__firstlevelbreadcrumb(self):
         """get_from_json_or_default to resolve a first level entry."""
         value = get_from_json_or_default({
             'test': 'response'
         }, 'test', 'custom')
         assert value == 'response'
 
-    def test_get_from_json_or_default__secondLevelBreadcrumb(self):
+    def test_get_from_json_or_default__secondlevelbreadcrumb(self):
         """get_from_json_or_default to resolve a second level entry."""
         value = get_from_json_or_default({
             'test': {
@@ -44,7 +44,7 @@ class TestUtils():
         )
         assert value == 'response'
 
-    def test_get_from_json_or_default__secondLevelBreadcrumbMiss(self):
+    def test_get_from_json_or_default__secondlevelbreadcrumbmiss(self):
         """get_from_json_or_default to miss a second level entry."""
         value = get_from_json_or_default({
             'test': {

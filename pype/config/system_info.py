@@ -2,9 +2,12 @@
 """Print system information useful for bug reports or other inspections."""
 
 import platform
+import sys
 from os import environ
 
 import click
+
+from pype.constants import ENV_CONFIG_FILE
 
 from tabulate import tabulate
 
@@ -12,7 +15,7 @@ from tabulate import tabulate
 @click.command(help=__doc__)
 def main():
     """Script's main entry point."""
-    UNSET = 'Not set'
+    unset = 'Not set'
     print('PYPE SYSTEM ENVIRONMENT')
     infos = []
     infos.append(['MACHINE', platform.machine()])
@@ -21,9 +24,10 @@ def main():
     infos.append(['VERSION', platform.version()])
     infos.append(['RELEASE', platform.release()])
     infos.append(['SYSTEM', platform.system()])
-    infos.append(['SHELL', environ.get('SHELL', UNSET)])
-    infos.append(['CONFIG FILE', environ.get(
-        'PYPE_CONFIGURATION_FILE', UNSET)])
+    infos.append(['PY VERSION', sys.version])
+    infos.append(['PY VERSION_INFO', sys.version_info])
+    infos.append(['SHELL', environ.get('SHELL', unset)])
+    infos.append(['CONFIG FILE', environ.get(ENV_CONFIG_FILE, unset)])
     print(tabulate(infos))
 
 
