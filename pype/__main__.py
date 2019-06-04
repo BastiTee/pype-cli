@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """Pype main entry point."""
 
@@ -112,7 +113,7 @@ def _bind_plugin(name, plugin):
         # Handle case that no toggles were used and no commands selected
         if not toggle_invoked and not ctx.invoked_subcommand:
             print(ctx.get_help())
-    _plugin_bind_function.__name__ = name
+    _plugin_bind_function.__name__ = _normalize_command_name(name)
     return _plugin_bind_function
 
 
@@ -136,8 +137,12 @@ def _bind_pype(name, plugin, pype):
             subprocess.run(command, env=sub_environment)
         except KeyboardInterrupt:
             pass  # Be silent if keyboard interrupt was catched
-    _pype_bind_function.__name__ = name
+    _pype_bind_function.__name__ = _normalize_command_name(name)
     return _pype_bind_function
+
+
+def _normalize_command_name(name):
+    return sub('_', '-', name)
 
 
 def _print_red(message):
