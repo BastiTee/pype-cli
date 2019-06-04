@@ -3,9 +3,8 @@
 """Package installer script."""
 
 from io import open
+from json import load
 from os import environ, path
-
-from pype.constants import ENV_SHELL_COMMAND
 
 from setuptools import find_packages, setup
 
@@ -13,7 +12,15 @@ with open(path.join(path.abspath(path.dirname(__file__)), 'README.md'),
           encoding='utf-8') as f:
     long_description = f.read()
 
-shell_command = environ.get(ENV_SHELL_COMMAND, 'pype')
+# Default console script
+console_scripts = ['pype=pype.__main__:main']
+# If present add custom shell command from configuration
+try:
+    config_json = load(open(environ.get('PYPE_CONFIGURATION_FILE'), 'r'))
+    shell_command = config_json['core_config']['shell_command']
+    console_scripts.append('{}=pype.__main__:main'.format(shell_command))
+except Exception:
+    pass  # Just continue regularily if nothing was found
 
 setup(
     # Basic project information
@@ -52,10 +59,9 @@ setup(
         'jsonschema',
         'progress'
     ],
-    entry_points="""
-        [console_scripts]
-        """ + shell_command + """=pype.__main__:main
-    """,
+    entry_points={
+        'console_scripts': console_scripts
+    },
     # Licensing and copyright
     license='Apache 2.0'
 )

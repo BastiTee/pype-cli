@@ -12,5 +12,7 @@
             "command": "pype pype.config"
         }
     ],
-    "initfile": "~/.pype-initfile-dev"
+    "core_config": {
+        "init_file": "~/.pype-initfile-dev"
+    }
 }

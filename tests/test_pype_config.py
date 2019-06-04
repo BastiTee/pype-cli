@@ -3,7 +3,7 @@
 
 import copy
 from json import dumps
-from os import environ, remove
+from os import environ, path, remove
 from tempfile import NamedTemporaryFile
 
 from pype.config_handler import PypeConfigHandler
@@ -39,7 +39,8 @@ class TestPypeConfigHandler():
                 'command': 'pype myplugin mypype'
             }
         ],
-        'initfile': '~/.pype-initfile'
+        'core_config': {
+        }
     }
 
     # PypeConfigHandler.resolve_config_file()
@@ -77,6 +78,8 @@ class TestPypeConfigHandler():
     def test_resolve_config_file_withontheflycreation(self):
         """Config file not found and created on the fly."""
         config = PypeConfigHandler()
+        if path.isfile('test_config.json'):
+            remove('test_config.json')
         config.DEFAULT_CONFIG_FILE = 'test_config.json'
         config.LOCAL_CONFIG_FILE = '/does/not/exist'
         config.resolve_config_file()
@@ -170,20 +173,5 @@ class TestPypeConfigHandler():
             'aliass': 'al',
             'commando': 'pype test'
         })
-        with raises(PypeException):
-            config.validate_config(input_config)
-
-    def test_validate_config_configuredinitfile(self):
-        """Config validation with configured initfile."""
-        config = PypeConfigHandler()
-        input_config = copy.deepcopy(self.VALID_CONFIG)
-        input_config['initfile'] = '/some/path'
-        assert config.validate_config(input_config)
-
-    def test_validate_config_misconfiguredinitfile(self):
-        """Config validation with misconfigured initfile."""
-        config = PypeConfigHandler()
-        input_config = copy.deepcopy(self.VALID_CONFIG)
-        input_config['initfile'] = {}
         with raises(PypeException):
             config.validate_config(input_config)

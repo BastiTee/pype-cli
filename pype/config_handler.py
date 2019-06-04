@@ -22,7 +22,8 @@ class PypeConfigHandler():
     LOCAL_CONFIG_FILE = join(dirname(dirname(__file__)), 'config.json')
     DEFAULT_CONFIG = {
         'plugins': [],
-        'aliases': []
+        'aliases': [],
+        'core_config': {}
     }
     CONFIG_SCHEMA_PATH = join(dirname(__file__), 'config-schema.json')
     CONFIG_SCHEMA = load(open(CONFIG_SCHEMA_PATH))

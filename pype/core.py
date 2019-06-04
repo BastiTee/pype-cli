@@ -11,7 +11,6 @@ from sys import path as syspath
 from colorama import Fore, Style
 
 from pype.config_handler import PypeConfigHandler
-from pype.constants import ENV_SHELL_COMMAND
 from pype.exceptions import PypeException
 from pype.type_plugin import Plugin
 from pype.util.iotools import resolve_path
@@ -21,20 +20,7 @@ from pype.util.misc import get_from_json_or_default
 class PypeCore():
     """Pype core initializer."""
 
-    SHELL_COMMAND = environ.get(ENV_SHELL_COMMAND, 'pype')
     SHELL_INIT_PREFIX = '.pype-initfile'
-    SUPPORTED_SHELLS = {
-        'bash': {
-            'init_file': join(expanduser('~'), SHELL_INIT_PREFIX + '-bash'),
-            'source_cmd': 'eval "$(_' + SHELL_COMMAND.upper() +
-            '_COMPLETE=source ' + SHELL_COMMAND + ')"'
-        },
-        'zsh': {
-            'init_file': join(expanduser('~'), SHELL_INIT_PREFIX + '-zsh'),
-            'source_cmd': 'eval "$(_' + SHELL_COMMAND.upper() +
-            '_COMPLETE=source_zsh ' + SHELL_COMMAND + ')"'
-        }
-    }
 
     def __init__(self):
         """Public constructor."""
@@ -132,14 +118,16 @@ class PypeCore():
     def install_to_shell(self, shell_config):
         """Install current configuration to shell."""
         config_json = self.__config.get_json()
-        init_file = get_from_json_or_default(
-            config_json, 'initfile', shell_config['init_file'])
+        init_file = self.get_core_config('init_file',
+                                         shell_config['init_file'])
+        shell_command = self.get_core_config('shell_command', 'pype')
+        print('Using shell command', shell_command)
         aliases = get_from_json_or_default(config_json, 'aliases', [])
         print('Writing init-file', init_file)
         with open(resolve_path(init_file), 'w+') as ifile:
             # Write pype sourcing command
             ifile.write('if [ ! -z "$( command -v ' +
-                        self.SHELL_COMMAND + ' )" ]; then\n')
+                        shell_command + ' )" ]; then\n')
             ifile.write('\t' + shell_config['source_cmd'] + '\n')
             # Write configured aliases
             for alias in aliases:
@@ -224,16 +212,36 @@ class PypeCore():
             [existing_alias for existing_alias in config_json.get('aliases')
              if existing_alias['alias'] == alias])
 
+    def get_core_config(self, key, default=None):
+        """Return a key from the core configuration of the config file."""
+        return get_from_json_or_default(
+            self.get_config_json(), 'core_config.' + key, default)
+
     def get_shell_config(self):
         """Construct a shell configuration by guessing the running shell."""
+        shell_command = self.get_core_config('shell_command', 'pype')
+        supported_shells = {
+            'bash': {
+                'init_file':
+                join(expanduser('~'), self.SHELL_INIT_PREFIX + '-bash'),
+                'source_cmd': 'eval "$(_' + shell_command.upper() +
+                '_COMPLETE=source ' + shell_command + ')"'
+            },
+            'zsh': {
+                'init_file': join(expanduser('~'),
+                                  self.SHELL_INIT_PREFIX + '-zsh'),
+                'source_cmd': 'eval "$(_' + shell_command.upper() +
+                '_COMPLETE=source_zsh ' + shell_command + ')"'
+            }
+        }
         shell = basename(environ.get('SHELL', None))
         if not any(
-            [supported for supported in self.SUPPORTED_SHELLS
+            [supported for supported in supported_shells
              if shell == supported]
         ):
             print('Unsupported shell "{}".'.format(shell))
             return None
-        return self.SUPPORTED_SHELLS[shell]
+        return supported_shells[shell]
 
 
 def load_module(name, path):
