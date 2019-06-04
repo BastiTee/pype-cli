@@ -62,8 +62,9 @@ lint() {
 
 profile() {
     # Run a profiler to analyse the runtime
-    python3 -m profile -o tests/profile.obj pype/__main__.py >/dev/null
-    python3 tests/run_pstats.py
+    pipenv run python -m profile -o tests/profile.obj pype/__main__.py \
+    >/dev/null
+    pipenv run python tests/run_pstats.py
 }
 
 package() {

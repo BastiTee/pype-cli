@@ -2,6 +2,7 @@
 """Print system information useful for bug reports or other inspections."""
 
 import platform
+import sys
 from os import environ
 
 import click
@@ -23,6 +24,8 @@ def main():
     infos.append(['VERSION', platform.version()])
     infos.append(['RELEASE', platform.release()])
     infos.append(['SYSTEM', platform.system()])
+    infos.append(['PY VERSION', sys.version])
+    infos.append(['PY VERSION_INFO', sys.version_info])
     infos.append(['SHELL', environ.get('SHELL', unset)])
     infos.append(['CONFIG FILE', environ.get(ENV_CONFIG_FILE, unset)])
     print(tabulate(infos))
