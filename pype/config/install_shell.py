@@ -3,6 +3,8 @@
 
 import click
 
+from colorama import Fore, init
+
 from pype.core import PypeCore
 from pype.util.iotools import resolve_path
 
@@ -19,8 +21,9 @@ def main(target_file, reverse):
         core.uninstall_from_shell(shell_config)
     else:
         core.install_to_shell(shell_config)
-    print('Done. Please reload shell session.')
+    print(Fore.RED + 'Done. Please reload shell session.')
 
 
 if __name__ == '__main__':
+    init(autoreset=True)
     main()
