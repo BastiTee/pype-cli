@@ -24,6 +24,8 @@ from pype.util.iotools import open_with_default
 )
 @click.option('--list-pypes', '-l', is_flag=True,
               help='Print all available pypes')
+@click.option('--aliases', '-a', is_flag=True,
+              help='Print all available aliases')
 @click.option('--open-config', '-o', is_flag=True,
               help='Open config file in default editor')
 @click.option('--register-alias', '-r', metavar='ALIAS',
@@ -31,7 +33,8 @@ from pype.util.iotools import open_with_default
 @click.option('--unregister-alias', '-u', metavar='ALIAS',
               help='Register alias for following pype')
 @click.pass_context
-def main(ctx, list_pypes, open_config, register_alias, unregister_alias):
+def main(ctx, list_pypes, aliases,
+         open_config, register_alias, unregister_alias):
     """Pype main entry point."""
     if not _process_alias_configuration(
             ctx, list_pypes, open_config, register_alias, unregister_alias):
@@ -41,6 +44,9 @@ def main(ctx, list_pypes, open_config, register_alias, unregister_alias):
         open_with_default(PYPE_CORE.get_config_filepath())
     elif list_pypes:
         PYPE_CORE.list_pypes()
+        return
+    elif aliases:
+        PYPE_CORE.list_aliases()
         return
     elif unregister_alias:
         PYPE_CORE.unregister_alias(unregister_alias)

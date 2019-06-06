@@ -16,6 +16,8 @@ from pype.type_plugin import Plugin
 from pype.util.iotools import resolve_path
 from pype.util.misc import get_from_json_or_default
 
+from tabulate import tabulate
+
 
 class PypeCore():
     """Pype core initializer."""
@@ -63,16 +65,36 @@ class PypeCore():
     def list_pypes(self):
         """Print list of pypes to console."""
         for plugin in self.plugins:
-            print('{}{}– {}{}\n{}\n@ {}'.format(
+            print('{}{}PLUGIN: {}{}\n{}\n@ {}'.format(
                 Style.BRIGHT, Fore.RED, plugin.name.upper(),
                 Fore.LIGHTBLACK_EX, plugin.doc,
                 'Built-in' if plugin.internal else plugin.abspath))
+            print('{}{}– PYPES:'.format(Style.BRIGHT, Fore.RED))
             for pype in plugin.pypes:
-                print('{}{}{}{} – {}'.format(
+                print('  {}{}{}{} – {}'.format(
                     Style.BRIGHT, Fore.RED, sub('_', '-', pype.name),
                     Style.RESET_ALL, pype.doc
                 ))
-            print()
+
+    def list_aliases(self):
+        """Print list of aliases to console."""
+        aliases = self.get_config_json().get('aliases')
+        sorted_alias_keys = sorted([alias['alias'] for alias in aliases])
+        alias_table = []
+
+        def find_alias(aliases, key):
+            for alias in aliases:
+                if key == alias['alias']:
+                    return alias
+
+        for alias in sorted_alias_keys:
+            alias_table.append([
+                '{}{}{}'.format(Style.BRIGHT, Fore.RED, alias),
+                Style.RESET_ALL + '=',
+                '{}{}{}'.format(Style.BRIGHT, Fore.LIGHTBLACK_EX,
+                                find_alias(aliases, alias)['command'])
+            ])
+        print(tabulate(alias_table, tablefmt='plain'))
 
     def create_pype_or_exit(self, pype_name, plugin, minimal):
         """Create a new pype inside the given plugin."""
