@@ -75,6 +75,7 @@ class PypeCore():
                     Style.BRIGHT, Fore.RED, sub('_', '-', pype.name),
                     Style.RESET_ALL, pype.doc
                 ))
+            print()
 
     def list_aliases(self):
         """Print list of aliases to console."""
