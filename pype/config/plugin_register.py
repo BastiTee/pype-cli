@@ -5,6 +5,7 @@
 import getpass
 from os import mkdir
 from os.path import isdir, join
+from re import sub
 
 import click
 
@@ -34,11 +35,16 @@ def main(name, path, create, user_only):
     users = [getpass.getuser()] if user_only else []
     config_json['plugins'].append({
         'name': module.__name__,
-        'path': path,
+        'path': _replace_homefolder_with_tilde(path),
         'users': users
     })
     core.set_config_json(config_json)
     print('Plugin "{}" successfully registered.'.format(name))
+
+
+def _replace_homefolder_with_tilde(plugin_path):
+    home_folder = resolve_path('~')
+    return sub(home_folder, '~', plugin_path)
 
 
 def _create_on_the_fly(name, path):
