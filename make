@@ -116,6 +116,17 @@ changelog() {
     git log --pretty=format:"%s" $version_hash..HEAD
 }
 
+commit() {
+    echo "Please provide commit message:"
+    read commit_message
+    echo $commit_message
+    git config user.name "Basti Tee"
+    git config user.email "basti.tee@posteo.de"
+    git add .
+    git commit -m "$commit_message"
+    git push
+}
+
 # -----------------------------------------------------------------------------
 
 coms=$( cat $0 | egrep "\(\) {" |tr "(" " " |awk '{print $1}' |tr "\n" " " )
