@@ -149,8 +149,9 @@ class PypeCore():
         print('Writing init-file', init_file)
         with open(resolve_path(init_file), 'w+') as ifile:
             # Write pype sourcing command
-            ifile.write('if [ ! -z "$( command -v ' +
-                        shell_command + ' )" ]; then\n')
+            ifile.write('if [ ! -z "$( command -v '
+                        + shell_command
+                        + ' )" ]; then\n')
             ifile.write('\t' + shell_config['source_cmd'] + '\n')
             # Write configured aliases
             for alias in aliases:
@@ -247,14 +248,14 @@ class PypeCore():
             'bash': {
                 'init_file':
                 join(expanduser('~'), self.SHELL_INIT_PREFIX + '-bash'),
-                'source_cmd': 'eval "$(_' + shell_command.upper() +
-                '_COMPLETE=source ' + shell_command + ')"'
+                'source_cmd': 'eval "$(_' + shell_command.upper()
+                + '_COMPLETE=source ' + shell_command + ')"'
             },
             'zsh': {
                 'init_file': join(expanduser('~'),
                                   self.SHELL_INIT_PREFIX + '-zsh'),
-                'source_cmd': 'eval "$(_' + shell_command.upper() +
-                '_COMPLETE=source_zsh ' + shell_command + ')"'
+                'source_cmd': 'eval "$(_' + shell_command.upper()
+                + '_COMPLETE=source_zsh ' + shell_command + ')"'
             }
         }
         shell = basename(environ.get('SHELL', None))

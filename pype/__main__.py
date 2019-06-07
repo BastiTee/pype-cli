@@ -137,8 +137,8 @@ def _bind_pype(name, plugin, pype):
         sub_environment = environ.copy()
         sub_environment['PYTHONPATH'] = ':'.join(syspath)
         extra_args = ['--help'] if help else list(ctx.params['extra_args'])
-        command = [executable, '-m', plugin.name +
-                   '.' + pype.name] + extra_args
+        command = [executable, '-m', plugin.name
+                   + '.' + pype.name] + extra_args
         try:
             subprocess.run(command, env=sub_environment)
         except KeyboardInterrupt:
