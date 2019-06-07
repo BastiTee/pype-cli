@@ -36,7 +36,7 @@ def truncate_with_ellipsis(string, length):
     return (string[:length] + '..') if len(string) > length else string
 
 
-def query_yes_no(question, default='yes'):
+def ask_yes_or_no(question, default='yes'):
     """Ask user a yes/no question and return their answer."""
     valid = {'yes': True, 'y': True, 'ye': True,
              'no': False, 'n': False}
@@ -60,7 +60,7 @@ def query_yes_no(question, default='yes'):
             print('Please respond with "yes" or "no" (or "y" or "n").')
 
 
-def query_text(question):
+def ask_for_text(question):
     """Ask user for free text input and return their answer."""
     print(question)
     return input('> ')
