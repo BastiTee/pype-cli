@@ -37,7 +37,7 @@ def truncate_with_ellipsis(string, length):
 
 
 def query_yes_no(question, default='yes'):
-    """Ask a yes/no question via raw_input() and return their answer."""
+    """Ask user a yes/no question and return their answer."""
     valid = {'yes': True, 'y': True, 'ye': True,
              'no': False, 'n': False}
     if default is None:
@@ -58,3 +58,9 @@ def query_yes_no(question, default='yes'):
             return valid[choice]
         else:
             print('Please respond with "yes" or "no" (or "y" or "n").')
+
+
+def query_text(question):
+    """Ask user for free text input and return their answer."""
+    print(question)
+    return input('> ')
