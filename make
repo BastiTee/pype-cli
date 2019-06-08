@@ -6,7 +6,7 @@ cd "$( cd "$( dirname "$0" )"; pwd )"
 [ -z "$( command -v pipenv )" ] && python3 -m pip install pipenv --upgrade
 
 # Allow to customize this script with a make-extension file
-[ -f "make-extension" ] && . make-extension
+[ -f "make-extension" ] && . ./make-extension
 
 # Suppress warning if pipenv is started inside .venv
 export PIPENV_VERBOSITY=${PIPENV_VERBOSITY:--1}
