@@ -10,7 +10,7 @@
 __Disclaimer: This project is an early POC and interfaces can change anytime.__
 
 ## In a nutshell
-test
+
 __pype-cli__ is a CLI-configurable command-line tool to orchestrate sets of other command-line tools. It simplifies the creation, orchestration and access of Python scripts that you require for your development work, process automation, etc.
 
 ## Installation
@@ -33,8 +33,8 @@ __pype-cli__ ships with one built-in __plugin__ called `pype.config` that is use
 
 __pype-cli__'s main benefit is that is is extendable with custom __plugins__ and that it will allow you to immediatelly browse and use newly created and existing __plugins__/__pypes__ by using the `<TAB>` key and by configuring short __aliases__. To enable the functionality it is required to install a source-script to your shell's rc-file that will be executed everytime you open a shell.
 
-* Run `pype pype.config install-shell -t ~/.bashrc` for bash shells
-* Run `pype pype.config install-shell -t ~/.zshrc` for zsh shells
+* Run `pype pype.config shell-install`
+* Run `pype pype.config shell-uninstall` to remove if necessary
 
 ### Un-/register plugins
 

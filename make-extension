@@ -1,0 +1,53 @@
+# Pype make extensions for core package
+
+profile() {
+    # Run a profiler to analyse the runtime
+    pipenv run python -m profile -o tests/profile.obj pype/__main__.py \
+    >/dev/null
+    pipenv run python tests/run_pstats.py
+}
+
+package() {
+    # Run package setup
+    echo " === PACKAGE === "
+    pipenv run python setup.py bdist_wheel $@
+}
+
+build() {
+    # Run setup.py-based build process to package application
+    echo " === BUILD === "
+    test
+    coverage
+    lint
+    package
+}
+
+publish() {
+    # Publish pype to pypi.org
+    echo " === PUBLISH === "
+    branch=$( git rev-parse --abbrev-ref HEAD )
+    if [ $branch != "master" ]; then
+        echo "Only publish released master branches! Currently on $branch"
+        exit 1
+    fi
+    build
+    pipenv run twine upload dist/*
+}
+
+dockerize() {
+    # Install pype into a dockercontainer to test mint-installation
+    echo " === DOCKERIZE === "
+    clean
+    build
+    docker build -t "pype-docker" .
+    docker run --rm -ti "pype-docker"
+}
+
+changelog() {
+    # Return changelog since last version tag
+    echo " === CHANGELOG === "
+    last_version=$( git tag | sort --version-sort -r | head -n1 )
+    version_hash=$( git show-ref -s $last_version )
+    echo "--- $last_version $version_hash"
+    git log --pretty=format:"%s" $version_hash..HEAD
+}

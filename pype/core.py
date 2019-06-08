@@ -3,7 +3,7 @@
 
 from importlib import import_module
 from os import environ, remove
-from os.path import abspath, basename, dirname, expanduser, isfile, join
+from os.path import abspath, dirname, isfile, join
 from re import sub
 from shutil import copyfile
 from sys import path as syspath
@@ -11,6 +11,7 @@ from sys import path as syspath
 from colorama import Fore, Style
 
 from pype.config_handler import PypeConfigHandler
+from pype.constants import ENV_CONFIG_FILE
 from pype.exceptions import PypeException
 from pype.type_plugin import Plugin
 from pype.util.iotools import resolve_path
@@ -22,15 +23,13 @@ from tabulate import tabulate
 class PypeCore():
     """Pype core initializer."""
 
-    SHELL_INIT_PREFIX = '.pype-initfile'
-
     def __init__(self):
         """Public constructor."""
         self.__set_environment_variables()
         self.__config = PypeConfigHandler()
         # load all external plugins
         self.plugins = [
-            Plugin(plugin)
+            Plugin(plugin, self.get_config_filepath())
             for plugin in get_from_json_or_default(
                 self.__config.get_json(), 'plugins', [])
         ]
@@ -40,7 +39,7 @@ class PypeCore():
         self.plugins.append(Plugin({
             'name': 'config',
             'users': []
-        }))
+        }, self.get_config_filepath()))
 
     def __set_environment_variables(self):
         environ['LC_ALL'] = 'C.UTF-8'
@@ -138,55 +137,94 @@ class PypeCore():
                 return pype.abspath
         return None
 
-    def install_to_shell(self, shell_config):
-        """Install current configuration to shell."""
-        config_json = self.__config.get_json()
-        init_file = self.get_core_config('init_file',
-                                         shell_config['init_file'])
-        shell_command = self.get_core_config('shell_command', 'pype')
-        print('Using shell command', shell_command)
-        aliases = get_from_json_or_default(config_json, 'aliases', [])
-        print('Writing init-file', init_file)
-        with open(resolve_path(init_file), 'w+') as ifile:
+    SHELL_INIT_PREFIX = '.pype-initfile-'
+    SUPPORTED_RC_FILES = [
+        resolve_path('~/.bashrc'),
+        resolve_path('~/.bash_profile'),
+        resolve_path('~/.zshrc')
+    ]
+
+    def __write_init_file(self, init_file, shell_command, aliases):
+        target_file = resolve_path('~/' + self.SHELL_INIT_PREFIX + init_file)
+        print('Writing init-file', target_file)
+        with open(resolve_path(target_file), 'w+') as ifile:
             # Write pype sourcing command
             ifile.write('if [ ! -z "$( command -v '
                         + shell_command
                         + ' )" ]; then\n')
-            ifile.write('\t' + shell_config['source_cmd'] + '\n')
+            source_cmd = 'eval "$(_{}_COMPLETE=source{} {})"'.format(
+                shell_command.upper(),
+                '_zsh' if init_file == 'zsh' else '',
+                shell_command
+            )
+            ifile.write('\t' + source_cmd + '\n')
             # Write configured aliases
             for alias in aliases:
                 alias_cmd = '\talias {}="{}"\n'.format(
                     alias['alias'], alias['command'])
                 ifile.write(alias_cmd)
+            # Close if
             ifile.write('fi\n')
-        # Only add source link to target file if not present yet
-        target_file = shell_config.get('target_file', None)
-        if not target_file:
-            return
-        try:
-            rc_file_content = open(
-                target_file, 'r').readlines()
-        except FileNotFoundError:
-            rc_file_content = []
-        already_present = [line for line in rc_file_content
-                           if basename(init_file) in line]
-        if not already_present:
-            print('Adding init-file sourcing to', target_file)
-            with open(target_file, 'a+') as rc_file_handle:
-                rc_file_handle.write('. ' + init_file + '\n')
 
-    def uninstall_from_shell(self, shell_config):
-        """Remove current configuration from shell."""
-        if isfile(shell_config['init_file']):
-            remove(shell_config['init_file'])
-        if not isfile(shell_config['target_file']):
-            return
-        with open(shell_config['target_file'], 'r') as f:
-            lines = f.readlines()
-        with open(shell_config['target_file'], 'w') as f:
-            for line in lines:
-                if self.SHELL_INIT_PREFIX not in line.strip('\n'):
-                    f.write(line)
+    def __remove_init_file(self, init_file):
+        target_file = resolve_path('~/' + self.SHELL_INIT_PREFIX + init_file)
+        print('Removing init-file', target_file)
+        try:
+            remove(target_file)
+        except FileNotFoundError:
+            pass  # Silent ignore to make function idempotent
+
+    def install_to_shell(self):
+        """Install shell features."""
+        # Clean up first
+        self.uninstall_from_shell()
+        # Write new init-files
+        config_json = self.__config.get_json()
+        shell_command = self.get_core_config('shell_command', 'pype')
+        aliases = get_from_json_or_default(config_json, 'aliases', [])
+        print('Using shell command "{}"'.format(shell_command))
+        self.__write_init_file('bsh', shell_command, aliases)
+        self.__write_init_file('zsh', shell_command, aliases)
+        print('Add link to init-file in rc-files if present')
+        for file in self.SUPPORTED_RC_FILES:
+            if not isfile(file):
+                continue
+            print(' - "{}"'.format(file))
+            # Append link to init-file and set config file
+            file_handle = open(file, 'a+')
+            init_file = '~/' + self.SHELL_INIT_PREFIX
+            init_file = (init_file + 'zsh' if 'zshrc' in file
+                         else init_file + 'bsh')
+            file_handle.write('export {}="{}" # {}\n'.format(
+                ENV_CONFIG_FILE,
+                resolve_path(self.get_config_filepath()),
+                self.SHELL_INIT_PREFIX
+            ))
+            file_handle.write('. ' + init_file + '\n')
+            file_handle.close()
+
+    def uninstall_from_shell(self):
+        """Uninstall shell features."""
+        # Remove init files
+        self.__remove_init_file('bsh')
+        self.__remove_init_file('zsh')
+        print('Remove link to init-file from rc-files if present')
+        for file in self.SUPPORTED_RC_FILES:
+            if not isfile(file):
+                continue
+            file_handle = open(file, 'r')
+            content = file_handle.readlines()
+            file_handle.close()
+            # Don't rewrite if rc file does not link to initfile
+            if not any(list(filter(
+                    lambda x: self.SHELL_INIT_PREFIX in x, content))):
+                continue
+            # Delete initfile-links from rc file
+            print(' - "{}"'.format(file))
+            file_handle = open(file, 'w')
+            [file_handle.write(cn)
+             for cn in content if self.SHELL_INIT_PREFIX not in cn]
+            file_handle.close()
 
     def register_alias(self, ctx, extra_args, alias):
         """Register a new alias."""
@@ -207,7 +245,7 @@ class PypeCore():
         })
         self.__config.set_json(config_json)
         # update install script
-        self.install_to_shell(self.get_shell_config())
+        self.install_to_shell()
         print('Installed alias "{}"'.format(alias_cmd))
 
     def unregister_alias(self, alias):
@@ -228,7 +266,7 @@ class PypeCore():
             del config_json['aliases'][obj[0]]
         self.__config.set_json(config_json)
         # update install script
-        self.install_to_shell(self.get_shell_config())
+        self.install_to_shell()
         print('Uninstalled alias "{}"'.format(alias))
 
     def _alias_present(self, config_json, alias):
@@ -240,32 +278,6 @@ class PypeCore():
         """Return a key from the core configuration of the config file."""
         return get_from_json_or_default(
             self.get_config_json(), 'core_config.' + key, default)
-
-    def get_shell_config(self):
-        """Construct a shell configuration by guessing the running shell."""
-        shell_command = self.get_core_config('shell_command', 'pype')
-        supported_shells = {
-            'bash': {
-                'init_file':
-                join(expanduser('~'), self.SHELL_INIT_PREFIX + '-bash'),
-                'source_cmd': 'eval "$(_' + shell_command.upper()
-                + '_COMPLETE=source ' + shell_command + ')"'
-            },
-            'zsh': {
-                'init_file': join(expanduser('~'),
-                                  self.SHELL_INIT_PREFIX + '-zsh'),
-                'source_cmd': 'eval "$(_' + shell_command.upper()
-                + '_COMPLETE=source_zsh ' + shell_command + ')"'
-            }
-        }
-        shell = basename(environ.get('SHELL', None))
-        if not any(
-            [supported for supported in supported_shells
-             if shell == supported]
-        ):
-            print('Unsupported shell "{}".'.format(shell))
-            return None
-        return supported_shells[shell]
 
 
 def load_module(name, path):
