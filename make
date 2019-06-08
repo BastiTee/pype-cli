@@ -69,8 +69,10 @@ install() {
     uninstall ||true
     install_deps_globally ||true
     if [ -d pype ]; then
+        # If inside pype project
         python3 -m pip install --editable . 2>/dev/null
     else
+        # If pype is embedded as library
         python3 -m pip install --editable ./lib/pype 2>/dev/null
     fi
     pype pype.config shell-install
