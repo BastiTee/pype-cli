@@ -11,7 +11,7 @@ __Disclaimer: This project is an early POC and interfaces can change anytime.__
 
 ## In a nutshell
 
-__pype-cli__ is a CLI-configurable command-line tool to orchestrate sets of other command-line tools. It simplifies the creation, orchestration and access of Python scripts that you require for your development work, process automation, etc.
+__pype-cli__ is a CLI-configurable command-line tool to manage sets of other command-line tools. It simplifies the creation, orchestration and access of Python scripts that you require for your development work, process automation, etc.
 
 ## Installation
 
