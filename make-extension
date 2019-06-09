@@ -1,4 +1,5 @@
-# Pype make extensions for core package
+#!/bin/sh
+# Extensions for pype's default make file
 
 profile() {
     # Run a profiler to analyse the runtime
@@ -9,13 +10,12 @@ profile() {
 
 package() {
     # Run package setup
-    echo " === PACKAGE === "
     pipenv run python setup.py bdist_wheel $@
 }
 
 build() {
     # Run setup.py-based build process to package application
-    echo " === BUILD === "
+    venv
     test
     coverage
     lint
@@ -24,7 +24,6 @@ build() {
 
 publish() {
     # Publish pype to pypi.org
-    echo " === PUBLISH === "
     branch=$( git rev-parse --abbrev-ref HEAD )
     if [ $branch != "master" ]; then
         echo "Only publish released master branches! Currently on $branch"
@@ -36,8 +35,6 @@ publish() {
 
 dockerize() {
     # Install pype into a dockercontainer to test mint-installation
-    echo " === DOCKERIZE === "
-    clean
     build
     docker build -t "pype-docker" .
     docker run --rm -ti "pype-docker"
@@ -45,7 +42,6 @@ dockerize() {
 
 changelog() {
     # Return changelog since last version tag
-    echo " === CHANGELOG === "
     last_version=$( git tag | sort --version-sort -r | head -n1 )
     version_hash=$( git show-ref -s $last_version )
     echo "--- $last_version $version_hash"

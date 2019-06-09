@@ -1,4 +1,5 @@
 #!/bin/sh
+set -e  # Always exit on non-zero return codes
 cd "$( cd "$( dirname "$0" )"; pwd )"
 
 # Check python and pipenv installation
@@ -25,29 +26,30 @@ ${PYPE_CONFIGURATION_FILE:-"$( pwd )/config.json"}
 
 venv() {
     # Create a pipenv virtual environment for IDE/coding support
-    rm -rf .venv  # Delete existing .venv
-	pipenv install --dev --skip-lock ||exit 1
+    rm -rf .venv
+	pipenv install --dev --skip-lock
     pipenv run pip install --editable .
 }
 
 clean() {
     # Clean project base by deleting any non-VC files
-    rm -fr build dist .egg *.egg-info
+    git status --ignored --short |grep -e "^!!" |awk '{print $2}' |\
+    while read file; do rm -vfr $file; done
 }
 
 test() {
     # Run all tests in default virtualenv
-    pipenv run py.test ||exit 1
+    pipenv run py.test
 }
 
 coverage() {
     # Run test coverage checks
-    pipenv run py.test -c .coveragerc --verbose tests ||exit 1
+    pipenv run py.test -c .coveragerc --verbose tests
 }
 
 lint() {
     # Run linter / code formatting checks against source code base
-    pipenv run flake8 $LINTED_MODULES tests  ||exit 1
+    pipenv run flake8 $LINTED_MODULES tests
 }
 
 install_deps_globally() {
@@ -67,7 +69,7 @@ uninstall() {
 install() {
     # Install pype to global system
     uninstall ||true
-    install_deps_globally ||true
+    install_deps_globally
     if [ -d pype ]; then
         # If inside pype project
         python3 -m pip install --editable . 2>/dev/null
@@ -79,6 +81,12 @@ install() {
 }
 
 # -----------------------------------------------------------------------------
-
-command=$1
-$command $@
+if [ $# == 0 ]; then
+    echo "No target provided. Available:"
+    {   # All functions in make or make-extension are considered targets
+        cat make 2>/dev/null
+        cat make-extension 2>/dev/null
+    } | egrep -e "^[a-zA-Z_]+\(\)" | tr "(" " " | awk '{print $1}' | sort
+    exit 1
+fi
+$@ # Execute the provided command line
