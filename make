@@ -88,5 +88,4 @@ if [ $# == 0 ]; then
     } | egrep -e "^[a-zA-Z_]+\(\)" | tr "(" " " | awk '{print $1}' | sort
     exit 1
 fi
-echo "Pype configuration file: $PYPE_CONFIGURATION_FILE"
 $@ # Execute the provided command line
