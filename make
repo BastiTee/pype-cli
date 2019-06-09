@@ -20,9 +20,8 @@ export LINTED_MODULES=${LINTED_MODULES:-pype}
 # Make sure we are running UTF-8 encoding
 export LC_ALL=${LC_ENCODING:-C.UTF-8}
 export LANG=${LC_ENCODING:-C.UTF-8}
-# Default pype configuration file
-export PYPE_CONFIGURATION_FILE=\
-${PYPE_CONFIGURATION_FILE:-"$( pwd )/config.json"}
+# Default pype configuration file (always use the one relative to make file)
+export PYPE_CONFIGURATION_FILE="$( pwd )/config.json"
 
 venv() {
     # Create a pipenv virtual environment for IDE/coding support
@@ -89,4 +88,5 @@ if [ $# == 0 ]; then
     } | egrep -e "^[a-zA-Z_]+\(\)" | tr "(" " " | awk '{print $1}' | sort
     exit 1
 fi
+echo "Pype configuration file: $PYPE_CONFIGURATION_FILE"
 $@ # Execute the provided command line
