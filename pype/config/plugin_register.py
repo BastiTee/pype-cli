@@ -4,8 +4,8 @@
 
 import getpass
 from os import mkdir
-from os.path import isdir, join
-from re import sub
+from os.path import dirname, isdir, join
+from re import IGNORECASE, sub
 
 import click
 
@@ -30,21 +30,34 @@ def main(name, path, create, user_only):
         print('Could not find a python module "{}" at {}'
               .format(name, path))
         exit(1)
+
+    # Append plugin to global configuration
     core = PypeCore()
     config_json = core.get_config_json()
+    path = _replace_parentfolder_if_relative_to_config(
+        path, core.get_config_filepath())
+    path = _replace_homefolder_with_tilde(path)
     users = [getpass.getuser()] if user_only else []
     config_json['plugins'].append({
         'name': module.__name__,
-        'path': _replace_homefolder_with_tilde(path),
+        'path': path,
         'users': users
     })
     core.set_config_json(config_json)
+
     print('Plugin "{}" successfully registered.'.format(name))
 
 
 def _replace_homefolder_with_tilde(plugin_path):
     home_folder = resolve_path('~')
-    return sub(home_folder, '~', plugin_path)
+    return sub(home_folder, '~', plugin_path, flags=IGNORECASE)
+
+
+def _replace_parentfolder_if_relative_to_config(plugin_path, config_path):
+    plugin_path_abs = resolve_path(plugin_path)
+    config_dir_abs = resolve_path(dirname(config_path))
+    return sub(sub(r'[/]+$', '', config_dir_abs, flags=IGNORECASE),
+               '.', plugin_path_abs, flags=IGNORECASE)
 
 
 def _create_on_the_fly(name, path):
