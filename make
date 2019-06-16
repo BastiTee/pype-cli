@@ -80,12 +80,17 @@ install() {
 }
 
 # -----------------------------------------------------------------------------
-if [ $# == 0 ]; then
-    echo "No target provided. Available:"
+function print_commands() {
+    echo "$1\n"
     {   # All functions in make or make-extension are considered targets
         cat make 2>/dev/null
         cat make-extension 2>/dev/null
     } | egrep -e "^[a-zA-Z_]+\(\)" | tr "(" " " | awk '{print $1}' | sort
+    echo
+}
+if [ $# == 0 ]; then
+    print_commands "No command selected. Available:"
     exit 1
 fi
-$@ # Execute the provided command line
+# Execute the provided command line
+$@ ||print_commands "Unknown command. Available:"

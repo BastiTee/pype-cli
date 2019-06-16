@@ -5,6 +5,7 @@ verify_ssl = true
 
 [dev-packages]
 autopep8 = "*" # Code formatter
+yapf = "*" # Yet another python formatter
 flake8 = "*" # Base-linter module
 flake8-quotes = "*" # flake8-extension to lint bad quoting
 flake8-docstrings = "*" # flake8-ext for strict docstring linting
