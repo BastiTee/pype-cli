@@ -80,20 +80,21 @@ install() {
 }
 
 # -----------------------------------------------------------------------------
-function print_commands {
+internal_print_commands() {
     echo "$1\n"
     {   # All functions in make or make-extension are considered targets
         cat make 2>/dev/null
         cat make-extension 2>/dev/null
-    } | egrep -e "^[a-zA-Z_]+\(\)" | tr "(" " " | awk '{print $1}' | sort
+    } | egrep -e "^[a-zA-Z_]+\(\)" | egrep -ve "^internal" |\
+    tr "(" " " | awk '{print $1}' | sort
     echo
 }
 if [ "$1" == "-h" ]||[ "$1" == "--help" ]; then
-    print_commands "Available:"
+    internal_print_commands "Available:"
     exit 0
 fi
 if [ $# == 0 ]; then
-    print_commands "No command selected. Available:"
+    internal_print_commands "No command selected. Available:"
     exit 1
 fi
 # Execute the provided command line
