@@ -12,7 +12,7 @@ import click
 
 from colorama import Fore, init
 
-from pype.core import PypeCore
+from pype.core import PypeCore, print_context_help
 from pype.exceptions import PypeException
 from pype.util.iotools import open_with_default
 
@@ -38,7 +38,7 @@ def main(ctx, list_pypes, aliases,
     """Pype main entry point."""
     if not _process_alias_configuration(
             ctx, list_pypes, open_config, register_alias, unregister_alias):
-        print(ctx.get_help())
+        print_context_help(ctx, level=1)
         return
     if open_config:
         open_with_default(PYPE_CORE.get_config_filepath())
@@ -53,7 +53,7 @@ def main(ctx, list_pypes, aliases,
         return
     elif ctx.invoked_subcommand is None:
         _print_red('No pype selected.')
-        print(ctx.get_help())
+        print_context_help(ctx, level=1)
 
 
 def _process_alias_configuration(
@@ -92,7 +92,7 @@ def _bind_plugin(name, plugin):
         if (minimal or edit) and not create_pype:
             _print_red(
                 '"-m" and "-e" can only be used with "-c" option.')
-            print(ctx.get_help())
+            print_context_help(ctx, level=2)
             return
         toggle_invoked = False
         if create_pype:  # Handle creation of pypes
@@ -118,7 +118,7 @@ def _bind_plugin(name, plugin):
             toggle_invoked = True
         # Handle case that no toggles were used and no commands selected
         if not toggle_invoked and not ctx.invoked_subcommand:
-            print(ctx.get_help())
+            print_context_help(ctx, level=2)
     _plugin_bind_function.__name__ = _normalize_command_name(name)
     return _plugin_bind_function
 

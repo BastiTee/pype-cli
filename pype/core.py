@@ -292,3 +292,14 @@ def load_module(name, path):
 def get_pype_basepath():
     """Get directory filename of this pype installation."""
     return dirname(dirname(__file__))
+
+
+def print_context_help(ctx, level=0):
+    """Print help page for current context with some slight improvements."""
+    default_help = ctx.get_help()
+    if level == 1:
+        print(sub('Commands:', 'Plugins:', default_help))
+    elif level == 2:
+        print(sub('Commands:', 'Pypes:', default_help))
+    else:
+        print(default_help)
