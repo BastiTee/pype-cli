@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """CLI-functions for better user experience and consistency."""
 
+from colorama import Fore, Style
+
 
 def ask_yes_or_no(question, default='yes'):
     """Ask user a yes/no question and return their answer."""
@@ -30,3 +32,22 @@ def ask_for_text(question):
     """Ask user for free text input and return their answer."""
     print(question)
     return input('> ')
+
+
+def print_success(message):
+    """Print a message with a green success highlight."""
+    _print_highlight(message, '✔', Fore.GREEN)
+
+
+def print_warning(message):
+    """Print a message with a yellow warning highlight."""
+    _print_highlight(message, '⚠', Fore.YELLOW)
+
+
+def print_error(message):
+    """Print a message with a red error highlight."""
+    _print_highlight(message, '✘', Fore.RED)
+
+
+def _print_highlight(message, prefix, color):
+    print(Style.BRIGHT + color + prefix + ' ' + message.strip())

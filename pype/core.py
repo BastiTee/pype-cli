@@ -65,13 +65,13 @@ class PypeCore():
         """Print list of pypes to console."""
         for plugin in self.plugins:
             print('{}{}PLUGIN: {}{}\n{}\n@ {}'.format(
-                Style.BRIGHT, Fore.RED, plugin.name.upper(),
+                Style.BRIGHT, Fore.BLUE, plugin.name.upper(),
                 Fore.LIGHTBLACK_EX, plugin.doc,
                 'Built-in' if plugin.internal else plugin.abspath))
-            print('{}{}– PYPES:'.format(Style.BRIGHT, Fore.RED))
+            print('{}{}– PYPES:'.format(Style.BRIGHT, Fore.BLUE))
             for pype in plugin.pypes:
                 print('  {}{}{}{} – {}'.format(
-                    Style.BRIGHT, Fore.RED, sub('_', '-', pype.name),
+                    Style.BRIGHT, Fore.BLUE, sub('_', '-', pype.name),
                     Style.RESET_ALL, pype.doc
                 ))
             print()
@@ -89,7 +89,7 @@ class PypeCore():
 
         for alias in sorted_alias_keys:
             alias_table.append([
-                '{}{}{}'.format(Style.BRIGHT, Fore.RED, alias),
+                '{}{}{}'.format(Style.BRIGHT, Fore.BLUE, alias),
                 Style.RESET_ALL + '=',
                 '{}{}{}'.format(Style.BRIGHT, Fore.LIGHTBLACK_EX,
                                 find_alias(aliases, alias)['command'])

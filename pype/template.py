@@ -9,6 +9,7 @@ import click
 from colorama import Fore, Style, init
 
 # You can also call pype's own utility functions
+from pype.util import cli
 from pype.util.iotools import run_interactive
 
 
@@ -19,6 +20,11 @@ from pype.util.iotools import run_interactive
 def main(option, verbose):
     """Script's main entry point."""
     # Print out something in shiny colors
+    cli.print_success('Yay!')
+    cli.print_warning('Meh.')
+    cli.print_error('Oh no!')
+
+    # Use colorama directly
     print(Fore.RED + '- option:  ' + Style.DIM + Fore.GREEN + option)
     print(Fore.RED + '- verbose: ' + Style.DIM + Fore.GREEN + str(verbose))
 

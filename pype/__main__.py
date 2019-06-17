@@ -10,10 +10,11 @@ from sys import path as syspath
 
 import click
 
-from colorama import Fore, init
+from colorama import init
 
 from pype.core import PypeCore, print_context_help
 from pype.exceptions import PypeException
+from pype.util.cli import print_error
 from pype.util.iotools import open_with_default
 
 
@@ -52,21 +53,21 @@ def main(ctx, list_pypes, aliases,
         PYPE_CORE.unregister_alias(unregister_alias)
         return
     elif ctx.invoked_subcommand is None:
-        _print_red('No pype selected.')
+        print_error('No pype selected.')
         print_context_help(ctx, level=1)
 
 
 def _process_alias_configuration(
         ctx, list_pypes, open_config, register_alias, unregister_alias):
     if register_alias and unregister_alias:
-        _print_red('Options -r and -u cannot be combined.')
+        print_error('Options -r and -u cannot be combined.')
         return False
     other_options = open_config or list_pypes
     if register_alias and other_options:
-        _print_red('Option -r cannot be combined with other options.')
+        print_error('Option -r cannot be combined with other options.')
         return False
     if unregister_alias and other_options:
-        _print_red('Option -u cannot be combined with other options.')
+        print_error('Option -u cannot be combined with other options.')
         return False
     # piggy-back context
     ctx.register_alias = register_alias
@@ -90,7 +91,7 @@ def _bind_plugin(name, plugin):
     def _plugin_bind_function(
             ctx, create_pype, minimal, edit, delete_pype, open_pype):
         if (minimal or edit) and not create_pype:
-            _print_red(
+            print_error(
                 '"-m" and "-e" can only be used with "-c" option.')
             print_context_help(ctx, level=2)
             return
@@ -104,14 +105,14 @@ def _bind_plugin(name, plugin):
             toggle_invoked = True
         if open_pype or edit:  # Handle opening existing or new pypes
             if plugin.internal:
-                _print_red('Opening internal pypes is not supported.')
+                print_error('Opening internal pypes is not supported.')
                 return
             # Resolve either an existing or a newly created pype
             pype_abspath = (PYPE_CORE.get_abspath_to_pype(
                 plugin, sub('-', '_', open_pype))
                 if open_pype else created_pype_abspath)
             if not pype_abspath:
-                _print_red(
+                print_error(
                     'Pype "{}" could not be found.'.format(open_pype))
                 return
             open_with_default(pype_abspath)
@@ -149,10 +150,6 @@ def _bind_pype(name, plugin, pype):
 
 def _normalize_command_name(name):
     return sub('_', '-', name)
-
-
-def _print_red(message):
-    print(Fore.RED + message)
 
 
 init(autoreset=True)
