@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """CLI-functions for better user experience and consistency."""
 
+import sys
+
 from colorama import Fore, Style
 
 
@@ -50,4 +52,5 @@ def print_error(message):
 
 
 def _print_highlight(message, prefix, color):
-    print(Style.BRIGHT + color + prefix + ' ' + message.strip())
+    sys.stdout.write(Style.BRIGHT + color + prefix + ' '
+                     + message.strip() + '\n')
