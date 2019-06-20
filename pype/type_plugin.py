@@ -44,8 +44,7 @@ class Plugin():
                                 .format(self.name, self.abspath))
         self.doc = self.__get_docu_or_default(self.module)
         self.pypes = [
-            Pype(path.join(self.abspath, subfile),
-                 subfile, plugin_config)
+            Pype(path.join(self.abspath, subfile), subfile, self)
             for subfile in
             get_immediate_subfiles(self.abspath, r'^(?!__).*(?!__)\.py$')
         ]
