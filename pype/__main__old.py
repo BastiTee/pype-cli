@@ -2,77 +2,6 @@
 # -*- coding: utf-8 -*-
 """Pype main entry point."""
 
-import subprocess
-from os import environ, path
-from re import sub
-from sys import executable
-from sys import path as syspath
-
-import click
-
-from colorama import init
-
-from pype.core import PypeCore, print_context_help
-from pype.exceptions import PypeException
-from pype.util.cli import print_error
-from pype.util.iotools import open_with_default
-
-
-@click.group(
-    invoke_without_command=True,
-    context_settings=dict(help_option_names=['-h', '--help']),
-    help='PYPE - A command-line tool for command-line tools'
-)
-@click.option('--list-pypes', '-l', is_flag=True,
-              help='Print all available pypes')
-@click.option('--aliases', '-a', is_flag=True,
-              help='Print all available aliases')
-@click.option('--open-config', '-o', is_flag=True,
-              help='Open config file in default editor')
-@click.option('--register-alias', '-r', metavar='ALIAS',
-              help='Register alias for following pype')
-@click.option('--unregister-alias', '-u', metavar='ALIAS',
-              help='Register alias for following pype')
-@click.pass_context
-def main(ctx, list_pypes, aliases,
-         open_config, register_alias, unregister_alias):
-    """Pype main entry point."""
-    if not _process_alias_configuration(
-            ctx, list_pypes, open_config, register_alias, unregister_alias):
-        print_context_help(ctx, level=1)
-        return
-    if open_config:
-        open_with_default(PYPE_CORE.get_config_filepath())
-    elif list_pypes:
-        PYPE_CORE.list_pypes()
-        return
-    elif aliases:
-        PYPE_CORE.list_aliases()
-        return
-    elif unregister_alias:
-        PYPE_CORE.unregister_alias(unregister_alias)
-        return
-    elif ctx.invoked_subcommand is None:
-        print_error('No pype selected.')
-        print_context_help(ctx, level=1)
-
-
-def _process_alias_configuration(
-        ctx, list_pypes, open_config, register_alias, unregister_alias):
-    if register_alias and unregister_alias:
-        print_error('Options -r and -u cannot be combined.')
-        return False
-    other_options = open_config or list_pypes
-    if register_alias and other_options:
-        print_error('Option -r cannot be combined with other options.')
-        return False
-    if unregister_alias and other_options:
-        print_error('Option -u cannot be combined with other options.')
-        return False
-    # piggy-back context
-    ctx.register_alias = register_alias
-    return True
-
 
 def _bind_plugin(name, plugin):
     @click.option('--create-pype', '-c',
@@ -147,17 +76,6 @@ def _bind_pype(name, plugin, pype):
     _pype_bind_function.__name__ = _normalize_command_name(name)
     return _pype_bind_function
 
-
-def _normalize_command_name(name):
-    return sub('_', '-', name)
-
-
-init(autoreset=True)
-try:
-    PYPE_CORE = PypeCore()
-except PypeException as err:
-    print(err)
-    exit(1)
 
 # Go through all configured plugins and their pypes and setup command groups
 for plugin in PYPE_CORE.get_plugins():

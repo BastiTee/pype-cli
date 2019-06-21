@@ -7,9 +7,9 @@ import click
 from pype.core import PypeCore
 
 
-@click.command(help=__doc__)
+@click.command('plugin_unregister', help=__doc__)
 @click.option('--name', '-n', help='Plugin module name', required=True)
-def main(name):
+def cli(name):
     """Script's main entry point."""
     # Try to load the module to verify the configuration
     core = PypeCore()
@@ -24,7 +24,3 @@ def main(name):
     config_json['plugins'] = new_plugins
     core.set_config_json(config_json)
     print('Plugin "{}" successfully unregistered.'.format(name))
-
-
-if __name__ == '__main__':
-    main()

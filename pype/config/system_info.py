@@ -12,8 +12,8 @@ from pype.constants import ENV_CONFIG_FILE
 from tabulate import tabulate
 
 
-@click.command(help=__doc__)
-def main():
+@click.command('system_info', help=__doc__)
+def cli():
     """Script's main entry point."""
     unset = 'Not set'
     print('PYPE SYSTEM ENVIRONMENT')
@@ -29,7 +29,3 @@ def main():
     infos.append(['SHELL', environ.get('SHELL', unset)])
     infos.append(['CONFIG FILE', environ.get(ENV_CONFIG_FILE, unset)])
     print(tabulate(infos))
-
-
-if __name__ == '__main__':
-    main()
