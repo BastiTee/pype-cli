@@ -1,7 +1,9 @@
-import subprocess
-from os import environ, listdir, path
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""Pype main entry point."""
+
+from os import listdir, path
 from re import sub
-from sys import executable
 from sys import path as syspath
 
 import click
@@ -14,9 +16,15 @@ from pype.util.cli import print_error
 from pype.util.iotools import open_with_default
 
 
-def _bind(plugin_name, plugin):
+def _bind_plugin(plugin_name, plugin):
 
-    class MyCLI(click.MultiCommand):
+    class PypeCLI(click.MultiCommand):
+
+        def __init__(self, *args, **kwargs):
+            click.MultiCommand.__init__(
+                self,
+                invoke_without_command=True,
+                *args, **kwargs)
 
         def list_commands(self, ctx):
             rv = []
@@ -26,10 +34,6 @@ def _bind(plugin_name, plugin):
             rv.sort()
             return rv
 
-        def format_commands(self, ctx, formatter):
-            super(MyCLI, self).format_commands(ctx, formatter)
-            # TODO Would be awesome to somehow sub 'Commands:' to 'Pypes:'
-
         def get_command(self, ctx, name):
             try:
                 syspath.append(path.dirname(plugin.abspath))
@@ -37,7 +41,7 @@ def _bind(plugin_name, plugin):
                                  None, None, ['cli'])
             except ImportError as e:
                 print(e)
-                return
+                exit(1)
             return mod.cli
 
     @click.option('--create-pype', '-c',
@@ -53,7 +57,7 @@ def _bind(plugin_name, plugin):
     @click.option('--open-pype', '-o',
                   help='Open selected pype in default editor')
     @click.pass_context
-    def _plugin_bind_function(
+    def _plugin_bind_plugin_function(
             ctx, create_pype, minimal, edit, delete_pype, open_pype):
         if (minimal or edit) and not create_pype:
             print_error(
@@ -85,9 +89,10 @@ def _bind(plugin_name, plugin):
         # Handle case that no toggles were used and no commands selected
         if not toggle_invoked and not ctx.invoked_subcommand:
             print_context_help(ctx, level=2)
-    _plugin_bind_function.__name__ = plugin_name
-    main.command(cls=MyCLI)(_plugin_bind_function)
-    return _plugin_bind_function
+    _plugin_bind_plugin_function.__name__ = plugin_name
+    main.command(cls=PypeCLI,
+                 help=plugin.doc)(_plugin_bind_plugin_function)
+    return _plugin_bind_plugin_function
 
 
 def _process_alias_configuration(
@@ -154,23 +159,10 @@ except PypeException as err:
     exit(1)
 
 
-# _bind('plug1', None)
-# _bind('plug2', None)
 # Go through all configured plugins and their pypes and setup command groups
 for plugin in PYPE_CORE.get_plugins():
-    _bind(plugin.name, plugin)
-    # plugin_click_group = main.group(
-    #     invoke_without_command=True, help=plugin.doc)(
-    #         _plugin_bind_function)
-    # ctx_settings = dict(
-    #     ignore_unknown_options=True,
-    #     allow_extra_args=True
-    # )
-    # for pype in plugin.pypes:
-    #     plugin_click_group.command(
-    #         context_settings=ctx_settings, help=pype.doc)(
-    #         _bind_pype(pype.name, plugin, pype))
+    _bind_plugin(plugin.name, plugin)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()
