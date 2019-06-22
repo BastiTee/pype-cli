@@ -125,6 +125,9 @@ def _bind_plugin(plugin_name, plugin):
                 return
             open_with_default(pype_abspath)
             toggle_invoked = True
+        if ctx.parent.register_alias:
+            PYPE_CORE.register_alias(ctx)
+            exit(0)
         # Handle case that no toggles were used and no commands selected
         if not toggle_invoked and not ctx.invoked_subcommand:
             print_context_help(ctx, level=2)
@@ -136,8 +139,6 @@ def _bind_plugin(plugin_name, plugin):
 
 def _process_alias_configuration(
         ctx, list_pypes, open_config, register_alias, unregister_alias):
-    print(register_alias)
-    print(unregister_alias)
     if register_alias and unregister_alias:
         print_error('Options -r and -u cannot be combined.')
         return False
