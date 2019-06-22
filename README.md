@@ -2,8 +2,8 @@
 
 ## Todos
 
-- Rename cli() pattern to main() pattern
 - Make sure that commands are with dash instead of underscore automatically
+- Repair alias function
 - Fix templates
 
 ----

@@ -13,7 +13,7 @@ from tabulate import tabulate
 
 
 @click.command('system_info', help=__doc__)
-def cli():
+def main():
     """Script's main entry point."""
     unset = 'Not set'
     print('PYPE SYSTEM ENVIRONMENT')

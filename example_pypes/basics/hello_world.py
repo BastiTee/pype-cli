@@ -5,6 +5,6 @@ import click
 
 
 @click.command('hello_world', help=__doc__)
-def cli():
+def main():
     """Script's main entry point."""
     print('Hello World!')

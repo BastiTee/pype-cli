@@ -16,6 +16,45 @@ from pype.util.cli import print_error
 from pype.util.iotools import open_with_default
 
 
+@click.group(
+    invoke_without_command=True,
+    context_settings=dict(help_option_names=['-h', '--help']),
+    help='PYPE - A command-line tool for command-line tools'
+)
+@click.option('--list-pypes', '-l', is_flag=True,
+              help='Print all available pypes')
+@click.option('--aliases', '-a', is_flag=True,
+              help='Print all available aliases')
+@click.option('--open-config', '-o', is_flag=True,
+              help='Open config file in default editor')
+@click.option('--register-alias', '-r', metavar='ALIAS',
+              help='Register alias for following pype')
+@click.option('--unregister-alias', '-u', metavar='ALIAS',
+              help='Register alias for following pype')
+@click.pass_context
+def main(ctx, list_pypes, aliases,
+         open_config, register_alias, unregister_alias):
+    """Pype main entry point."""
+    if not _process_alias_configuration(
+            ctx, list_pypes, open_config, register_alias, unregister_alias):
+        print_context_help(ctx, level=1)
+        return
+    if open_config:
+        open_with_default(PYPE_CORE.get_config_filepath())
+    elif list_pypes:
+        PYPE_CORE.list_pypes()
+        return
+    elif aliases:
+        PYPE_CORE.list_aliases()
+        return
+    elif unregister_alias:
+        PYPE_CORE.unregister_alias(unregister_alias)
+        return
+    elif ctx.invoked_subcommand is None:
+        print_error('No pype selected.')
+        print_context_help(ctx, level=1)
+
+
 def _bind_plugin(plugin_name, plugin):
 
     class PypeCLI(click.MultiCommand):
@@ -38,11 +77,11 @@ def _bind_plugin(plugin_name, plugin):
             try:
                 syspath.append(path.dirname(plugin.abspath))
                 mod = __import__(plugin.name + '.' + name,
-                                 None, None, ['cli'])
+                                 None, None, ['main'])
             except ImportError as e:
                 print(e)
                 exit(1)
-            return mod.cli
+            return mod.main
 
     @click.option('--create-pype', '-c',
                   help='Create new pype with provided name')
@@ -97,6 +136,8 @@ def _bind_plugin(plugin_name, plugin):
 
 def _process_alias_configuration(
         ctx, list_pypes, open_config, register_alias, unregister_alias):
+    print(register_alias)
+    print(unregister_alias)
     if register_alias and unregister_alias:
         print_error('Options -r and -u cannot be combined.')
         return False
@@ -112,57 +153,13 @@ def _process_alias_configuration(
     return True
 
 
-@click.group(
-    invoke_without_command=True,
-    context_settings=dict(help_option_names=['-h', '--help']),
-    help='PYPE - A command-line tool for command-line tools'
-)
-@click.option('--list-pypes', '-l', is_flag=True,
-              help='Print all available pypes')
-@click.option('--aliases', '-a', is_flag=True,
-              help='Print all available aliases')
-@click.option('--open-config', '-o', is_flag=True,
-              help='Open config file in default editor')
-@click.option('--register-alias', '-r', metavar='ALIAS',
-              help='Register alias for following pype')
-@click.option('--unregister-alias', '-u', metavar='ALIAS',
-              help='Register alias for following pype')
-@click.pass_context
-def main(ctx, list_pypes, aliases,
-         open_config, register_alias, unregister_alias):
-    """Pype main entry point."""
-    if not _process_alias_configuration(
-            ctx, list_pypes, open_config, register_alias, unregister_alias):
-        print_context_help(ctx, level=1)
-        return
-    if open_config:
-        open_with_default(PYPE_CORE.get_config_filepath())
-    elif list_pypes:
-        PYPE_CORE.list_pypes()
-        return
-    elif aliases:
-        PYPE_CORE.list_aliases()
-        return
-    elif unregister_alias:
-        PYPE_CORE.unregister_alias(unregister_alias)
-        return
-    elif ctx.invoked_subcommand is None:
-        print_error('No pype selected.')
-        print_context_help(ctx, level=1)
-
-
 init(autoreset=True)
 try:
     PYPE_CORE = PypeCore()
+    [
+        _bind_plugin(plugin.name, plugin)
+        for plugin in PYPE_CORE.get_plugins()
+    ]
 except PypeException as err:
     print(err)
     exit(1)
-
-
-# Go through all configured plugins and their pypes and setup command groups
-for plugin in PYPE_CORE.get_plugins():
-    _bind_plugin(plugin.name, plugin)
-
-
-if __name__ == '__main__':
-    main()

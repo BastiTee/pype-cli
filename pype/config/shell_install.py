@@ -8,7 +8,7 @@ from pype.util.cli import print_success
 
 
 @click.command('shell_install', help=__doc__)
-def cli():
+def main():
     """Script's main entry point."""
     core = PypeCore()
     core.install_to_shell()

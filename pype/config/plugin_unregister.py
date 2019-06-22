@@ -9,7 +9,7 @@ from pype.core import PypeCore
 
 @click.command('plugin_unregister', help=__doc__)
 @click.option('--name', '-n', help='Plugin module name', required=True)
-def cli(name):
+def main(name):
     """Script's main entry point."""
     # Try to load the module to verify the configuration
     core = PypeCore()

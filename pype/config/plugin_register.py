@@ -19,7 +19,7 @@ from pype.util.iotools import resolve_path
 @click.option('--path', '-p', help='Module directory', required=True)
 @click.option('--create', '-c', help='Create on the fly', is_flag=True)
 @click.option('--user-only', '-u', help='Just for current user', is_flag=True)
-def cli(name, path, create, user_only):
+def main(name, path, create, user_only):
     """Script's main entry point."""
     if create:
         _create_on_the_fly(name, path)

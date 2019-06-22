@@ -7,6 +7,6 @@ import click
 @click.command('hello_world_opt', help=__doc__)
 @click.option('--message', '-m', default='Hello World!',
               help='Alternative message')
-def cli(message):
+def main(message):
     """Script's main entry point."""
     print(message)

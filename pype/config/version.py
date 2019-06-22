@@ -9,7 +9,7 @@ from pype.core import get_pype_basepath
 
 
 @click.command('version', help=__doc__)
-def cli():
+def main():
     """Script's main entry point."""
     base_path = get_pype_basepath()
     version = pkg_resources.get_distribution('pype-cli').version

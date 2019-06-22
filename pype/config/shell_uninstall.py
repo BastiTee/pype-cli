@@ -8,7 +8,7 @@ from pype.util.cli import print_success
 
 
 @click.command('shell_uninstall', help=__doc__)
-def cli():
+def main():
     """Script's main entry point."""
     core = PypeCore()
     core.uninstall_from_shell()
