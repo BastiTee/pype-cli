@@ -3,8 +3,10 @@
 
 import click
 
+from pype.core import fname_to_name
 
-@click.command('hello_world_opt', help=__doc__)
+
+@click.command(name=fname_to_name(__file__), help=__doc__)
 @click.option('--message', '-m', default='Hello World!',
               help='Alternative message')
 def main(message):

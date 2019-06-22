@@ -9,12 +9,12 @@ from re import IGNORECASE, sub
 
 import click
 
-from pype.core import PypeCore, load_module
+from pype.core import PypeCore, fname_to_name, load_module
 from pype.exceptions import PypeException
 from pype.util.iotools import resolve_path
 
 
-@click.command('plugin_register', help=__doc__)
+@click.command(name=fname_to_name(__file__), help=__doc__)
 @click.option('--name', '-n', help='Plugin module name', required=True)
 @click.option('--path', '-p', help='Module directory', required=True)
 @click.option('--create', '-c', help='Create on the fly', is_flag=True)

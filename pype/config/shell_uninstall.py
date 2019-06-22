@@ -3,11 +3,11 @@
 
 import click
 
-from pype.core import PypeCore
+from pype.core import PypeCore, fname_to_name
 from pype.util.cli import print_success
 
 
-@click.command('shell_uninstall', help=__doc__)
+@click.command(name=fname_to_name(__file__), help=__doc__)
 def main():
     """Script's main entry point."""
     core = PypeCore()

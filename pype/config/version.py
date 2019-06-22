@@ -5,10 +5,10 @@ import click
 
 import pkg_resources
 
-from pype.core import get_pype_basepath
+from pype.core import fname_to_name, get_pype_basepath
 
 
-@click.command('version', help=__doc__)
+@click.command(name=fname_to_name(__file__), help=__doc__)
 def main():
     """Script's main entry point."""
     base_path = get_pype_basepath()

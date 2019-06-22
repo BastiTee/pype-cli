@@ -3,8 +3,6 @@
 ## Todos
 
 - Make sure that commands are with dash instead of underscore automatically
-- Repair alias function
-- Fix templates
 
 ----
 

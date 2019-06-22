@@ -4,10 +4,10 @@
 
 import click
 
-from pype.core import PypeCore
+from pype.core import PypeCore, fname_to_name
 
 
-@click.command('plugin_unregister', help=__doc__)
+@click.command(name=fname_to_name(__file__), help=__doc__)
 @click.option('--name', '-n', help='Plugin module name', required=True)
 def main(name):
     """Script's main entry point."""

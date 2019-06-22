@@ -2,7 +2,7 @@
 """Pype core initializer."""
 
 from importlib import import_module
-from os import environ, remove
+from os import environ, remove, sep
 from os.path import abspath, dirname, isfile, join
 from re import sub
 from shutil import copyfile
@@ -298,6 +298,11 @@ class PypeCore():
         """Return a key from the core configuration of the config file."""
         return get_from_json_or_default(
             self.get_config_json(), 'core_config.' + key, default)
+
+
+def fname_to_name(fname):
+    """Use the filename as command name."""
+    return fname[:-3].split(sep)[-1]
 
 
 def load_module(name, path):
