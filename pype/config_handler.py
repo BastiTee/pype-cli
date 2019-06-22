@@ -78,7 +78,7 @@ class PypeConfigHandler():
         except ValidationError as err:
             print(Fore.RED + str(err) + Style.RESET_ALL + '\n', file=stderr)
             raise PypeException(
-                'Configuration file is not valid. See above for details ' +
-                'and refer to the schema file at {}'.format(
+                'Configuration file is not valid. See above for details '
+                + 'and refer to the schema file at {}'.format(
                     self.CONFIG_SCHEMA_PATH))
         return True

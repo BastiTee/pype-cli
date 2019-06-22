@@ -3,14 +3,12 @@
 
 import click
 
+from pype.core import fname_to_name
 
-@click.command(help=__doc__)
+
+@click.command(name=fname_to_name(__file__), help=__doc__)
 @click.option('--message', '-m', default='Hello World!',
-              help='Alternative message')
+              metavar='MESSAGE', help='Alternative message')
 def main(message):
     """Script's main entry point."""
     print(message)
-
-
-if __name__ == '__main__':
-    main()

@@ -14,12 +14,13 @@ RUN mkdir /pypes
 COPY example_pypes/basics /pypes/basics
 
 # Set bash as default shell and vim as default editor
+ENV LANG=C.UTF-8
 ENV SHELL=/bin/bash
 ENV VISUAL=vim
 ENV EDITOR=vim
 
 # Configure pype
 RUN pype pype.config plugin-register -n basics -p /pypes
-RUN pype pype.config install-shell -t ~/.bashrc
+RUN pype pype.config shell-install
 
 ENTRYPOINT [ "bash" ]
