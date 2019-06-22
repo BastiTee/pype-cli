@@ -14,7 +14,7 @@ from pype.config_handler import PypeConfigHandler
 from pype.constants import ENV_CONFIG_FILE
 from pype.exceptions import PypeException
 from pype.type_plugin import Plugin
-from pype.util.cli import print_success, print_warning
+from pype.util.cli import print_error, print_success, print_warning
 from pype.util.iotools import resolve_path
 from pype.util.misc import get_from_json_or_default
 
@@ -100,36 +100,36 @@ class PypeCore():
     def create_pype_or_exit(self, pype_name, plugin, minimal):
         """Create a new pype inside the given plugin."""
         if plugin.internal:
-            print('Creating internal pypes is not supported.')
+            print_error('Creating internal pypes is not supported.')
             exit(1)
         # Normalize filename to be PEP8-conform
         target_name = sub('-', '_', sub(r'\.py$', '', pype_name))
         # Create absolute path
         target_file = join(plugin.abspath, target_name + '.py')
         if isfile(target_file):
-            print('Pype already present')
+            print_warning('Pype already present')
             exit(1)
         # Depending on user input create a documented or simple template
         template_name = ('template_minimal.py' if minimal
                          else 'template.py')
         source_name = join(dirname(__file__), template_name)
         copyfile(source_name, target_file)
-        print('Created new pype', target_file)
+        print_success('Created new pype ' + target_file)
         return target_file
 
     def delete_pype(self, pype_name, plugin):
         """Delete pype from the given plugin."""
         if plugin.internal:
-            print('Deleting internal pypes is not supported.')
+            print_error('Deleting internal pypes is not supported.')
             return
         source_name = sub('-', '_', sub(r'\.py$', '', pype_name))
         source_name = join(plugin.abspath, source_name + '.py')
         try:
             remove(source_name)
         except FileNotFoundError:
-            print('No such pype')
+            print_error('No such pype')
             return
-        print('Deleted pype', source_name)
+        print_success('Deleted pype', source_name)
 
     def get_abspath_to_pype(self, plugin, name):
         """Get absoulte path to pype Python script."""

@@ -11,12 +11,15 @@ import click
 
 from pype.core import PypeCore, fname_to_name, load_module
 from pype.exceptions import PypeException
+from pype.util.cli import print_error, print_success
 from pype.util.iotools import resolve_path
 
 
 @click.command(name=fname_to_name(__file__), help=__doc__)
-@click.option('--name', '-n', help='Plugin module name', required=True)
-@click.option('--path', '-p', help='Module directory', required=True)
+@click.option('--name', '-n', help='Plugin module name',
+              metavar='NAME', required=True)
+@click.option('--path', '-p', help='Module directory',
+              metavar='PATH', required=True)
 @click.option('--create', '-c', help='Create on the fly', is_flag=True)
 @click.option('--user-only', '-u', help='Just for current user', is_flag=True)
 def main(name, path, create, user_only):
@@ -27,8 +30,8 @@ def main(name, path, create, user_only):
     try:
         module = load_module(name, path)
     except PypeException:
-        print('Could not find a python module "{}" at {}'
-              .format(name, path))
+        print_error('Could not find a python module "{}" at {}'
+                    .format(name, path))
         exit(1)
 
     # Append plugin to global configuration
@@ -45,7 +48,7 @@ def main(name, path, create, user_only):
     })
     core.set_config_json(config_json)
 
-    print('Plugin "{}" successfully registered.'.format(name))
+    print_success('Plugin "{}" successfully registered.'.format(name))
 
 
 def _replace_homefolder_with_tilde(plugin_path):
@@ -63,15 +66,15 @@ def _replace_parentfolder_if_relative_to_config(plugin_path, config_path):
 def _create_on_the_fly(name, path):
     abspath = resolve_path(path)
     if not isdir(abspath):
-        print('Path {} does not point to a directoy.'.format(abspath))
+        print_error('Path {} does not point to a directoy.'.format(abspath))
         exit(1)
     plugin_dir = join(abspath, name)
     if isdir(plugin_dir):
-        print('Path {} already exists.'.format(abspath))
+        print_error('Path {} already exists.'.format(abspath))
         exit(1)
     plugin_init_file = join(plugin_dir, '__init__.py')
     mkdir(plugin_dir)
     with open(plugin_init_file, 'w+') as init:
         init.write('"""Not documented yet."""\n')
-    print('Plugin "{}" successfully created at {}'.format(
+    print_success('Plugin "{}" successfully created at {}'.format(
         name, abspath))

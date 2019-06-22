@@ -5,10 +5,12 @@
 import click
 
 from pype.core import PypeCore, fname_to_name
+from pype.util.cli import print_success, print_warning
 
 
 @click.command(name=fname_to_name(__file__), help=__doc__)
-@click.option('--name', '-n', help='Plugin module name', required=True)
+@click.option('--name', '-n', help='Plugin module name',
+              metavar='NAME', required=True)
 def main(name):
     """Script's main entry point."""
     # Try to load the module to verify the configuration
@@ -19,8 +21,8 @@ def main(name):
         if plugin['name'] != name
     ]
     if config_json['plugins'] == new_plugins:
-        print('Plugin "{}" not found. Nothing to do.'.format(name))
+        print_warning('Plugin "{}" not found. Nothing to do.'.format(name))
         return
     config_json['plugins'] = new_plugins
     core.set_config_json(config_json)
-    print('Plugin "{}" successfully unregistered.'.format(name))
+    print_success('Plugin "{}" successfully unregistered.'.format(name))

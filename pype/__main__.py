@@ -79,8 +79,8 @@ def _bind_plugin(plugin_name, plugin):
                 syspath.append(path.dirname(plugin.abspath))
                 mod = __import__(plugin.name + '.' + name,
                                  None, None, ['main'])
-            except ImportError as e:
-                print(e)
+            except ImportError as import_error:
+                print_error(str(import_error))
                 exit(1)
             return mod.main
 
@@ -162,6 +162,6 @@ try:
         _bind_plugin(plugin.name, plugin)
         for plugin in PYPE_CORE.get_plugins()
     ]
-except PypeException as err:
-    print(err)
+except PypeException as pype_exception:
+    print_error(str(pype_exception))
     exit(1)
