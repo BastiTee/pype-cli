@@ -38,7 +38,7 @@ clean() {
 
 test() {
     # Run all tests in default virtualenv
-    pipenv run py.test
+    pipenv run py.test $@
 }
 
 coverage() {
