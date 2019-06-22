@@ -155,7 +155,7 @@ def _process_alias_configuration(
     return True
 
 
-init(autoreset=True)
+init(autoreset=True)  # Initialize colorama
 try:
     PYPE_CORE = PypeCore()
     [
