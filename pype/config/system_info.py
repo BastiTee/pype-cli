@@ -8,11 +8,12 @@ from os import environ
 import click
 
 from pype.constants import ENV_CONFIG_FILE
+from pype.core import fname_to_name
 
 from tabulate import tabulate
 
 
-@click.command(help=__doc__)
+@click.command(name=fname_to_name(__file__), help=__doc__)
 def main():
     """Script's main entry point."""
     unset = 'Not set'
@@ -29,7 +30,3 @@ def main():
     infos.append(['SHELL', environ.get('SHELL', unset)])
     infos.append(['CONFIG FILE', environ.get(ENV_CONFIG_FILE, unset)])
     print(tabulate(infos))
-
-
-if __name__ == '__main__':
-    main()

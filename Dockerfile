@@ -14,6 +14,7 @@ RUN mkdir /pypes
 COPY example_pypes/basics /pypes/basics
 
 # Set bash as default shell and vim as default editor
+ENV LANG=C.UTF-8
 ENV SHELL=/bin/bash
 ENV VISUAL=vim
 ENV EDITOR=vim

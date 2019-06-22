@@ -5,6 +5,8 @@ from os import environ, listdir, name, path
 from re import IGNORECASE, match
 from subprocess import call, run
 
+from pype.util.cli import print_error
+
 
 def get_environ_without_pythonpath():
     """Get os.environ but with variable PYTHONPATH deleted."""
@@ -47,7 +49,8 @@ def open_with_default(filepath):
         if not editor:
             editor = environ.get('VISUAL', None)
         if not editor:
-            print('Open with default editor is not supported on this OS.')
+            print_error(
+                'Open with default editor is not supported on this OS.')
             exit(1)
         run_interactive([editor, filepath])
 

@@ -2,11 +2,11 @@
 """Pype core initializer."""
 
 from importlib import import_module
-from os import environ, remove
+from os import environ, remove, sep
 from os.path import abspath, dirname, isfile, join
 from re import sub
 from shutil import copyfile
-from sys import path as syspath
+from sys import argv, path as syspath
 
 from colorama import Fore, Style
 
@@ -14,6 +14,7 @@ from pype.config_handler import PypeConfigHandler
 from pype.constants import ENV_CONFIG_FILE
 from pype.exceptions import PypeException
 from pype.type_plugin import Plugin
+from pype.util.cli import print_error, print_success, print_warning
 from pype.util.iotools import resolve_path
 from pype.util.misc import get_from_json_or_default
 
@@ -99,36 +100,36 @@ class PypeCore():
     def create_pype_or_exit(self, pype_name, plugin, minimal):
         """Create a new pype inside the given plugin."""
         if plugin.internal:
-            print('Creating internal pypes is not supported.')
+            print_error('Creating internal pypes is not supported.')
             exit(1)
         # Normalize filename to be PEP8-conform
         target_name = sub('-', '_', sub(r'\.py$', '', pype_name))
         # Create absolute path
         target_file = join(plugin.abspath, target_name + '.py')
         if isfile(target_file):
-            print('Pype already present')
+            print_warning('Pype already present')
             exit(1)
         # Depending on user input create a documented or simple template
         template_name = ('template_minimal.py' if minimal
                          else 'template.py')
         source_name = join(dirname(__file__), template_name)
         copyfile(source_name, target_file)
-        print('Created new pype', target_file)
+        print_success('Created new pype ' + target_file)
         return target_file
 
     def delete_pype(self, pype_name, plugin):
         """Delete pype from the given plugin."""
         if plugin.internal:
-            print('Deleting internal pypes is not supported.')
+            print_error('Deleting internal pypes is not supported.')
             return
         source_name = sub('-', '_', sub(r'\.py$', '', pype_name))
         source_name = join(plugin.abspath, source_name + '.py')
         try:
             remove(source_name)
         except FileNotFoundError:
-            print('No such pype')
+            print_error('No such pype')
             return
-        print('Deleted pype', source_name)
+        print_success('Deleted pype', source_name)
 
     def get_abspath_to_pype(self, plugin, name):
         """Get absoulte path to pype Python script."""
@@ -144,9 +145,10 @@ class PypeCore():
         resolve_path('~/.zshrc')
     ]
 
-    def __write_init_file(self, init_file, shell_command, aliases):
+    def __write_init_file(self, init_file, shell_command, aliases,
+                          silent=False):
         target_file = resolve_path('~/' + self.SHELL_INIT_PREFIX + init_file)
-        print('Writing init-file', target_file)
+        self.__print_if('Writing init-file ' + target_file, silent)
         with open(resolve_path(target_file), 'w+') as ifile:
             # Write pype sourcing command
             ifile.write('if [ ! -z "$( command -v '
@@ -166,30 +168,32 @@ class PypeCore():
             # Close if
             ifile.write('fi\n')
 
-    def __remove_init_file(self, init_file):
+    def __remove_init_file(self, init_file, silent):
         target_file = resolve_path('~/' + self.SHELL_INIT_PREFIX + init_file)
-        print('Removing init-file', target_file)
+        self.__print_if('Removing init-file ' + target_file, silent)
         try:
             remove(target_file)
         except FileNotFoundError:
             pass  # Silent ignore to make function idempotent
 
-    def install_to_shell(self):
+    def install_to_shell(self, silent=False):
         """Install shell features."""
         # Clean up first
-        self.uninstall_from_shell()
+        self.uninstall_from_shell(silent)
+        print_success('Successfully cleaned up existing configurations')
         # Write new init-files
         config_json = self.__config.get_json()
         shell_command = self.get_core_config('shell_command', 'pype')
         aliases = get_from_json_or_default(config_json, 'aliases', [])
-        print('Using shell command "{}"'.format(shell_command))
-        self.__write_init_file('bsh', shell_command, aliases)
-        self.__write_init_file('zsh', shell_command, aliases)
-        print('Add link to init-file in rc-files if present')
+        self.__print_if('Using shell command "{}"'.format(shell_command),
+                        silent)
+        self.__write_init_file('bsh', shell_command, aliases, silent)
+        self.__write_init_file('zsh', shell_command, aliases, silent)
+        self.__print_if('Add link to init-file in rc-files if present', silent)
         for file in self.SUPPORTED_RC_FILES:
             if not isfile(file):
                 continue
-            print(' - "{}"'.format(file))
+            self.__print_if(' - "{}"'.format(file), silent)
             # Append link to init-file and set config file
             file_handle = open(file, 'a+')
             init_file = '~/' + self.SHELL_INIT_PREFIX
@@ -202,13 +206,15 @@ class PypeCore():
             ))
             file_handle.write('. ' + init_file + '\n')
             file_handle.close()
+        print_success('Successfully written init-files')
 
-    def uninstall_from_shell(self):
+    def uninstall_from_shell(self, silent=False):
         """Uninstall shell features."""
         # Remove init files
-        self.__remove_init_file('bsh')
-        self.__remove_init_file('zsh')
-        print('Remove link to init-file from rc-files if present')
+        self.__remove_init_file('bsh', silent)
+        self.__remove_init_file('zsh', silent)
+        self.__print_if('Remove link to init-file from rc-files if present',
+                        silent)
         for file in self.SUPPORTED_RC_FILES:
             if not isfile(file):
                 continue
@@ -220,33 +226,43 @@ class PypeCore():
                     lambda x: self.SHELL_INIT_PREFIX in x, content))):
                 continue
             # Delete initfile-links from rc file
-            print(' - "{}"'.format(file))
+            self.__print_if(' - "{}"'.format(file), silent)
             file_handle = open(file, 'w')
             [file_handle.write(cn)
              for cn in content if self.SHELL_INIT_PREFIX not in cn]
             file_handle.close()
 
-    def register_alias(self, ctx, extra_args, alias):
+    def register_alias(self, ctx):
         """Register a new alias."""
+        alias = ctx.parent.register_alias
+        # Combine the current context's command path with remaining CL-args
+        cmd_path = ctx.command_path.split(' ')
+        cmd_path_last = cmd_path[-1]
+        found_entry = False
+        for arg in argv:
+            if found_entry:
+                cmd_path.append(arg)
+            if arg.strip() == cmd_path_last:
+                found_entry = True
+        cmd_line = ' '.join(cmd_path)
         if not alias:
             return
-        cmd_line = ctx.command_path + ' ' + ' '.join(extra_args)
         alias_cmd = '{}="{}"'.format(alias, cmd_line.strip())
         # store to internal config
         config_json = self.__config.get_json()
         if not config_json.get('aliases', None):
             config_json['aliases'] = []
         if self._alias_present(config_json, alias):
-            print('Alias already registered.')
+            print_warning('Alias already registered.')
             return
         config_json.get('aliases').append({
             'alias': alias,
             'command': cmd_line
         })
+        print_success('Installed alias: {}'.format(alias_cmd))
         self.__config.set_json(config_json)
         # update install script
-        self.install_to_shell()
-        print('Installed alias "{}"'.format(alias_cmd))
+        self.install_to_shell(silent=True)
 
     def unregister_alias(self, alias):
         """Unregister the provided alias."""
@@ -255,10 +271,10 @@ class PypeCore():
         # store to internal config
         config_json = self.__config.get_json()
         if not config_json.get('aliases', None):
-            print('No aliases registered.')
+            print_warning('No aliases registered.')
             return
         if not self._alias_present(config_json, alias):
-            print('Alias not registered.')
+            print_warning('Alias not registered.')
             return
         for obj in enumerate(config_json['aliases']):
             if obj[1]['alias'] != alias:
@@ -266,18 +282,27 @@ class PypeCore():
             del config_json['aliases'][obj[0]]
         self.__config.set_json(config_json)
         # update install script
-        self.install_to_shell()
-        print('Uninstalled alias "{}"'.format(alias))
+        print_success('Uninstalled alias "{}"'.format(alias))
+        self.install_to_shell(silent=True)
 
     def _alias_present(self, config_json, alias):
         return any(
             [existing_alias for existing_alias in config_json.get('aliases')
              if existing_alias['alias'] == alias])
 
+    def __print_if(self, message, silent):
+        if not silent:
+            print(message)
+
     def get_core_config(self, key, default=None):
         """Return a key from the core configuration of the config file."""
         return get_from_json_or_default(
             self.get_config_json(), 'core_config.' + key, default)
+
+
+def fname_to_name(fname):
+    """Use the filename as command name."""
+    return sub('_', '-', fname[:-3].split(sep)[-1])
 
 
 def load_module(name, path):
