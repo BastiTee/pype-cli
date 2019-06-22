@@ -1,12 +1,5 @@
 # pype
 
-## Todos
-
-- Make sure that commands are with dash instead of underscore automatically
-
-----
-
-
 > A command-line tool for command-line tools
 <img align="right" src="res/icon.png" alt="alt text" width="150" height="150">
 

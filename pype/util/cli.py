@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
 """CLI-functions for better user experience and consistency."""
 
-import sys
-
-from colorama import Fore, Style
+import click
 
 
 def ask_yes_or_no(question, default='yes'):
@@ -38,19 +36,19 @@ def ask_for_text(question):
 
 def print_success(message):
     """Print a message with a green success highlight."""
-    _print_highlight(message, '✔', Fore.GREEN)
+    _print_highlight(message, '✔', 'green')
 
 
 def print_warning(message):
     """Print a message with a yellow warning highlight."""
-    _print_highlight(message, '⚠', Fore.YELLOW)
+    _print_highlight(message, '⚠', 'yellow')
 
 
 def print_error(message):
     """Print a message with a red error highlight."""
-    _print_highlight(message, '✘', Fore.RED)
+    _print_highlight(message, '✘', 'red')
 
 
 def _print_highlight(message, prefix, color):
-    sys.stdout.write(Style.BRIGHT + color + prefix + ' '
-                     + message.strip() + '\n')
+    click.echo(click.style(prefix + ' ' + message.strip(),
+                           fg=color, bold=True))

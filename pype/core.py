@@ -302,7 +302,7 @@ class PypeCore():
 
 def fname_to_name(fname):
     """Use the filename as command name."""
-    return fname[:-3].split(sep)[-1]
+    return sub('_', '-', fname[:-3].split(sep)[-1])
 
 
 def load_module(name, path):

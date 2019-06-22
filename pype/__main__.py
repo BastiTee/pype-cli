@@ -10,7 +10,7 @@ import click
 
 from colorama import init
 
-from pype.core import PypeCore, print_context_help
+from pype.core import PypeCore, fname_to_name, print_context_help
 from pype.exceptions import PypeException
 from pype.util.cli import print_error
 from pype.util.iotools import open_with_default
@@ -69,11 +69,12 @@ def _bind_plugin(plugin_name, plugin):
             rv = []
             for filename in listdir(plugin.abspath):
                 if filename.endswith('.py') and '__' not in filename:
-                    rv.append(filename[:-3])
+                    rv.append(fname_to_name(filename))
             rv.sort()
             return rv
 
         def get_command(self, ctx, name):
+            name = sub('-', '_', name)
             try:
                 syspath.append(path.dirname(plugin.abspath))
                 mod = __import__(plugin.name + '.' + name,
