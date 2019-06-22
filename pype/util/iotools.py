@@ -8,33 +8,24 @@ from subprocess import call, run
 from pype.util.cli import print_error
 
 
-def get_environ_without_pythonpath():
-    """Get os.environ but with variable PYTHONPATH deleted."""
-    environ_copy = environ.copy()
-    del environ_copy['PYTHONPATH']
-    return environ_copy
-
-
-def run_interactive(cmdline, reset_pythonpath=False, *args, **kwargs):
+def run_interactive(cmdline, *args, **kwargs):
     """Call to an interactive shell."""
     if not isinstance(cmdline, str):
         cmdline = ' '.join(cmdline)
-    env = get_environ_without_pythonpath() if reset_pythonpath else environ
     try:
-        return call(cmdline, shell=True, env=env, *args, **kwargs)
+        return call(cmdline, shell=True, *args, **kwargs)
     except KeyboardInterrupt:
         pass
 
 
-def run_and_get_output(cmdline, reset_pythonpath=False, *args, **kwargs):
+def run_and_get_output(cmdline, *args, **kwargs):
     """Run a cmdline non-interactive and returns both stdout and stderr."""
-    env = get_environ_without_pythonpath() if reset_pythonpath else environ
     if isinstance(cmdline, str):
         # For convenvience we split str-cmdlines into a list which is
         # required for run(). Note that this might not work due to
         # quoted arguments etc.
         cmdline = cmdline.split(' ')
-    proc = run(cmdline, capture_output=True, env=env, *args, **kwargs)
+    proc = run(cmdline, capture_output=True, *args, **kwargs)
     return proc.stdout.decode('utf-8'), proc.stderr.decode('utf-8')
 
 
