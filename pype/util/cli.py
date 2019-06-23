@@ -6,13 +6,13 @@ import click
 from pype.util import misc
 
 
-def _append_short_names_to_commands(commands):
-    stripped_keys = misc.remove_common_prefix_from_string_list(
+def _create_short_names_for_commands(commands):
+    short_names = misc.remove_common_prefix_from_string_list(
         misc.remove_common_suffix_from_string_list(
             [command['name'] for command in commands]
         ))
     for i in range(0, len(commands)):
-        commands[i]['short_name'] = stripped_keys[i]
+        commands[i]['short_name'] = short_names[i]
 
 
 def _get_command(name, commands, strip):
@@ -23,19 +23,24 @@ def _get_command(name, commands, strip):
 
 
 def generate_dynamic_multicommand(
-        commands, callback_function, strip=False):
+        commands, callback_function, create_short_names=False):
     """Use provided dict to create a dynamic click.MultiCommand."""
-    if strip:
-        _append_short_names_to_commands(commands)
+    has_short_names = False
+    if create_short_names:
+        _create_short_names_for_commands(commands)
+        has_short_names = True
+    if len(commands) == len(
+            [c for c in commands if c.get('short_name', None)]):
+        has_short_names = True
 
     class DynamicCLI(click.MultiCommand):
 
         def list_commands(self, ctx):
-            selector = 'short_name' if strip else 'name'
+            selector = 'short_name' if has_short_names else 'name'
             return [command[selector] for command in commands]
 
         def get_command(self, ctx, name):
-            command = _get_command(name, commands, strip)
+            command = _get_command(name, commands, has_short_names)
             @click.command(name, help=command.get('help', None))
             @click.pass_context
             def invoke_callback(ctx):
