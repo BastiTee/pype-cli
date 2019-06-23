@@ -21,6 +21,6 @@ ENV EDITOR=vim
 
 # Configure pype
 RUN pype pype.config plugin-register -n basics -p /pypes
-RUN pype pype.config shell-install -o
+RUN pype pype.config shell-install
 
 ENTRYPOINT [ "bash" ]

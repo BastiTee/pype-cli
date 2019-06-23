@@ -179,7 +179,7 @@ class PypeCore():
         except FileNotFoundError:
             pass  # Silent ignore to make function idempotent
 
-    def install_to_shell(self, silent=False, one_tab=False):
+    def install_to_shell(self, silent=False):
         """Install shell features."""
         # Clean up first
         self.uninstall_from_shell(silent)
@@ -187,6 +187,7 @@ class PypeCore():
         # Write new init-files
         config_json = self.__config.get_json()
         shell_command = self.get_core_config('shell_command', 'pype')
+        one_tab = self.get_core_config('one_tab_completion', False)
         aliases = get_from_json_or_default(config_json, 'aliases', [])
         self.__print_if('Using shell command "{}"'.format(shell_command),
                         silent)
