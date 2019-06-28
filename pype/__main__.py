@@ -81,6 +81,7 @@ def _bind_plugin(plugin_name, plugin):
                                  None, None, ['main'])
             except ImportError as import_error:
                 print_error(str(import_error))
+                raise import_error
                 exit(1)
             return mod.main
 
