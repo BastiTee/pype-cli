@@ -154,7 +154,7 @@ class PypeCore():
             ifile.write('if [ ! -z "$( command -v '
                         + shell_command
                         + ' )" ]; then\n')
-            if one_tab:
+            if one_tab and init_file != 'zsh':
                 ifile.write('\tbind \'set show-all-if-ambiguous on\'\n')
                 ifile.write('\tbind \'set completion-ignore-case on\'\n')
             source_cmd = 'eval "$(_{}_COMPLETE=source{} {})"'.format(
