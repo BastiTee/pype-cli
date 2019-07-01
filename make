@@ -60,9 +60,10 @@ install_deps_globally() {
 uninstall() {
     # Uninstall pype from global system
     echo "-- Uninstall shell support"
-    pype pype.config shell-uninstall 2>/dev/null
+    pype pype.config shell-uninstall 2>/dev/null ||true
     echo "-- Uninstall python librarires"
-    python3 -m pip uninstall -y pype-cli
+    pipenv lock -r > requirements.txt
+    python3 -m pip uninstall -y -r requirements.txt
 }
 
 install() {
