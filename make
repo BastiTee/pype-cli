@@ -21,7 +21,6 @@ export PYTHONPATH=${PYTHONPATH:-.}
 # Setup modules used for linting
 export LINTED_MODULES=${LINTED_MODULES:-pype}
 # Make sure we are running with an explicit encoding
-export PYPE_ENCODING="C.UTF-8"
 export LC_ALL=${PYPE_ENCODING:-${LC_ALL}}
 export LANG=${PYPE_ENCODING:--${LANG}}
 # Default pype configuration file (always use the one relative to make file)
