@@ -3,7 +3,6 @@
 
 import click
 
-from pype import core
 from pype.util import misc
 
 
@@ -44,7 +43,6 @@ def generate_dynamic_multicommand(
             command = _get_command(name, commands, has_short_names)
             if not command:
                 print_error(f'Command \'{name}\' not found.')
-                core.print_context_help(ctx)
                 exit(1)
 
             @click.command(name, help=command.get('help', None))

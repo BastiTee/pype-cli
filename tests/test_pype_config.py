@@ -43,8 +43,6 @@ class TestPypeConfigHandler():
         }
     }
 
-    # PypeConfigHandler.resolve_config_file()
-
     def test_resolve_config_file_withenv(self):
         """Config file found via environment variable."""
         tmpf = self._create_temporary_config_file(self.VALID_CONFIG)
