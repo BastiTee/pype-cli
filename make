@@ -2,9 +2,12 @@
 set -e  # Always exit on non-zero return codes
 cd "$( cd "$( dirname "$0" )"; pwd )"
 
+# Superuser access for global installation
+SUDO="sudo -H"
+
 # Check python and pipenv installation
 [ -z "$( command -v python3 )" ] && { echo "python3 not available."; exit 1; }
-[ -z "$( command -v pipenv )" ] && python3 -m pip install pipenv --upgrade
+[ -z "$( command -v pipenv )" ] && $SUDO python3 -m pip install pipenv --upgrade
 
 # Allow to customize this script with a make-extension file
 [ -f "make-extension" ] && . ./make-extension
@@ -17,9 +20,10 @@ export PIPENV_VENV_IN_PROJECT=${PIPENV_VENV_IN_PROJECT:-1}
 export PYTHONPATH=${PYTHONPATH:-.}
 # Setup modules used for linting
 export LINTED_MODULES=${LINTED_MODULES:-pype}
-# Make sure we are running UTF-8 encoding
-export LC_ALL=${LC_ENCODING:-C.UTF-8}
-export LANG=${LC_ENCODING:-C.UTF-8}
+# Make sure we are running with an explicit encoding
+export PYPE_ENCODING="C.UTF-8"
+export LC_ALL=${PYPE_ENCODING:-${LC_ALL}}
+export LANG=${PYPE_ENCODING:--${LANG}}
 # Default pype configuration file (always use the one relative to make file)
 export PYPE_CONFIGURATION_FILE="$( pwd )/config.json"
 
@@ -54,7 +58,7 @@ lint() {
 install_deps_globally() {
     # Install to global python installation all required dependencies
     pipenv lock -r > requirements.txt
-    python3 -m pip install -r requirements.txt
+    $SUDO python3 -m pip install -r requirements.txt
 }
 
 uninstall() {
@@ -63,7 +67,7 @@ uninstall() {
     pype pype.config shell-uninstall 2>/dev/null ||true
     echo "-- Uninstall python librarires"
     pipenv lock -r > requirements.txt
-    python3 -m pip uninstall -y -r requirements.txt
+    $SUDO python3 -m pip uninstall -y -r requirements.txt
 }
 
 install() {
@@ -72,10 +76,10 @@ install() {
     install_deps_globally
     if [ -d pype ]; then
         # If inside pype project
-        python3 -m pip install --editable . 2>/dev/null
+        $SUDO python3 -m pip install --force --editable .
     else
         # If pype is embedded as library
-        python3 -m pip install --editable ./lib/pype 2>/dev/null
+        python3 -m pip install --editable ./lib/pype
     fi
     pype pype.config shell-install
 }
@@ -90,11 +94,11 @@ internal_print_commands() {
     tr "(" " " | awk '{print $1}' | sort
     echo
 }
-if [ "$1" == "-h" ]||[ "$1" == "--help" ]; then
+if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
     internal_print_commands "Available:"
     exit 0
 fi
-if [ $# == 0 ]; then
+if [ $# = 0 ]; then
     internal_print_commands "No command selected. Available:"
     exit 1
 fi
