@@ -42,7 +42,7 @@ def generate_dynamic_multicommand(
         def get_command(self, ctx, name):
             command = _get_command(name, commands, has_short_names)
             if not command:
-                print_error(f'Command \'{name}\' not found.')
+                print_error('Command \'{}\' not found.'.format(name))
                 exit(1)
 
             @click.command(name, help=command.get('help', None))
