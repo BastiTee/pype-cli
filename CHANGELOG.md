@@ -1,5 +1,13 @@
 # Changelog
 
+## Version 0.3.1
+
+- Add dynamic subcommand routine
+- Allow one-tab completion for bash-environments
+- Hide stacktrace on unknown plugin-pype
+- Fix linux installation
+- Refine dependency installation
+
 ## Version 0.3.0
 
 - Rewrite `__main__` procedure now using click multicommands instead of spawning a new subshell, which allows much better dynamic chaining of pypes
