@@ -146,7 +146,7 @@ class PypeCore():
     ]
 
     def __write_init_file(self, init_file, shell_command, aliases,
-                          silent=False):
+                          silent=False, one_tab=False):
         target_file = resolve_path('~/' + self.SHELL_INIT_PREFIX + init_file)
         self.__print_if('Writing init-file ' + target_file, silent)
         with open(resolve_path(target_file), 'w+') as ifile:
@@ -154,6 +154,9 @@ class PypeCore():
             ifile.write('if [ ! -z "$( command -v '
                         + shell_command
                         + ' )" ]; then\n')
+            if one_tab and init_file != 'zsh':
+                ifile.write('\tbind \'set show-all-if-ambiguous on\'\n')
+                ifile.write('\tbind \'set completion-ignore-case on\'\n')
             source_cmd = 'eval "$(_{}_COMPLETE=source{} {})"'.format(
                 shell_command.upper(),
                 '_zsh' if init_file == 'zsh' else '',
@@ -184,11 +187,12 @@ class PypeCore():
         # Write new init-files
         config_json = self.__config.get_json()
         shell_command = self.get_core_config('shell_command', 'pype')
+        one_tab = self.get_core_config('one_tab_completion', False)
         aliases = get_from_json_or_default(config_json, 'aliases', [])
         self.__print_if('Using shell command "{}"'.format(shell_command),
                         silent)
-        self.__write_init_file('bsh', shell_command, aliases, silent)
-        self.__write_init_file('zsh', shell_command, aliases, silent)
+        self.__write_init_file('bsh', shell_command, aliases, silent, one_tab)
+        self.__write_init_file('zsh', shell_command, aliases, silent, one_tab)
         self.__print_if('Add link to init-file in rc-files if present', silent)
         for file in self.SUPPORTED_RC_FILES:
             if not isfile(file):

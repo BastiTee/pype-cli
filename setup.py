@@ -25,7 +25,7 @@ except Exception:
 setup(
     # Basic project information
     name='pype-cli',
-    version='0.3.0',
+    version='0.3.1',
     # Authorship and online reference
     author='Basti Tee',
     author_email='basti.tee@posteo.de',

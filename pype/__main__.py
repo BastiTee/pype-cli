@@ -88,10 +88,10 @@ def _bind_plugin(plugin_name, plugin):
                   help='Create new pype with provided name')
     @click.option('--minimal', '-m', is_flag=True,
                   help='Use a minimal template with less boilerplate '
-                  + '(only used along with "-c" option')
+                  + '(only used along with "-c" option)')
     @click.option('--edit', '-e', is_flag=True,
                   help='Open new pype immediatly for editing '
-                  + '(only used along with "-c" option')
+                  + '(only used along with "-c" option)')
     @click.option('--delete-pype', '-d',
                   help='Deletes pype for provided name')
     @click.option('--open-pype', '-o',

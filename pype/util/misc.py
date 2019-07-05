@@ -34,3 +34,25 @@ def truncate_with_ellipsis(string, length):
     """Truncate a string at the given length or return it."""
     string = string if string else ''
     return (string[:length] + '..') if len(string) > length else string
+
+
+def remove_common_prefix_from_string_list(string_list):
+    """If a list of strings share the same prefix they will be removed."""
+    if any([len(string) < 2 or not string for string in string_list]):
+        return string_list
+    uniq_first_char = len(set([string[:1] for string in string_list]))
+    if uniq_first_char == 1:
+        string_list = remove_common_prefix_from_string_list(
+            [string[1:] for string in string_list])
+    return string_list
+
+
+def remove_common_suffix_from_string_list(string_list):
+    """If a list of strings share the same suffix they will be removed."""
+    if any([len(string) < 2 or not string for string in string_list]):
+        return string_list
+    uniq_last_char = len(set([string[-1:] for string in string_list]))
+    if uniq_last_char == 1:
+        string_list = remove_common_suffix_from_string_list(
+            [string[:-1] for string in string_list])
+    return string_list

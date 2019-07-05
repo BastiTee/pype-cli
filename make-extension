@@ -45,5 +45,5 @@ changelog() {
     last_version=$( git tag | sort --version-sort -r | head -n1 )
     version_hash=$( git show-ref -s $last_version )
     echo "--- $last_version $version_hash"
-    git log --pretty=format:"%s" $version_hash..HEAD
+    git log --pretty=format:"- %s" $version_hash..HEAD
 }

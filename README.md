@@ -15,7 +15,9 @@ __pype-cli__ is a CLI-configurable command-line tool to manage sets of other com
 
 ## Installation
 
-The core package can be installed using `python3 -m pip install pype-cli` or `pip3 install pype-cli`. Refer to the usage section on configuration options.
+You can currently install __pype-cli__ from source using `./make install`. Be aware that the installer will prompt you for your sudo-password to install pipenv globally if it is not present.
+
+In future releases the core package will be installable using `python3 -m pip install pype-cli` or `pip3 install pype-cli`.
 
 ## Usage
 
