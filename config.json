@@ -12,7 +12,5 @@
             "command": "pype pype.config"
         }
     ],
-    "core_config": {
-        "one_tab_completion": true
-    }
+    "core_config": {}
 }
