@@ -60,6 +60,17 @@ install_deps_globally() {
     $SUDO python3 -m pip install -r requirements.txt
 }
 
+install_pype_core() {
+    # Installs main component from source
+    if [ -d pype ]; then
+        # If inside pype project
+        $SUDO python3 -m pip install --force --editable .
+    else
+        # If pype is embedded as library
+        python3 -m pip install --editable ./lib/pype
+    fi
+}
+
 uninstall() {
     # Uninstall pype from global system
     echo "-- Uninstall shell support"
@@ -73,13 +84,7 @@ install() {
     # Install pype to global system
     uninstall ||true
     install_deps_globally
-    if [ -d pype ]; then
-        # If inside pype project
-        $SUDO python3 -m pip install --force --editable .
-    else
-        # If pype is embedded as library
-        python3 -m pip install --editable ./lib/pype
-    fi
+    install_pype_core
     pype pype.config shell-install
 }
 
