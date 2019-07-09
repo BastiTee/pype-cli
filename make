@@ -71,7 +71,7 @@ install_pype_core() {
         $SUDO python3 -m pip install --force --editable .
     else
         # If pype is embedded as library
-        python3 -m pip install --editable ./lib/pype
+        $SUDO python3 -m pip install --editable ./lib/pype
     fi
 }
 
