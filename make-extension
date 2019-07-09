@@ -34,11 +34,25 @@ publish() {
     pipenv run twine upload dist/*
 }
 
-dockerize() {
+internal_docker_make() {
+    # Private function to create a docker container from parameters
+    image_name="$1"
+    shift
+    cp dockerfiles/${image_name}.Dockerfile Dockerfile
+    docker build -t "pype-docker-${image_name}" . ||rm -f Dockerfile
+    rm -f Dockerfile
+    docker run --rm $@ "pype-docker-${image_name}"
+}
+
+dockerize_travis_py37() {
+    # Run a similar chain that travis uses to build for CI-checks on Python 3.7
+    internal_docker_make "travis-py37" -ti
+}
+
+dockerize_mint_install() {
     # Install pype into a dockercontainer to test mint-installation
     build
-    docker build -t "pype-docker" .
-    docker run --rm -ti "pype-docker"
+    internal_docker_make "mint-install" -ti
 }
 
 changelog() {

@@ -3,7 +3,12 @@ set -e  # Always exit on non-zero return codes
 cd "$( cd "$( dirname "$0" )"; pwd )"
 
 # Superuser access for global installation
-SUDO="sudo -H"
+if [ "$( whoami )" = "root" ]; then
+    echo "WARN: Installation started as root-user which is not recommended."
+    SUDO="" # If root (compatibility with docker builds)
+else
+    SUDO="sudo -H"
+fi
 
 # Check python and pipenv installation
 [ -z "$( command -v python3 )" ] && { echo "python3 not available."; exit 1; }
@@ -35,8 +40,7 @@ venv() {
 
 clean() {
     # Clean project base by deleting any non-VC files
-    git status --ignored --short |grep -e "^!!" |awk '{print $2}' |\
-    while read file; do rm -vfr $file; done
+    rm -rf .venv build dist
 }
 
 test() {
