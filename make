@@ -68,7 +68,7 @@ install_pype_core() {
     # Installs main component from source
     if [ -d pype ]; then
         # If inside pype project
-        $SUDO python3 -m pip install --force --editable .
+        python3 -m pip install --force --editable .
     else
         # If pype is embedded as library
         python3 -m pip install --editable ./lib/pype
