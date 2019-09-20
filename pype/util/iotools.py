@@ -3,7 +3,7 @@
 
 from os import environ, listdir, name, path
 from re import IGNORECASE, match
-from subprocess import call, run, PIPE
+from subprocess import PIPE, call, run
 
 from pype.util.cli import print_error
 
