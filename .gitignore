@@ -2,7 +2,6 @@
 .dockerignore
 Pipfile.lock
 requirements.txt
-Dockerfile
 
 # Byte-compiled / optimized / DLL files
 *.py[cod]
