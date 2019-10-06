@@ -40,7 +40,7 @@ venv() {
 
 clean() {
     # Clean project base by deleting any non-VC files
-    rm -rf .venv build dist
+    rm -rf .venv build dist .pytest_cache *.egg-info
 }
 
 test() {
