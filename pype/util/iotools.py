@@ -3,7 +3,7 @@
 
 from os import environ, listdir, name, path
 from re import IGNORECASE, match
-from subprocess import call, run
+from subprocess import PIPE, call, run
 
 from pype.util.cli import print_error
 
@@ -25,7 +25,7 @@ def run_and_get_output(cmdline, *args, **kwargs):
         # required for run(). Note that this might not work due to
         # quoted arguments etc.
         cmdline = cmdline.split(' ')
-    proc = run(cmdline, capture_output=True, *args, **kwargs)
+    proc = run(cmdline, stdout=PIPE, stderr=PIPE, *args, **kwargs)
     return proc.stdout.decode('utf-8'), proc.stderr.decode('utf-8')
 
 

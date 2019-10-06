@@ -23,7 +23,11 @@ def get_from_json_or_default(json, path, default_value):
 
 def beautify_json_string(json_string, colorize=False, sort_keys=False):
     """Beautify JSON string with optional coloring."""
-    json_obj = json.loads(json_string)
+    return beautify_json(json.loads(json_string), colorize, sort_keys)
+
+
+def beautify_json(json_obj, colorize=False, sort_keys=False):
+    """Beautify JSON with optional coloring."""
     formatted_json = json.dumps(json_obj, sort_keys=sort_keys, indent=4)
     if not colorize:
         return formatted_json

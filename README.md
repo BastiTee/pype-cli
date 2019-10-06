@@ -38,6 +38,13 @@ __pype-cli__'s main benefit is that is is extendable with custom __plugins__ and
 * Run `pype pype.config shell-install`
 * Run `pype pype.config shell-uninstall` to remove if necessary
 
+If you want to use one-tab completion (instead of two tab presses) you can add the following section to your `.bashrc` file (unfortunatly I did not find a solution for zshell yet):
+
+```shell
+bind 'set show-all-if-ambiguous on'
+bind 'set completion-ignore-case on'
+```
+
 ### Un-/register plugins
 
 * Register an existing __plugin__: `pype pype.config plugin-register -n myplugin -p ~/pype_plugins` (`myplugin` is a Python module with at least an `__init__.py` file and `~/pype_plugins` a folder where the __plugin__ is stored)
