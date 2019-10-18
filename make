@@ -2,17 +2,9 @@
 set -e  # Always exit on non-zero return codes
 cd "$( cd "$( dirname "$0" )"; pwd )"
 
-# Superuser access for global installation
-if [ "$( whoami )" = "root" ]; then
-    echo "WARN: Installation started as root-user which is not recommended."
-    SUDO="" # If root (compatibility with docker builds)
-else
-    SUDO="sudo -H"
-fi
-
 # Check python and pipenv installation
 [ -z "$( command -v python3 )" ] && { echo "python3 not available."; exit 1; }
-[ -z "$( command -v pipenv )" ] && $SUDO python3 -m pip install pipenv --upgrade
+[ -z "$( command -v pipenv )" ] && { echo "pipenv not available."; exit 1; }
 
 # Allow to customize this script with a make-extension file
 [ -f "make-extension" ] && . ./make-extension
@@ -58,20 +50,14 @@ lint() {
     pipenv run flake8 $LINTED_MODULES tests
 }
 
-install_deps_globally() {
-    # Install to global python installation all required dependencies
-    pipenv lock -r > requirements.txt
-    $SUDO python3 -m pip install -r requirements.txt
-}
-
 install_pype_core() {
     # Installs main component from source
     if [ -d pype ]; then
         # If inside pype project
-        python3 -m pip install --force --editable .
+        python3 -m pip install --user --force --editable .
     else
         # If pype is embedded as library
-        python3 -m pip install --editable ./lib/pype
+        python3 -m pip install --user --editable ./lib/pype
     fi
 }
 
@@ -80,14 +66,12 @@ uninstall() {
     echo "-- Uninstall shell support"
     pype pype.config shell-uninstall 2>/dev/null ||true
     echo "-- Uninstall python librarires"
-    pipenv lock -r > requirements.txt
-    $SUDO python3 -m pip uninstall -y -r requirements.txt
+    python3 -m pip uninstall -y pype-cli3
 }
 
 install() {
     # Install pype to global system
     uninstall ||true
-    install_deps_globally
     install_pype_core
     pype pype.config shell-install
 }
