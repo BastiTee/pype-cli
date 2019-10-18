@@ -1,5 +1,19 @@
 # Changelog
 
+## Version 0.3.3
+
+- Add auto creation for empty config filepaths
+- Improved development workflow
+- Fix fallback to VISUAL or EDITOR mode on opening pypes
+- Fix bug for pypes relative to configuration file
+- Fix print-out bug in pype deletion
+- Improved template pype
+- Add .env file for editor support
+
+## Version 0.3.2
+
+- NaN
+
 ## Version 0.3.1
 
 - Add dynamic subcommand routine
