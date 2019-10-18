@@ -79,7 +79,8 @@ If your __plugin__ contains shared code over all __pypes__ you can simply put it
 
 ## Development
 
-* Run `./make shell` to open a `pipenv` shell with the required shell configuration
+* Run `./make venv` to create a new virtual environment
+* Run `pipenv shell` to activate a local shell with the required configurations
 * Run `pype` to operate locale development version (it will react to code changes)
 
 ## License and attribution
