@@ -45,11 +45,16 @@ class PypeConfigHandler():
             # Priority 3: ./config.json
             elif isfile(self.LOCAL_CONFIG_FILE):
                 self.filepath = self.LOCAL_CONFIG_FILE
-        # Priority 4: Create a template config from scratch
+        # Priority 4: Create a template config from scratch if no path provided
         if not self.filepath:
             dump(self.DEFAULT_CONFIG, open(self.DEFAULT_CONFIG_FILE, 'w+'))
             self.filepath = self.DEFAULT_CONFIG_FILE
-        self.config = load(open(self.filepath, 'r'))
+        try:
+            self.config = load(open(self.filepath, 'r'))
+        except FileNotFoundError:
+            # Priorty 5: File name provided but file does not exist
+            dump(self.DEFAULT_CONFIG, open(self.filepath, 'w+'))
+            self.config = load(open(self.filepath, 'r'))
         self.validate_config(self.config)
 
     def get_json(self):
