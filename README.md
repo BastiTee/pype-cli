@@ -20,12 +20,13 @@ __pype-cli__ is a CLI-configurable command-line tool to manage sets of other com
 * Create a new __plugin__ in your home folder: `pype pype.config plugin-register --create --name my-plugin --path ~/`
 * Create a sample __pype__ for your plugin: `pype my-plugin --create-pype my-pype`
 * Run your __pype__: `pype my-plugin my-pype`
+* Show and edit the template __pype__ you've just created: `pype my-plugin --open-pype my-pype`
 
 You'll find more information on the commands in the sections below.
 
 ## Usage
 
-__pype-cli__ builds upon __plugins__ and __pypes__. A __pype__ is a single Python script whereas a __plugin__ is basically a Python module that extens __pype-cli__ with a collection of __pypes__.
+__pype-cli__ builds upon __plugins__ and __pypes__. A __pype__ is a single Python script whereas a __plugin__ is essentially a Python module that extens __pype-cli__ with a collection of __pypes__.
 
 __pype-cli__ ships with one built-in __plugin__ called `pype.config` that is used to configure __pype-cli__. All of the required information will be stored to a local JSON-configuration file that defaults to `~/.pype-config.json`. To configure a custom configuration file use the environment variable `PYPE_CONFIGURATION_FILE`, e.g. in your `~/.bashrc` file set `export PYPE_CONFIGURATION_FILE=/path/to/myconfig.json`.
 
@@ -42,7 +43,7 @@ __pype-cli__'s main benefit is that is is extendable with custom __plugins__ and
 * Run `pype pype.config shell-install`
 * Run `pype pype.config shell-uninstall` to remove if necessary
 
-If you want to use one-tab completion (instead of two tab presses) you can add the following section to your `.bashrc` file (unfortunatly I did not find a solution for zshell yet):
+If you want to use one-tab completion (instead of two tab presses) you can add the following section to your `.bashrc` file (unfortunatly there is no corresponding solution for zshell):
 
 ```shell
 bind 'set show-all-if-ambiguous on'
