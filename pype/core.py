@@ -129,7 +129,7 @@ class PypeCore():
         except FileNotFoundError:
             print_error('No such pype')
             return
-        print_success('Deleted pype', source_name)
+        print_success('Deleted pype ' + source_name)
 
     def get_abspath_to_pype(self, plugin, name):
         """Get absoulte path to pype Python script."""

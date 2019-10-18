@@ -34,7 +34,7 @@ def open_with_default(filepath):
     try:
         # Use open command
         run(['open', filepath], check=True)
-    except FileNotFoundError:
+    except Exception:
         # If not possible try to find $EDITOR or $VISUAL environment var
         editor = environ.get('EDITOR', None)
         if not editor:

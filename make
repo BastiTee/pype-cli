@@ -2,17 +2,9 @@
 set -e  # Always exit on non-zero return codes
 cd "$( cd "$( dirname "$0" )"; pwd )"
 
-# Superuser access for global installation
-if [ "$( whoami )" = "root" ]; then
-    echo "WARN: Installation started as root-user which is not recommended."
-    SUDO="" # If root (compatibility with docker builds)
-else
-    SUDO="sudo -H"
-fi
-
 # Check python and pipenv installation
 [ -z "$( command -v python3 )" ] && { echo "python3 not available."; exit 1; }
-[ -z "$( command -v pipenv )" ] && $SUDO python3 -m pip install pipenv --upgrade
+[ -z "$( command -v pipenv )" ] && { echo "pipenv not available."; exit 1; }
 
 # Allow to customize this script with a make-extension file
 [ -f "make-extension" ] && . ./make-extension
@@ -21,6 +13,8 @@ fi
 export PIPENV_VERBOSITY=${PIPENV_VERBOSITY:--1}
 # Use relative .venv folder instead of home-folder based
 export PIPENV_VENV_IN_PROJECT=${PIPENV_VENV_IN_PROJECT:-1}
+# Ignore existing venvs (required for travis)
+export PIPENV_IGNORE_VIRTUALENVS=${PIPENV_IGNORE_VIRTUALENVS:-1}
 # Setup python path
 export PYTHONPATH=${PYTHONPATH:-.}
 # Setup modules used for linting
@@ -36,6 +30,11 @@ venv() {
     rm -rf .venv
 	pipenv install --dev --skip-lock
     pipenv run pip install --editable .
+    # Use a venv-relative config file
+    echo "export PYPE_CONFIGURATION_FILE=.venv/bin/pype-config.json" \
+    >> .venv/bin/activate
+    # Auto-activate shell completion (only for bash)
+    echo "eval \"\$(_PYPE_COMPLETE=source pype)\"" >> .venv/bin/activate
 }
 
 clean() {
@@ -56,40 +55,6 @@ coverage() {
 lint() {
     # Run linter / code formatting checks against source code base
     pipenv run flake8 $LINTED_MODULES tests
-}
-
-install_deps_globally() {
-    # Install to global python installation all required dependencies
-    pipenv lock -r > requirements.txt
-    $SUDO python3 -m pip install -r requirements.txt
-}
-
-install_pype_core() {
-    # Installs main component from source
-    if [ -d pype ]; then
-        # If inside pype project
-        python3 -m pip install --force --editable .
-    else
-        # If pype is embedded as library
-        python3 -m pip install --editable ./lib/pype
-    fi
-}
-
-uninstall() {
-    # Uninstall pype from global system
-    echo "-- Uninstall shell support"
-    pype pype.config shell-uninstall 2>/dev/null ||true
-    echo "-- Uninstall python librarires"
-    pipenv lock -r > requirements.txt
-    $SUDO python3 -m pip uninstall -y -r requirements.txt
-}
-
-install() {
-    # Install pype to global system
-    uninstall ||true
-    install_deps_globally
-    install_pype_core
-    pype pype.config shell-install
 }
 
 # -----------------------------------------------------------------------------

@@ -51,9 +51,9 @@ class Plugin():
         self.active = True
 
     def __handle_relative_path(self, plugin_path, config_path):
-        if not plugin_path.startswith('./'):
+        if not plugin_path.startswith('.'):
             return plugin_path
-        return sub(r'^\./', path.dirname(config_path) + '/', plugin_path)
+        return sub(r'^\.[/]*', path.dirname(config_path) + '/', plugin_path)
 
     def __get_docu_or_default(self, module):
         return (
