@@ -15,8 +15,6 @@ package() {
 
 build() {
     # Run setup.py-based build process to package application
-    clean
-    venv
     test
     coverage
     lint
