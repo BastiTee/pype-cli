@@ -7,15 +7,21 @@
 ![PyPU - Version](https://img.shields.io/pypi/v/pype-cli.svg)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/pype-cli.svg)
 
+**DISCLAIMER: This project is in alpha stage and interfaces can still change a lot.**
+
 ## In a nutshell
 
 __pype-cli__ is a CLI-configurable command-line tool to manage sets of other command-line tools. It simplifies the creation, orchestration and access of Python scripts that you require for your development work, process automation, etc.
 
-## Installation
+## Quickstart
 
-You can currently install __pype-cli__ from source using `./make install`. Be aware that the installer will prompt you for your sudo-password to install pipenv globally if it is not present.
+* Install __pype-cli__ via `pip3 install --user pype-cli`
+* Run `pype pype.config shell-install` and open a new shell to activate shell completion
+* Create a new __plugin__ in your home folder: `pype pype.config plugin-register --create --name my-plugin --path ~/`
+* Create a sample __pype__ for your plugin: `pype my-plugin --create-pype my-pype`
+* Run your __pype__: `pype my-plugin my-pype`
 
-In future releases the core package will be installable using `python3 -m pip install pype-cli` or `pip3 install pype-cli`.
+You'll find more information on the commands in the sections below.
 
 ## Usage
 
