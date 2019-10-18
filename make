@@ -13,6 +13,8 @@ cd "$( cd "$( dirname "$0" )"; pwd )"
 export PIPENV_VERBOSITY=${PIPENV_VERBOSITY:--1}
 # Use relative .venv folder instead of home-folder based
 export PIPENV_VENV_IN_PROJECT=${PIPENV_VENV_IN_PROJECT:-1}
+# Ignore existing venvs (required for travis)
+export PIPENV_IGNORE_VIRTUALENVS=${PIPENV_IGNORE_VIRTUALENVS:-1}
 # Setup python path
 export PYTHONPATH=${PYTHONPATH:-.}
 # Setup modules used for linting
