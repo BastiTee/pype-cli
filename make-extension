@@ -1,13 +1,6 @@
 #!/bin/sh
 # Extensions for pype's default make file
 
-profile() {
-    # Run a profiler to analyse the runtime
-    pipenv run python -m profile -o tests/profile.obj pype/__main__.py \
-    >/dev/null
-    pipenv run python tests/run_pstats.py
-}
-
 package() {
     # Run package setup
     pipenv run python setup.py bdist_wheel $@
@@ -15,6 +8,8 @@ package() {
 
 build() {
     # Run setup.py-based build process to package application
+    clean
+    venv
     test
     coverage
     lint
@@ -40,11 +35,6 @@ internal_docker_make() {
     docker build -t "pype-docker-${image_name}" . ||rm -f Dockerfile
     rm -f Dockerfile
     docker run --rm $@ "pype-docker-${image_name}"
-}
-
-dockerize_travis_py37() {
-    # Run a similar chain that travis uses to build for CI-checks on Python 3.7
-    internal_docker_make "travis-py37" -ti
 }
 
 dockerize_mint_install() {

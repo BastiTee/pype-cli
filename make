@@ -28,6 +28,11 @@ venv() {
     rm -rf .venv
 	pipenv install --dev --skip-lock
     pipenv run pip install --editable .
+    # Use a venv-relative config file
+    echo "export PYPE_CONFIGURATION_FILE=.venv/bin/pype-config.json" \
+    >> .venv/bin/activate
+    # Auto-activate shell completion (only for bash)
+    echo "eval \"\$(_PYPE_COMPLETE=source pype)\"" >> .venv/bin/activate
 }
 
 clean() {
@@ -48,32 +53,6 @@ coverage() {
 lint() {
     # Run linter / code formatting checks against source code base
     pipenv run flake8 $LINTED_MODULES tests
-}
-
-install_pype_core() {
-    # Installs main component from source
-    if [ -d pype ]; then
-        # If inside pype project
-        python3 -m pip install --user --force --editable .
-    else
-        # If pype is embedded as library
-        python3 -m pip install --user --editable ./lib/pype
-    fi
-}
-
-uninstall() {
-    # Uninstall pype from global system
-    echo "-- Uninstall shell support"
-    pype pype.config shell-uninstall 2>/dev/null ||true
-    echo "-- Uninstall python librarires"
-    python3 -m pip uninstall -y pype-cli3
-}
-
-install() {
-    # Install pype to global system
-    uninstall ||true
-    install_pype_core
-    pype pype.config shell-install
 }
 
 # -----------------------------------------------------------------------------
