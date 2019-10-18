@@ -14,12 +14,12 @@ Work in progress.
 - Finish development on develop branch and push all changes
 - Check [Travis](https://travis-ci.org/BastiTee/pype/branches) for successful builds
 - Run a full build: `./make build`
-- Start release: `git flow release start "0.3.2"`
+- Start release: `git flow release start "0.0.1"`
 - Finish release by..
   - setting version tag correctly in setup.py and commit change `git add . && git commit -m "Fix version tag"`
-  - TODO Add changelog
-- Finish release: `git flow release finish "0.3.2"`
-- Bump version to next snapshot version in setup.py, e.g., `0.3.3-SNAPSHOT`
+  - get the latest changelog via `./make changelog` and edit CHANGELOG file
+- Finish release: `git flow release finish "0.0.1"`
+- Bump version to next snapshot version in setup.py, e.g., `0.0.2`
 - Push all changes: `git push`
 - Check [Travis](https://travis-ci.org/BastiTee/pype/branches) for successful builds
 - Draft new release in github with tag https://github.com/BastiTee/pype/releases/new << This should happen automatically on GitHub but it doesn't :/
