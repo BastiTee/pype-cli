@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 0.3.4
+
+- Simplified process for custom shell command
+- Improve README
+
 ## Version 0.3.3
 
 - Add auto creation for empty config filepaths
