@@ -14,7 +14,6 @@
 - Run a full build: `./make build`
 - Start release, e.g., for release 0.0.1: `git flow release start 0.0.1`
 - Finish release by..
-  - setting the final [semantic version](https://semver.org/) number in setup.py
   - getting the latest changelog via `./make changelog` and edit CHANGELOG file
 - Finish release: `git flow release finish --tagname 0.0.1 0.0.1`
 - Bump version to next version in setup.py, e.g., `0.0.2`
