@@ -3,7 +3,6 @@
 """Package installer script."""
 
 from io import open
-from json import load
 from os import environ, path
 
 from setuptools import find_packages, setup
@@ -12,15 +11,10 @@ with open(path.join(path.abspath(path.dirname(__file__)), 'README.md'),
           encoding='utf-8') as f:
     long_description = f.read()
 
-# Default console script
-console_scripts = ['pype=pype.__main__:main']
-# If present add custom shell command from configuration
-try:
-    config_json = load(open(environ.get('PYPE_CONFIGURATION_FILE'), 'r'))
-    shell_command = config_json['core_config']['shell_command']
-    console_scripts.append('{}=pype.__main__:main'.format(shell_command))
-except Exception:
-    pass  # Just continue regularily if nothing was found
+# Configure shell command
+custom_shell_command = environ.get('PYPE_CUSTOM_SHELL_COMMAND', None)
+shell_command = custom_shell_command if custom_shell_command else 'pype'
+console_scripts = ['{}=pype.__main__:main'.format(shell_command)]
 
 setup(
     # Basic project information
