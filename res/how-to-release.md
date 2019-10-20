@@ -19,4 +19,4 @@
 - Bump version to next version in setup.py, e.g., `0.0.2`
 - Push all changes: `git push --tags && git push`
 - Check [Travis](https://travis-ci.org/BastiTee/pype/branches) for successful builds
-- Push to PyPi using `./make publish`
+- Push to PyPi using `git checkout master && ./make publish`
