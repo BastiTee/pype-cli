@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 0.3.5
+
+- Fix simplified process for custom shell command
+
 ## Version 0.3.4
 
 - Simplified process for custom shell command
