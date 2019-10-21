@@ -3,7 +3,7 @@
 
 from importlib import import_module
 from os import environ, remove, sep
-from os.path import abspath, dirname, isfile, join
+from os.path import abspath, basename, dirname, isfile, join
 from re import sub
 from shutil import copyfile
 from sys import argv, path as syspath
@@ -176,12 +176,13 @@ class PypeCore():
         except FileNotFoundError:
             pass  # Silent ignore to make function idempotent
 
-    def install_to_shell(self, shell_command, silent=False):
+    def install_to_shell(self, silent=False):
         """Install shell features."""
         # Clean up first
         self.uninstall_from_shell(silent)
         print_success('Successfully cleaned up existing configurations')
         # Write new init-files
+        shell_command = basename(argv[0])
         config_json = self.__config.get_json()
         aliases = get_from_json_or_default(config_json, 'aliases', [])
         self.__print_if('Using shell command "{}"'.format(shell_command),
