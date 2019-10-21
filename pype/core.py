@@ -150,22 +150,27 @@ class PypeCore():
         target_file = resolve_path('~/' + self.SHELL_INIT_PREFIX + init_file)
         self.__print_if('Writing init-file ' + target_file, silent)
         with open(resolve_path(target_file), 'w+') as ifile:
-            # Write pype sourcing command
+            # Catch that pype was uninstalled somehow
             ifile.write('if [ ! -z "$( command -v '
                         + shell_command
-                        + ' )" ]; then\n')
-            source_cmd = 'eval "$(_{}_COMPLETE=source{} {})"'.format(
+                        + ' )" ]; then # Catches bad uninstall\n')
+            # Install complete script if necessary
+            source_cmd = '_{}_COMPLETE=source{} {}'.format(
                 shell_command.upper(),
                 '_zsh' if init_file == 'zsh' else '',
                 shell_command
             )
-            ifile.write('\t' + source_cmd + '\n')
+            ifile.write('\tif [ ! -f ~/.pype-complete ]; then # Create once\n')
+            ifile.write('\t\t' + source_cmd + ' > ~/.pype-complete\n')
+            ifile.write('\tfi\n')
+            # Source complete script
+            ifile.write('\t. ~/.pype-complete\n')
             # Write configured aliases
             for alias in aliases:
                 alias_cmd = '\talias {}="{}"\n'.format(
                     alias['alias'], alias['command'])
                 ifile.write(alias_cmd)
-            # Close if
+            # Close enclosing if
             ifile.write('fi\n')
 
     def __remove_init_file(self, init_file, silent):
