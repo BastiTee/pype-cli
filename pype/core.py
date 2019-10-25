@@ -162,7 +162,7 @@ then
     . ~/.pype-complete
 
 """ + ''.join([
-            '\t{}="{}"\n'.format(alias['alias'], alias['command'])
+            '\talias {}="{}"\n'.format(alias['alias'], alias['command'])
             for alias in aliases
         ]) + """
 fi
