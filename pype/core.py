@@ -139,6 +139,7 @@ class PypeCore():
         return None
 
     SHELL_INIT_PREFIX = '.pype-initfile-'
+    SHELL_COMPLETE_PREFIX = '.pype-complete-'
     SUPPORTED_RC_FILES = [
         resolve_path('~/.bashrc'),
         resolve_path('~/.bash_profile'),
@@ -149,17 +150,19 @@ class PypeCore():
         shell_command = basename(argv[0])
         source_cmd = 'source_zsh' if init_file == 'zsh' else 'source'
         target_file = resolve_path('~/' + self.SHELL_INIT_PREFIX + init_file)
+        complete_file = resolve_path(
+            '~/' + self.SHELL_COMPLETE_PREFIX + init_file)
         target_handle = open(resolve_path(target_file), 'w+')
         print('Writing init-file ' + target_file)
         target_handle.write("""# PYPE-CLI INIT-FILE: """ + init_file + """
 export PATH=$PATH:""" + dirname(argv[0]) + """
 if [ ! -z "$( command -v """ + shell_command + """ )" ] # Only if installed
 then
-    if [ ! -f ~/.pype-complete ]
+    if [ ! -f """ + complete_file + """ ]
     then
-        _""" + shell_command.upper() + """_COMPLETE=""" + source_cmd + """ """ + shell_command + """ > ~/.pype-complete
+        _""" + shell_command.upper() + """_COMPLETE=""" + source_cmd + """ """ + shell_command + """ > """ + complete_file + """
     fi
-    . ~/.pype-complete
+    . """ + complete_file + """
 
 """ + ''.join([
             '\talias {}="{}"\n'.format(alias['alias'], alias['command'])
@@ -209,7 +212,8 @@ fi
         # Remove init files
         self.__remove_file_silently('~/' + self.SHELL_INIT_PREFIX + 'bsh')
         self.__remove_file_silently('~/' + self.SHELL_INIT_PREFIX + 'zsh')
-        self.__remove_file_silently('~/.pype-complete')
+        self.__remove_file_silently('~/' + self.SHELL_COMPLETE_PREFIX + 'bsh')
+        self.__remove_file_silently('~/' + self.SHELL_COMPLETE_PREFIX + 'zsh')
         print('Remove link to init-file from rc-files if present')
         for file in self.SUPPORTED_RC_FILES:
             if not isfile(file):
