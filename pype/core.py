@@ -155,7 +155,10 @@ class PypeCore():
 export PATH=$PATH:""" + dirname(argv[0]) + """
 if [ ! -z "$( command -v """ + shell_command + """ )" ] # Only if installed
 then
-    _""" + shell_command.upper() + """_COMPLETE=""" + source_cmd + """ """ + shell_command + """ > ~/.pype-complete
+    if [ ! -f ~/.pype-complete ]
+    then
+        _""" + shell_command.upper() + """_COMPLETE=""" + source_cmd + """ """ + shell_command + """ > ~/.pype-complete
+    fi
     . ~/.pype-complete
 
 """ + ''.join([
@@ -165,8 +168,8 @@ then
 fi
 """)
 
-    def __remove_init_file(self, init_file):
-        target_file = resolve_path('~/' + self.SHELL_INIT_PREFIX + init_file)
+    def __remove_file_silently(self, target_file):
+        target_file = resolve_path(target_file)
         print('Removing init-file ' + target_file)
         try:
             remove(target_file)
@@ -204,8 +207,9 @@ fi
     def uninstall_from_shell(self):
         """Uninstall shell features."""
         # Remove init files
-        self.__remove_init_file('bsh')
-        self.__remove_init_file('zsh')
+        self.__remove_file_silently('~/' + self.SHELL_INIT_PREFIX + 'bsh')
+        self.__remove_file_silently('~/' + self.SHELL_INIT_PREFIX + 'zsh')
+        self.__remove_file_silently('~/.pype-complete')
         print('Remove link to init-file from rc-files if present')
         for file in self.SUPPORTED_RC_FILES:
             if not isfile(file):
