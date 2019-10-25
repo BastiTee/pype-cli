@@ -145,60 +145,48 @@ class PypeCore():
         resolve_path('~/.zshrc')
     ]
 
-    def __write_init_file(self, init_file, shell_command, aliases,
-                          silent=False):
+    def __write_init_file(self, init_file, aliases):
+        shell_command = basename(argv[0])
+        source_cmd = 'source_zsh' if init_file == 'zsh' else 'source'
         target_file = resolve_path('~/' + self.SHELL_INIT_PREFIX + init_file)
-        self.__print_if('Writing init-file ' + target_file, silent)
-        with open(resolve_path(target_file), 'w+') as ifile:
-            # Catch that pype was uninstalled somehow
-            ifile.write('if [ ! -z "$( command -v '
-                        + shell_command
-                        + ' )" ]; then # Catches bad uninstall\n')
-            # Install complete script if necessary
-            source_cmd = '_{}_COMPLETE=source{} {}'.format(
-                shell_command.upper(),
-                '_zsh' if init_file == 'zsh' else '',
-                shell_command
-            )
-            ifile.write('\tif [ ! -f ~/.pype-complete ]; then # Create once\n')
-            ifile.write('\t\t' + source_cmd + ' > ~/.pype-complete\n')
-            ifile.write('\tfi\n')
-            # Source complete script
-            ifile.write('\t. ~/.pype-complete\n')
-            # Write configured aliases
-            for alias in aliases:
-                alias_cmd = '\talias {}="{}"\n'.format(
-                    alias['alias'], alias['command'])
-                ifile.write(alias_cmd)
-            # Close enclosing if
-            ifile.write('fi\n')
+        target_handle = open(resolve_path(target_file), 'w+')
+        print('Writing init-file ' + target_file)
+        target_handle.write("""# PYPE-CLI INIT-FILE: """ + init_file + """
+export PATH=$PATH:""" + dirname(argv[0]) + """
+if [ ! -z "$( command -v """ + shell_command + """ )" ] # Only if installed
+then
+    _""" + shell_command.upper() + """_COMPLETE=""" + source_cmd + """ """ + shell_command + """ > ~/.pype-complete
+    . ~/.pype-complete
 
-    def __remove_init_file(self, init_file, silent):
+""" + ''.join([
+            '\t{}="{}"\n'.format(alias['alias'], alias['command'])
+            for alias in aliases
+        ]) + """
+fi
+""")
+
+    def __remove_init_file(self, init_file):
         target_file = resolve_path('~/' + self.SHELL_INIT_PREFIX + init_file)
-        self.__print_if('Removing init-file ' + target_file, silent)
+        print('Removing init-file ' + target_file)
         try:
             remove(target_file)
         except FileNotFoundError:
             pass  # Silent ignore to make function idempotent
 
-    def install_to_shell(self, silent=False):
+    def install_to_shell(self):
         """Install shell features."""
         # Clean up first
-        self.uninstall_from_shell(silent)
+        self.uninstall_from_shell()
         print_success('Successfully cleaned up existing configurations')
-        # Write new init-files
-        shell_command = basename(argv[0])
         config_json = self.__config.get_json()
         aliases = get_from_json_or_default(config_json, 'aliases', [])
-        self.__print_if('Using shell command "{}"'.format(shell_command),
-                        silent)
-        self.__write_init_file('bsh', shell_command, aliases, silent)
-        self.__write_init_file('zsh', shell_command, aliases, silent)
-        self.__print_if('Add link to init-file in rc-files if present', silent)
+        self.__write_init_file('bsh', aliases)
+        self.__write_init_file('zsh', aliases)
+        print('Add link to init-file in rc-files if present')
         for file in self.SUPPORTED_RC_FILES:
             if not isfile(file):
                 continue
-            self.__print_if(' - "{}"'.format(file), silent)
+            print(' - "{}"'.format(file))
             # Append link to init-file and set config file
             file_handle = open(file, 'a+')
             init_file = '~/' + self.SHELL_INIT_PREFIX
@@ -213,13 +201,12 @@ class PypeCore():
             file_handle.close()
         print_success('Successfully written init-files')
 
-    def uninstall_from_shell(self, silent=False):
+    def uninstall_from_shell(self):
         """Uninstall shell features."""
         # Remove init files
-        self.__remove_init_file('bsh', silent)
-        self.__remove_init_file('zsh', silent)
-        self.__print_if('Remove link to init-file from rc-files if present',
-                        silent)
+        self.__remove_init_file('bsh')
+        self.__remove_init_file('zsh')
+        print('Remove link to init-file from rc-files if present')
         for file in self.SUPPORTED_RC_FILES:
             if not isfile(file):
                 continue
@@ -231,7 +218,7 @@ class PypeCore():
                     lambda x: self.SHELL_INIT_PREFIX in x, content))):
                 continue
             # Delete initfile-links from rc file
-            self.__print_if(' - "{}"'.format(file), silent)
+            print(' - "{}"'.format(file))
             file_handle = open(file, 'w')
             [file_handle.write(cn)
              for cn in content if self.SHELL_INIT_PREFIX not in cn]
@@ -264,10 +251,10 @@ class PypeCore():
             'alias': alias,
             'command': cmd_line
         })
-        print_success('Installed alias: {}'.format(alias_cmd))
+        print_success('Configured alias: {}'.format(alias_cmd))
         self.__config.set_json(config_json)
         # update install script
-        self.install_to_shell(silent=True)
+        self.install_to_shell()
 
     def unregister_alias(self, alias):
         """Unregister the provided alias."""
@@ -288,16 +275,12 @@ class PypeCore():
         self.__config.set_json(config_json)
         # update install script
         print_success('Uninstalled alias "{}"'.format(alias))
-        self.install_to_shell(silent=True)
+        self.install_to_shell()
 
     def _alias_present(self, config_json, alias):
         return any(
             [existing_alias for existing_alias in config_json.get('aliases')
              if existing_alias['alias'] == alias])
-
-    def __print_if(self, message, silent):
-        if not silent:
-            print(message)
 
     def get_core_config(self, key, default=None):
         """Return a key from the core configuration of the config file."""
