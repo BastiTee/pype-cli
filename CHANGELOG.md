@@ -1,5 +1,12 @@
 # Changelog
 
+## Version 0.3.6
+
+- Fix bug in pype.config.shell-install
+- Source complete script for zsh and bsh only once
+- Split complete files for bash and zsh
+- Improve init-file creation
+
 ## Version 0.3.5
 
 - Fix simplified process for custom shell command
