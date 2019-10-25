@@ -33,8 +33,14 @@ venv() {
     # Use a venv-relative config file
     echo "export PYPE_CONFIGURATION_FILE=.venv/bin/pype-config.json" \
     >> .venv/bin/activate
-    # Auto-activate shell completion (only for bash)
-    echo "eval \"\$(_PYPE_COMPLETE=source pype)\"" >> .venv/bin/activate
+    # Auto-activate shell completion
+    shell="$( basename $SHELL )"
+    echo "Used shell: $shell"
+    if [ "$shell" = "bash" ]; then
+        echo "eval \"\$(_PYPE_COMPLETE=source pype)\"" >> .venv/bin/activate
+    else
+        echo "eval \"\$(_PYPE_COMPLETE=source_zsh pype)\"" >> .venv/bin/activate
+    fi
 }
 
 clean() {
