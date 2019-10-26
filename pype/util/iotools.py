@@ -8,25 +8,24 @@ from subprocess import PIPE, call, run
 from pype.util.cli import print_error
 
 
-def run_interactive(cmdline, dry_run=False, verbose=False, *args, **kwargs):
+def run_interactive(cmdline, *args, **kwargs):
     """Call to an interactive shell."""
-    if dry_run or verbose:
-        print('$: {}'.format(cmdline))
-    if dry_run:
-        return
+    if not isinstance(cmdline, str):
+        cmdline = ' '.join(cmdline)
     try:
         return call(cmdline, shell=True, *args, **kwargs)
     except KeyboardInterrupt:
         pass
 
 
-def run_and_get_output(cmdline, dry_run=False, verbose=False, *args, **kwargs):
+def run_and_get_output(cmdline, *args, **kwargs):
     """Run a cmdline non-interactive and returns both stdout and stderr."""
-    if dry_run or verbose:
-        print('$: {}'.format(cmdline))
-    if dry_run:
-        return '', ''
-    proc = run(cmdline, shell=True, stdout=PIPE, stderr=PIPE, *args, **kwargs)
+    if isinstance(cmdline, str):
+        # For convenvience we split str-cmdlines into a list which is
+        # required for run(). Note that this might not work due to
+        # quoted arguments etc.
+        cmdline = cmdline.split(' ')
+    proc = run(cmdline, stdout=PIPE, stderr=PIPE, *args, **kwargs)
     return proc.stdout.decode('utf-8'), proc.stderr.decode('utf-8')
 
 
