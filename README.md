@@ -79,6 +79,14 @@ If you have selected a __pype__ from a __plugin__ you can set __aliases__ for it
 
 If your __plugin__ contains shared code over all __pypes__ you can simply put it into a subpackage of your __plugin__ or into a file prefixed with `__`, e.g., `__commons__.py`. __pype-cli__ will only scan / consider top-level Python scripts without underscores as __pypes__.
 
+### Example recipes
+
+You can register a sample __plugin__ called __basics__ that contains some useful recipes to get you started with your own pipes.
+
+* Register the __basics__ __plugin__: `pype pype.config plugin-register --name basics --path <PYPE_REPOSITORY>/example_pypes`
+* Navigate to `pype basics <TAB>` to see its content
+* Open a recipe in your edior, for example: `pype basics --open-pype hello-world-opt`
+
 ## Development
 
 * Run `./make venv` to create a new virtual environment
