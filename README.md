@@ -11,7 +11,7 @@
 
 ## In a nutshell
 
-__pype-cli__ is a CLI-configurable command-line tool to manage sets of other command-line tools. It simplifies the creation, orchestration and access of Python scripts that you require for your development work, process automation, etc.
+__pype-cli__ is a command-line tool to manage sets of other command-line tools. It simplifies the creation, orchestration and access of Python scripts that you require for your development work, process automation, etc.
 
 ## Quickstart
 
@@ -33,9 +33,11 @@ __pype-cli__ ships with one built-in __plugin__ called `pype.config` that is use
 
 ### Basic operations
 
-* List all available __pypes__: `pype -l`
-* Open __pype-cli__'s configuration file: `pype -o`
-* Refer to `pype ... -h` for further information on the command-line
+* List all available __pypes__: `pype --list-pypes`
+* Open __pype-cli__'s configuration file: `pype --open-config`
+* Refer to `pype ... --help` for further information on the command-line
+
+For all options you will find a short variant such as `-h` for `--help` or `pype -l` instead of `pype --list-pypes`. They are omitted here for better readability.
 
 ### Install pype autocompletion and aliases
 
@@ -44,36 +46,42 @@ __pype-cli__'s main benefit is that is is extendable with custom __plugins__ and
 * Run `pype pype.config shell-install`
 * Run `pype pype.config shell-uninstall` to remove if necessary
 
-If you want to use one-tab completion (instead of two tab presses) you can add the following section to your `.bashrc` file (unfortunatly there is no corresponding solution for zshell):
+If you want to use one-tab completion (instead of two tab presses) you can add the following section to your `.bashrc` file:
 
 ```shell
 bind 'set show-all-if-ambiguous on'
 bind 'set completion-ignore-case on'
 ```
 
+For `.zshrc` apply instead:
+
+```shell
+unsetopt listambiguous
+```
+
 ### Un-/register plugins
 
-* Register an existing __plugin__: `pype pype.config plugin-register -n myplugin -p ~/pype_plugins` (`myplugin` is a Python module with at least an `__init__.py` file and `~/pype_plugins` a folder where the __plugin__ is stored)
-* On-the-fly create and register a new __plugin__: `pype pype.config plugin-register -c -n myplugin -p ~/pype_plugins`
-* Unregister (but not delete) a __plugin__: `pype pype.config plugin-unregister -n myplugin`
+* Register an existing __plugin__: `pype pype.config plugin-register --name myplugin --path ~/pype_plugins` (`myplugin` is a Python module with at least an `__init__.py` file and `~/pype_plugins` a folder where the __plugin__ is stored)
+* On-the-fly create and register a new __plugin__: `pype pype.config plugin-register --create --name myplugin --path ~/pype_plugins`
+* Unregister (but not delete) a __plugin__: `pype pype.config plugin-unregister --name myplugin`
 
 ### Create, open and delete pypes
 
 To create a new pype you need to decide to which plugin you want to add the pype, e.g., `myplugin`.
 
-* Create a new __pype__ from a template: `pype myplugin -c mypype`
-* Create a new __pype__ from a template with less boilerplate: `pype myplugin --minimal -c mypype` or `pype myplugin -mc mypype`
-* Create a new __pype__ from minimal template and open immediately: `pype myplugin --minimal --edit -c mypype` or `pype myplugin -mec mypype`
-* Open a __pype__ in your default editor: `pype myplugin -o mypype`
-* Delete a __pype__: `pype myplugin -d mypype`
+* Create a new __pype__ from a template: `pype myplugin --create mypype`
+* Create a new __pype__ from a template with less boilerplate: `pype myplugin --minimal --create mypype`
+* Create a new __pype__ from minimal template and open immediately: `pype myplugin --minimal --edit --create mypype`
+* Open a __pype__ in your default editor: `pype myplugin --open-pype mypype`
+* Delete a __pype__: `pype myplugin --delete-pype mypype`
 
 ### Un-/register aliases
 
 If you have selected a __pype__ from a __plugin__ you can set __aliases__ for it. Afterwards you need to start a new shell session or source your rc-file to activate the __aliases__. New __aliases__ are stored in the configuration file.
 
-* Register an __alias__: `pype -r mm myplugin mypype` → `alias mm="pype myplugin mypype"`
-* Register an __alias with options__: `pype -r mm myplugin mypype -o opt1 -v` → `alias mm="pype myplugin mypype -o opt1 -v"`
-* Unregister an __alias__: `pype -u mm`
+* Register an __alias__: `pype --register-alias mm myplugin mypype` → `alias mm="pype myplugin mypype"`
+* Register an __alias with options__: `pype --register-alias mm myplugin mypype --option opt1 --toggle` → `alias mm="pype myplugin mypype --option opt1 --toggle"`
+* Unregister an __alias__: `pype --unregister-alias mm`
 
 ### Shared code for plugins
 
