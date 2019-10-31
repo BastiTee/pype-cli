@@ -6,9 +6,6 @@ cd "$( cd "$( dirname "$0" )"; pwd )"
 [ -z "$( command -v python3 )" ] && { echo "python3 not available."; exit 1; }
 [ -z "$( command -v pipenv )" ] && { echo "pipenv not available."; exit 1; }
 
-# Allow to customize this script with a make-extension file
-[ -f "make-extension" ] && . ./make-extension
-
 # Suppress warning if pipenv is started inside .venv
 export PIPENV_VERBOSITY=${PIPENV_VERBOSITY:--1}
 # Use relative .venv folder instead of home-folder based
@@ -61,6 +58,56 @@ coverage() {
 lint() {
     # Run linter / code formatting checks against source code base
     pipenv run flake8 $LINTED_MODULES tests
+}
+
+package() {
+    # Run package setup
+    pipenv run python setup.py bdist_wheel $@
+}
+
+build() {
+    # Run setup.py-based build process to package application
+    clean
+    venv
+    test
+    coverage
+    lint
+    package
+}
+
+publish() {
+    # Publish pype to pypi.org
+    branch=$( git rev-parse --abbrev-ref HEAD )
+    if [ $branch != "master" ]; then
+        echo "Only publish released master branches! Currently on $branch"
+        exit 1
+    fi
+    build
+    pipenv run twine upload dist/*
+}
+
+internal_docker_make() {
+    # Private function to create a docker container from parameters
+    image_name="$1"
+    shift
+    cp dockerfiles/${image_name}.Dockerfile Dockerfile
+    docker build -t "pype-docker-${image_name}" . ||rm -f Dockerfile
+    rm -f Dockerfile
+    docker run --rm $@ "pype-docker-${image_name}"
+}
+
+dockerize_mint_install() {
+    # Install pype into a dockercontainer to test mint-installation
+    build
+    internal_docker_make "mint-install" -ti
+}
+
+changelog() {
+    # Return changelog since last version tag
+    last_version=$( git tag | sort --version-sort -r | head -n1 )
+    version_hash=$( git show-ref -s $last_version )
+    echo "--- $last_version $version_hash"
+    git log --pretty=format:"- %s" $version_hash..HEAD
 }
 
 # -----------------------------------------------------------------------------
