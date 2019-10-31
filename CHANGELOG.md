@@ -1,5 +1,14 @@
 # Changelog
 
+## Version 0.3.7
+
+- run_interactive and run_and_get_output now always shell=True
+- Combine make-extension and make
+- Fix help for --unregister-alias
+- Document example pypes
+- Update pype-cli documentation
+- Add terminalizer for resources
+
 ## Version 0.3.6
 
 - Fix bug in pype.config.shell-install
