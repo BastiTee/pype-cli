@@ -89,7 +89,7 @@ If your __plugin__ contains shared code over all __pypes__ you can simply put it
 
 ### Example recipes
 
-You can register a sample __plugin__ called __basics__ that contains some useful recipes to get you started with your own pipes.
+You can register a sample __plugin__ called [__basics__](example_pypes/basics) that contains some useful recipes to get you started with your own pipes.
 
 * Register the __basics__ __plugin__: `pype pype.config plugin-register --name basics --path <PYPE_REPOSITORY>/example_pypes`
 * Navigate to `pype basics <TAB>` to see its content
