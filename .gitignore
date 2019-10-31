@@ -3,6 +3,9 @@
 Pipfile.lock
 requirements.txt
 
+# Terminalizer
+node_modules/
+
 # Byte-compiled / optimized / DLL files
 *.py[cod]
 __pycache__/

@@ -30,7 +30,7 @@ from pype.util.iotools import open_with_default
 @click.option('--register-alias', '-r', metavar='ALIAS',
               help='Register alias for following pype')
 @click.option('--unregister-alias', '-u', metavar='ALIAS',
-              help='Register alias for following pype')
+              help='Unregister alias')
 @click.pass_context
 def main(ctx, list_pypes, aliases,
          open_config, register_alias, unregister_alias):
