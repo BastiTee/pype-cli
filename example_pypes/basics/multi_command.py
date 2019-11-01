@@ -1,9 +1,5 @@
 # -*- coding: utf-8 -*-
-"""A dynamic multi-command creator.
-
-This pype demonstrating how to utilize the multi command processor
-bundled with pype-cli.
-"""
+"""A dynamic multi-command creator."""
 
 import json
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""Pype main entry point."""
+"""PYPE - A command-line tool for command-line tools."""
 
 from os import listdir, path
 from re import sub
@@ -19,7 +19,7 @@ from pype.util.iotools import open_with_default
 @click.group(
     invoke_without_command=True,
     context_settings=dict(help_option_names=['-h', '--help']),
-    help='PYPE - A command-line tool for command-line tools.'
+    help=__doc__
 )
 @click.option('--list-pypes', '-l', is_flag=True,
               help='Print all available pypes.')

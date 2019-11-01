@@ -48,12 +48,12 @@ class Plugin():
         subfiles = [
             path.basename(file)
             for file in glob(self.abspath + '/*.py')
-            if not file.startswith('__')
         ]
+        subfiles = [file for file in subfiles
+                    if not file.startswith('__')]
         self.pypes = [
             Pype(path.join(self.abspath, subfile), subfile, self)
-            for subfile in
-            subfiles
+            for subfile in subfiles
         ]
         self.active = True
 
