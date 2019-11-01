@@ -3,6 +3,9 @@
 Pipfile.lock
 requirements.txt
 
+# PyCharm
+.idea/
+
 # Terminalizer
 node_modules/
 
