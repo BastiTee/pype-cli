@@ -1,22 +1,27 @@
 # -*- coding: utf-8 -*-
 """Not documented yet."""
 
-# Pype's go-to library to create command-line interfaces.
-# Visit <https://click.palletsprojects.com> for details.
+# Import the "Command Line Interface Creation Kit"
+# <https://click.palletsprojects.com>
 import click
 
 # For colored output pype includes the colorama library
 from colorama import Fore, Style
 
-# Used for convenience to name click command using the file's name
+# You can omit this if you make sure to use dashes instead of underscores in
+# your command name, e.g., hello-world instead of hello_world.
+# This function just makes sure of that so you don't have to press shift to
+# resolve it during execution.
 from pype.core import fname_to_name
-# You can also call pype's own utility functions
+
+# Import some utilities that are bundled with pype-cli
 from pype.util import cli
 from pype.util.iotools import run_interactive
 
 
-# Decorators to initialize a CLI-command with options
+# Create a click command https://click.palletsprojects.com/en/7.x/commands/
 @click.command(name=fname_to_name(__file__), help=__doc__)
+# Add options https://click.palletsprojects.com/en/7.x/options/
 @click.option('--option', '-o', default='default', help='An option')
 @click.option('--verbose', '-v', is_flag=True, help='A toggle')
 def main(option, verbose):

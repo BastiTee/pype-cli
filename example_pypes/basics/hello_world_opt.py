@@ -2,6 +2,7 @@
 """A classic hello world console feedback with click cli-options."""
 
 # Import the "Command Line Interface Creation Kit"
+# <https://click.palletsprojects.com>
 import click
 
 # You can omit this if you make sure to use dashes instead of underscores in
