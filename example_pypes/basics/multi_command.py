@@ -8,12 +8,19 @@ dynamically via the command line.
 
 import json
 
+# Import the "Command Line Interface Creation Kit"
 import click
 
+# You can omit this if you make sure to use dashes instead of underscores in
+# your command name, e.g., hello-world instead of hello_world.
+# This function just makes sure of that so you don't have to press shift to
+# resolve it during execution.
 from pype.core import fname_to_name
+# Import some utilities that are bundled with pype-cli
 from pype.util.cli import ask_yes_or_no, generate_dynamic_multicommand
 from pype.util.iotools import resolve_path
 
+# Place to store your dynamic commands
 commands_registry = resolve_path('~/.pype-example-multicommands')
 
 
@@ -42,17 +49,20 @@ def _command_callback(command, context):
 
 
 # Create a new click command with dynamic sub commands
-@click.command(name=fname_to_name(__file__), help=__doc__,
-               # This will allow to call the pype without a sub command
-               invoke_without_command=True,
-               # Initialize dynamic subcommands using the convenience function
-               cls=generate_dynamic_multicommand(
-                   # Add a function to create multi commands, in this case
-                   # based on the existing command registry.
-                   _generate_multi_command(),
-                   # Provide a callback to receive the command and the
-                   # click context object.
-                   _command_callback))
+@click.command(
+    name=fname_to_name(__file__), help=__doc__,
+    # This will allow to call the pype without a sub command
+    invoke_without_command=True,
+    # Initialize dynamic subcommands using the convenience function
+    cls=generate_dynamic_multicommand(
+       # Add a function to create multi commands, in this case
+       # based on the existing command registry.
+       _generate_multi_command(),
+       # Provide a callback to receive the command and the
+       # click context object.
+       _command_callback
+    )
+)
 # Add an option to extend the command registry
 @click.option('--add', '-a', metavar='COMMAND_NAME',
               help='Add a new subcommand')
