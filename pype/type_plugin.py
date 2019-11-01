@@ -41,7 +41,8 @@ class Plugin:
                 __file__), plugin_config['name'])
         try:
             self.module = importlib.import_module(self.name)
-        except ModuleNotFoundError:  # noqa: F821
+        # This used to be a ModuleNotFoundException but it's only Python >= 3.6
+        except Exception:  # noqa: F821
             raise PypeException('No plugin named "{}" found at {}'
                                 .format(self.name, self.abspath))
         self.doc = self.__get_docu_or_default(self.module)
