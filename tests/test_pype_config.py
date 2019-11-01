@@ -13,12 +13,11 @@ from pype.exceptions import PypeException
 from pytest import raises
 
 
-class TestPypeConfigHandler():
+class TestPypeConfigHandler:
     """Pype configuration tests."""
 
-    # Helpers
-
-    def _create_temporary_config_file(self, json):
+    @staticmethod
+    def _create_temporary_config_file(json):
         temp = NamedTemporaryFile()
         if json:
             temp.write(bytes(dumps(json), 'utf-8'))
