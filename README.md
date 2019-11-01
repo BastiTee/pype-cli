@@ -1,4 +1,4 @@
-# pype
+# pype-cli
 
 > A command-line tool for command-line tools
 <img align="right" src="res/icon.png" alt="pype-cli Logo" width="150" height="150">
@@ -75,7 +75,7 @@ To create a new pype you need to decide to which plugin you want to add the pype
 * Open a __pype__ in your default editor: `pype myplugin --open-pype mypype`
 * Delete a __pype__: `pype myplugin --delete-pype mypype`
 
-Note that as long as you don't import some of the [convenience utilities](pype/util) of __pype__ directly, your __pype__ will remain an independent Python script.
+Note that as long as you don't import some of the [convenience utilities](pype/util) of __pype-cli__ directly, your __pype__ will remain an independent Python script.
 
 ### Un-/register aliases
 
@@ -101,8 +101,8 @@ For some basic information you can also refer to the built-in [template.py](pype
 
 ### Best practises
 
-__pype__ has been built around the [Click-project ("Command Line Interface Creation Kit")](https://click.palletsprojects.com/) which is a Python package for creating beautiful command line interfaces.
-To fully utilize the capabilities of __pype__ it is highly recommended to get familiar with the project and use it in your __pypes__ as well.
+__pype-cli__ has been built around the [Click-project ("Command Line Interface Creation Kit")](https://click.palletsprojects.com/) which is a Python package for creating beautiful command line interfaces.
+To fully utilize the capabilities of __pype-cli__ it is highly recommended to get familiar with the project and use it in your __pypes__ as well.
 Again you can refer to the [__basics__](example_pypes/basics) plugin for guidance.
 
 ## pype-cli development
