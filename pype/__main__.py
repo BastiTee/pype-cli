@@ -10,9 +10,9 @@ import click
 
 from colorama import init
 
-from pype.core import PypeCore, fname_to_name, print_context_help
+from pype.core import PypeCore, print_context_help
 from pype.exceptions import PypeException
-from pype.util.cli import print_error
+from pype.util.cli import fname_to_name, print_error
 from pype.util.iotools import open_with_default
 
 

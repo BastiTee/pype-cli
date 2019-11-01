@@ -3,6 +3,7 @@
 
 import getpass
 import importlib
+from glob import glob
 from os import path
 from re import sub
 from sys import path as syspath
@@ -10,7 +11,7 @@ from sys import path as syspath
 from pype.constants import NOT_DOCUMENTED_YET
 from pype.exceptions import PypeException
 from pype.type_pype import Pype
-from pype.util.iotools import get_immediate_subfiles, resolve_path
+from pype.util.iotools import resolve_path
 
 
 class Plugin():
@@ -44,10 +45,15 @@ class Plugin():
             raise PypeException('No plugin named "{}" found at {}'
                                 .format(self.name, self.abspath))
         self.doc = self.__get_docu_or_default(self.module)
+        subfiles = [
+            path.basename(file)
+            for file in glob(self.abspath + '/*.py')
+            if not file.startswith('__')
+        ]
         self.pypes = [
             Pype(path.join(self.abspath, subfile), subfile, self)
             for subfile in
-            get_immediate_subfiles(self.abspath, r'^(?!__).*(?!__)\.py$')
+            subfiles
         ]
         self.active = True
 

@@ -8,7 +8,7 @@ from os import environ
 import click
 
 from pype.constants import ENV_CONFIG_FILE
-from pype.core import fname_to_name
+from pype.util.cli import fname_to_name
 
 from tabulate import tabulate
 

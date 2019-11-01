@@ -9,9 +9,9 @@ from re import IGNORECASE, sub
 import click
 
 from pype.constants import NOT_DOCUMENTED_YET
-from pype.core import PypeCore, fname_to_name, load_module
+from pype.core import PypeCore, load_module
 from pype.exceptions import PypeException
-from pype.util.cli import print_error, print_success
+from pype.util.cli import fname_to_name, print_error, print_success
 from pype.util.iotools import resolve_path
 
 

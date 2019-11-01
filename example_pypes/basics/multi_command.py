@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 """A dynamic multi-command creator.
 
-This pype demonstrating how to utilize
-pype.util.cli.generate_dynamic_multicommand to create a multi-command
-dynamically via the command line.
+This pype demonstrating how to utilize the multi command processor
+bundled with pype-cli.
 """
 
 import json
@@ -12,17 +11,10 @@ import json
 # <https://click.palletsprojects.com>
 import click
 
-# You can omit this if you make sure to use dashes instead of underscores in
-# your command name, e.g., hello-world instead of hello_world.
-# This function just makes sure of that so you don't have to press shift to
-# resolve it during execution.
-from pype.core import fname_to_name
-# Import some utilities that are bundled with pype-cli
-from pype.util.cli import generate_dynamic_multicommand
-from pype.util.iotools import resolve_path
+import pype
 
 # Place to store your dynamic commands
-commands_registry = resolve_path('~/.pype-example-multicommands')
+commands_registry = pype.resolve_path('~/.pype-example-multicommands')
 
 
 def _load_command_registry():
@@ -35,7 +27,7 @@ def _load_command_registry():
 
 
 def _generate_multi_command():
-    """A function to create the subcommand registry."""
+    """Create the subcommand registry."""
     commands = _load_command_registry()
     return [{
         'name': command,
@@ -44,18 +36,18 @@ def _generate_multi_command():
 
 
 def _command_callback(command, context):
-    """A callback to process the subcommand."""
+    """Process the passed subcommand."""
     print('Executing ' + command)
     print('Command context: ' + str(context))
 
 
 # Create a new click command with dynamic sub commands
 @click.command(
-    name=fname_to_name(__file__), help=__doc__,
+    name=pype.fname_to_name(__file__), help=__doc__,
     # This will allow to call the pype without a sub command
     invoke_without_command=True,
     # Initialize dynamic subcommands using the convenience function
-    cls=generate_dynamic_multicommand(
+    cls=pype.generate_dynamic_multicommand(
         # Add a function to create multi commands, in this case
         # based on the existing command registry.
         _generate_multi_command(),

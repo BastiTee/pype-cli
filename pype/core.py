@@ -2,7 +2,7 @@
 """Pype core initializer."""
 
 from importlib import import_module
-from os import environ, remove, sep
+from os import environ, remove
 from os.path import abspath, basename, dirname, isfile, join
 from re import sub
 from shutil import copyfile
@@ -306,11 +306,6 @@ def get_from_json_or_default(json, path, default_value):
         return json if json else default_value
     except KeyError:
         return default_value
-
-
-def fname_to_name(fname):
-    """Use the filename as command name."""
-    return sub('_', '-', fname[:-3].split(sep)[-1])
 
 
 def load_module(name, path):

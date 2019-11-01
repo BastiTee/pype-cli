@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 """I/O utilities."""
 
-from os import environ, listdir, path
-from re import IGNORECASE, match
+from os import environ, path
 from subprocess import PIPE, call, run
 
 from pype.util.cli import print_error
@@ -50,25 +49,3 @@ def open_with_default(filepath):
 def resolve_path(relative_path):
     """Resolve path including home folder expanding."""
     return path.abspath(path.expanduser(relative_path))
-
-
-def get_immediate_subfiles(
-        file_path, pattern=None, ignorecase=False, is_file=True):
-    """Return the immediate subfiles of a path."""
-    if not file_path:
-        raise TypeError('file_path not provided.')
-
-    files = []
-    for file_name in listdir(file_path):
-        path_is_dir = path.isdir(path.join(file_path, file_name))
-        if (path_is_dir and is_file) or (not path_is_dir and not is_file):
-            continue
-        if pattern:
-            if ignorecase and match(pattern, file_name, IGNORECASE):
-                files.append(file_name)
-            elif match(pattern, file_name):
-                files.append(file_name)
-            continue
-        files.append(file_name)
-    files.sort()
-    return files

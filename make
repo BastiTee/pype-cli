@@ -26,7 +26,7 @@ venv() {
 	pipenv install --dev --skip-lock
     pipenv run pip install --editable .
     # Use a venv-relative config file
-    echo "export PYPE_CONFIGURATION_FILE=.venv/bin/pype-config.json" \
+    echo "export PYPE_CONFIGURATION_FILE=$( pwd )/.venv/bin/pype-config.json" \
     >> .venv/bin/activate
     # Auto-activate shell completion
     shell="$( basename $SHELL )"

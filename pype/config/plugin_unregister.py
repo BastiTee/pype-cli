@@ -4,8 +4,8 @@
 
 import click
 
-from pype.core import PypeCore, fname_to_name
-from pype.util.cli import print_success, print_warning
+from pype.core import PypeCore
+from pype.util.cli import fname_to_name, print_success, print_warning
 
 
 @click.command(name=fname_to_name(__file__), help=__doc__)
