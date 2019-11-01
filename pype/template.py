@@ -13,7 +13,6 @@ from colorama import Fore, Style
 # This function just makes sure of that so you don't have to press shift to
 # resolve it during execution.
 from pype.core import fname_to_name
-
 # Import some utilities that are bundled with pype-cli
 from pype.util import cli
 from pype.util.iotools import run_interactive
