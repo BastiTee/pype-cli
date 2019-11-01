@@ -14,8 +14,6 @@ export PIPENV_VENV_IN_PROJECT=${PIPENV_VENV_IN_PROJECT:-1}
 export PIPENV_IGNORE_VIRTUALENVS=${PIPENV_IGNORE_VIRTUALENVS:-1}
 # Setup python path
 export PYTHONPATH=${PYTHONPATH:-.}
-# Setup modules used for linting
-export LINTED_MODULES=${LINTED_MODULES:-pype}
 # Make sure we are running with an explicit encoding
 export LC_ALL=${PYPE_ENCODING:-${LC_ALL}}
 export LANG=${PYPE_ENCODING:--${LANG}}
@@ -57,7 +55,7 @@ coverage() {
 
 lint() {
     # Run linter / code formatting checks against source code base
-    pipenv run flake8 $LINTED_MODULES tests
+    pipenv run flake8 pype example_pypes test
 }
 
 package() {
