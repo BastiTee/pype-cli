@@ -27,13 +27,13 @@ def main(name, path, create, user_only):
     if create:
         _create_on_the_fly(name, path)
     # Try to load the module to verify the configuration
+    module = None
     try:
         module = load_module(name, path)
     except PypeException:
         print_error('Could not find a python module "{}" at {}'
                     .format(name, path))
         exit(1)
-
     # Append plugin to global configuration
     core = PypeCore()
     config_json = core.get_config_json()

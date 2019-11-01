@@ -14,7 +14,7 @@ from pype.type_pype import Pype
 from pype.util.iotools import resolve_path
 
 
-class Plugin():
+class Plugin:
     """Data structure defining a plugin, i.e., a set of pypes."""
 
     def __init__(self, plugin_config, config_path):
@@ -57,17 +57,20 @@ class Plugin():
         ]
         self.active = True
 
-    def __handle_relative_path(self, plugin_path, config_path):
+    @staticmethod
+    def __handle_relative_path(plugin_path, config_path):
         if not plugin_path.startswith('.'):
             return plugin_path
         return sub(r'^\.[/]*', path.dirname(config_path) + '/', plugin_path)
 
-    def __get_docu_or_default(self, module):
+    @staticmethod
+    def __get_docu_or_default(module):
         return (
             module.__doc__ if module.__doc__ else NOT_DOCUMENTED_YET
         )
 
-    def __valid_for_user(self, plugin_config):
+    @staticmethod
+    def __valid_for_user(plugin_config):
         plugin_users = plugin_config.get('users', [])
         if len(plugin_users) == 0:
             return True

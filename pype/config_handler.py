@@ -15,7 +15,7 @@ from pype.exceptions import PypeException
 from pype.util.iotools import resolve_path
 
 
-class PypeConfigHandler():
+class PypeConfigHandler:
     """Pype configuration handler."""
 
     DEFAULT_CONFIG_FILE = resolve_path('~/.pype-config.json')

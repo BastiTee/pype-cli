@@ -20,8 +20,16 @@ from pype.util.iotools import resolve_path
 from tabulate import tabulate
 
 
-class PypeCore():
+class PypeCore:
     """Pype core initializer."""
+
+    SHELL_INIT_PREFIX = '.pype-initfile-'
+    SHELL_COMPLETE_PREFIX = '.pype-complete-'
+    SUPPORTED_RC_FILES = [
+        resolve_path('~/.bashrc'),
+        resolve_path('~/.bash_profile'),
+        resolve_path('~/.zshrc')
+    ]
 
     def __init__(self):
         """Public constructor."""
@@ -40,10 +48,6 @@ class PypeCore():
             'name': 'config',
             'users': []
         }, self.get_config_filepath()))
-
-    def __set_environment_variables(self):
-        environ['LC_ALL'] = 'C.UTF-8'
-        environ['LANG'] = 'C.UTF-8'
 
     def get_plugins(self):
         """Get list of configured plugins."""
@@ -82,68 +86,14 @@ class PypeCore():
         sorted_alias_keys = sorted([alias['alias'] for alias in aliases])
         alias_table = []
 
-        def find_alias(aliases, key):
-            for alias in aliases:
-                if key == alias['alias']:
-                    return alias
-
         for alias in sorted_alias_keys:
             alias_table.append([
                 '{}{}{}'.format(Style.BRIGHT, Fore.BLUE, alias),
                 Style.RESET_ALL + '=',
                 '{}{}{}'.format(Style.BRIGHT, Fore.LIGHTBLACK_EX,
-                                find_alias(aliases, alias)['command'])
+                                self._find_alias(aliases, alias)['command'])
             ])
         print(tabulate(alias_table, tablefmt='plain'))
-
-    def create_pype_or_exit(self, pype_name, plugin, minimal):
-        """Create a new pype inside the given plugin."""
-        if plugin.internal:
-            print_error('Creating internal pypes is not supported.')
-            exit(1)
-        # Normalize filename to be PEP8-conform
-        target_name = sub('-', '_', sub(r'\.py$', '', pype_name))
-        # Create absolute path
-        target_file = join(plugin.abspath, target_name + '.py')
-        if isfile(target_file):
-            print_warning('Pype already present')
-            exit(1)
-        # Depending on user input create a documented or simple template
-        template_name = ('template_minimal.py' if minimal
-                         else 'template.py')
-        source_name = join(dirname(__file__), template_name)
-        copyfile(source_name, target_file)
-        print_success('Created new pype ' + target_file)
-        return target_file
-
-    def delete_pype(self, pype_name, plugin):
-        """Delete pype from the given plugin."""
-        if plugin.internal:
-            print_error('Deleting internal pypes is not supported.')
-            return
-        source_name = sub('-', '_', sub(r'\.py$', '', pype_name))
-        source_name = join(plugin.abspath, source_name + '.py')
-        try:
-            remove(source_name)
-        except FileNotFoundError:
-            print_error('No such pype')
-            return
-        print_success('Deleted pype ' + source_name)
-
-    def get_abspath_to_pype(self, plugin, name):
-        """Get absoulte path to pype Python script."""
-        for pype in plugin.pypes:
-            if name == pype.name:
-                return pype.abspath
-        return None
-
-    SHELL_INIT_PREFIX = '.pype-initfile-'
-    SHELL_COMPLETE_PREFIX = '.pype-complete-'
-    SUPPORTED_RC_FILES = [
-        resolve_path('~/.bashrc'),
-        resolve_path('~/.bash_profile'),
-        resolve_path('~/.zshrc')
-    ]
 
     def __write_init_file(self, init_file, aliases):
         shell_command = basename(argv[0])
@@ -169,14 +119,6 @@ then
         ]) + """
 fi
 """)
-
-    def __remove_file_silently(self, target_file):
-        target_file = resolve_path(target_file)
-        print('Removing init-file ' + target_file)
-        try:
-            remove(target_file)
-        except FileNotFoundError:
-            pass  # Silent ignore to make function idempotent
 
     def install_to_shell(self):
         """Install shell features."""
@@ -221,7 +163,8 @@ fi
             content = file_handle.readlines()
             file_handle.close()
             # Don't rewrite if rc file does not link to initfile
-            if not any(list(filter(
+            if not any(
+                list(filter(
                     lambda x: self.SHELL_INIT_PREFIX in x, content))):
                 continue
             # Delete initfile-links from rc file
@@ -284,15 +227,80 @@ fi
         print_success('Uninstalled alias "{}"'.format(alias))
         self.install_to_shell()
 
-    def _alias_present(self, config_json, alias):
-        return any(
-            [existing_alias for existing_alias in config_json.get('aliases')
-             if existing_alias['alias'] == alias])
-
     def get_core_config(self, key, default=None):
         """Return a key from the core configuration of the config file."""
         return get_from_json_or_default(
             self.get_config_json(), 'core_config.' + key, default)
+
+    @staticmethod
+    def _find_alias(aliases, key):
+        for alias in aliases:
+            if key == alias['alias']:
+                return alias
+
+    @staticmethod
+    def _alias_present(config_json, alias):
+        return any(
+            [existing_alias for existing_alias in config_json.get('aliases')
+             if existing_alias['alias'] == alias])
+
+    @staticmethod
+    def create_pype_or_exit(pype_name, plugin, minimal):
+        """Create a new pype inside the given plugin."""
+        if plugin.internal:
+            print_error('Creating internal pypes is not supported.')
+            exit(1)
+        # Normalize filename to be PEP8-conform
+        target_name = sub('-', '_', sub(r'\.py$', '', pype_name))
+        # Create absolute path
+        target_file = join(plugin.abspath, target_name + '.py')
+        if isfile(target_file):
+            print_warning('Pype already present')
+            exit(1)
+        # Depending on user input create a documented or simple template
+        template_name = ('template_minimal.py' if minimal
+                         else 'template.py')
+        source_name = join(dirname(__file__), template_name)
+        copyfile(source_name, target_file)
+        print_success('Created new pype ' + target_file)
+        return target_file
+
+    @staticmethod
+    def delete_pype(pype_name, plugin):
+        """Delete pype from the given plugin."""
+        if plugin.internal:
+            print_error('Deleting internal pypes is not supported.')
+            return
+        source_name = sub('-', '_', sub(r'\.py$', '', pype_name))
+        source_name = join(plugin.abspath, source_name + '.py')
+        try:
+            remove(source_name)
+        except FileNotFoundError:
+            print_error('No such pype')
+            return
+        print_success('Deleted pype ' + source_name)
+
+    @staticmethod
+    def get_abspath_to_pype(plugin, name):
+        """Get absoulte path to pype Python script."""
+        for pype in plugin.pypes:
+            if name == pype.name:
+                return pype.abspath
+        return None
+
+    @staticmethod
+    def __remove_file_silently(target_file):
+        target_file = resolve_path(target_file)
+        print('Removing init-file ' + target_file)
+        try:
+            remove(target_file)
+        except FileNotFoundError:
+            pass  # Silent ignore to make function idempotent
+
+    @staticmethod
+    def __set_environment_variables():
+        environ['LC_ALL'] = 'C.UTF-8'
+        environ['LANG'] = 'C.UTF-8'
 
 
 def get_from_json_or_default(json, path, default_value):
