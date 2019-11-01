@@ -7,6 +7,7 @@ from os import path
 from re import sub
 from sys import path as syspath
 
+from pype.constants import NOT_DOCUMENTED_YET
 from pype.exceptions import PypeException
 from pype.type_pype import Pype
 from pype.util.iotools import get_immediate_subfiles, resolve_path
@@ -57,8 +58,7 @@ class Plugin():
 
     def __get_docu_or_default(self, module):
         return (
-            sub(r'[\.]+$', '', module.__doc__)  # replace trailing dots
-            if module.__doc__ else 'Not documented yet'
+            module.__doc__ if module.__doc__ else NOT_DOCUMENTED_YET
         )
 
     def __valid_for_user(self, plugin_config):

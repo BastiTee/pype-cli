@@ -19,18 +19,18 @@ from pype.util.iotools import open_with_default
 @click.group(
     invoke_without_command=True,
     context_settings=dict(help_option_names=['-h', '--help']),
-    help='PYPE - A command-line tool for command-line tools'
+    help='PYPE - A command-line tool for command-line tools.'
 )
 @click.option('--list-pypes', '-l', is_flag=True,
-              help='Print all available pypes')
+              help='Print all available pypes.')
 @click.option('--aliases', '-a', is_flag=True,
-              help='Print all available aliases')
+              help='Print all available aliases.')
 @click.option('--open-config', '-o', is_flag=True,
-              help='Open config file in default editor')
+              help='Open config file in default editor.')
 @click.option('--register-alias', '-r', metavar='ALIAS',
-              help='Register alias for following pype')
+              help='Register alias for following pype.')
 @click.option('--unregister-alias', '-u', metavar='ALIAS',
-              help='Unregister alias')
+              help='Unregister alias.')
 @click.pass_context
 def main(ctx, list_pypes, aliases,
          open_config, register_alias, unregister_alias):
@@ -78,24 +78,24 @@ def _bind_plugin(plugin_name, plugin):
             try:
                 syspath.append(path.dirname(plugin.abspath))
                 mod = __import__(plugin.name + '.' + name,
-                                 None, None, ['main'])
+                                 {}, {}, ['main'])
+                return mod.main
             except ImportError as import_error:
                 print_error(str(import_error))
                 exit(1)
-            return mod.main
 
     @click.option('--create-pype', '-c',
-                  help='Create new pype with provided name')
+                  help='Create new pype with given name.')
     @click.option('--minimal', '-m', is_flag=True,
                   help='Use a minimal template with less boilerplate '
-                  + '(only used along with "-c" option)')
+                  + '(only used along with "-c" option).')
     @click.option('--edit', '-e', is_flag=True,
-                  help='Open new pype immediatly for editing '
-                  + '(only used along with "-c" option)')
+                  help='Open new pype immediately for editing '
+                  + '(only used along with "-c" option).')
     @click.option('--delete-pype', '-d',
-                  help='Deletes pype for provided name')
+                  help='Delete pype with given name.')
     @click.option('--open-pype', '-o',
-                  help='Open selected pype in default editor')
+                  help='Open pype with given name in default editor.')
     @click.pass_context
     def _plugin_bind_plugin_function(
             ctx, create_pype, minimal, edit, delete_pype, open_pype):
@@ -105,6 +105,7 @@ def _bind_plugin(plugin_name, plugin):
             print_context_help(ctx, level=2)
             return
         toggle_invoked = False
+        created_pype_abspath = None
         if create_pype:  # Handle creation of pypes
             created_pype_abspath = PYPE_CORE.create_pype_or_exit(
                 create_pype, plugin, minimal)

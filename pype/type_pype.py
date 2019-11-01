@@ -3,6 +3,8 @@
 
 from re import sub
 
+from pype.constants import NOT_DOCUMENTED_YET
+
 
 class Pype():
     """Data structure defining a pype."""
@@ -18,4 +20,4 @@ class Pype():
         co = compile(open(filepath).read(), filepath, 'exec')
         if co.co_consts and isinstance(co.co_consts[0], str):
             return sub(r'[\.]+$', '', co.co_consts[0])
-        return 'Not documented yet'
+        return NOT_DOCUMENTED_YET

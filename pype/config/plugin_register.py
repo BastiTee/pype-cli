@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Register a new pype plugin."""
-
+"""Register a new plugin."""
 
 import getpass
 from os import mkdir
@@ -9,6 +8,7 @@ from re import IGNORECASE, sub
 
 import click
 
+from pype.constants import NOT_DOCUMENTED_YET
 from pype.core import PypeCore, fname_to_name, load_module
 from pype.exceptions import PypeException
 from pype.util.cli import print_error, print_success
@@ -16,12 +16,12 @@ from pype.util.iotools import resolve_path
 
 
 @click.command(name=fname_to_name(__file__), help=__doc__)
-@click.option('--name', '-n', help='Plugin module name',
+@click.option('--name', '-n', help='Plugin name.',
               metavar='NAME', required=True)
-@click.option('--path', '-p', help='Module directory',
+@click.option('--path', '-p', help='Host directory.',
               metavar='PATH', required=True)
-@click.option('--create', '-c', help='Create on the fly', is_flag=True)
-@click.option('--user-only', '-u', help='Just for current user', is_flag=True)
+@click.option('--create', '-c', help='Create on the fly.', is_flag=True)
+@click.option('--user-only', '-u', help='Just for current user.', is_flag=True)
 def main(name, path, create, user_only):
     """Script's main entry point."""
     if create:
@@ -75,6 +75,6 @@ def _create_on_the_fly(name, path):
     plugin_init_file = join(plugin_dir, '__init__.py')
     mkdir(plugin_dir)
     with open(plugin_init_file, 'w+') as init:
-        init.write('"""Not documented yet."""\n')
+        init.write('"""' + NOT_DOCUMENTED_YET + '"""\n')
     print_success('Plugin "{}" successfully created at {}'.format(
         name, abspath))

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Print system information useful for bug reports or other inspections."""
+"""Print system information."""
 
 import platform
 import sys
