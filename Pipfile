@@ -19,12 +19,8 @@ twine = "*" # Interoperability with pypi.org
 
 [packages]
 click = "*" # Command-line interface library
-colorama = "*" # Print-coloring library
-pygments = "*" # Syntax highlighter
-tabulate = "*" # Table-formatter
-requests = "*" # HTTP backend
 jsonschema = "*" # JSON schema validation
-progress = "*" # Easy-to-use progress bars
+tabulate = "*" # Table-formatter
 
 [requires]
 # Please check https://github.com/pypa/pipenv/issues/1050 why we don't set
