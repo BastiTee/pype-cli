@@ -103,22 +103,33 @@ class PypeCore:
             '~/' + self.SHELL_COMPLETE_PREFIX + init_file)
         target_handle = open(resolve_path(target_file), 'w+')
         print('Writing init-file ' + target_file)
-        target_handle.write("""# PYPE-CLI INIT-FILE: """ + init_file + """
-export PATH=$PATH:""" + dirname(argv[0]) + """
-if [ ! -z "$( command -v """ + shell_command + """ )" ] # Only if installed
+        target_handle.write("""# PYPE-CLI INIT-FILE: {}
+export PATH=$PATH:{}
+if [ ! -z "$( command -v {} )" ] # Only if installed
 then
-    if [ ! -f """ + complete_file + """ ]
+    if [ ! -f {} ]
     then
-        _""" + shell_command.upper() + """_COMPLETE=""" + source_cmd + """ """ + shell_command + """ > """ + complete_file + """
+        _{}_COMPLETE={} {} > {}
     fi
-    . """ + complete_file + """
+    . {}
 
-""" + ''.join([
-            '\talias {}="{}"\n'.format(alias['alias'], alias['command'])
-            for alias in aliases
-        ]) + """
+{}
 fi
-""")
+""".format(
+            init_file,  # Init-file descriptor
+            dirname(argv[0]),  # Path to console script
+            shell_command,  # Configured shell command
+            complete_file,  # Complete file name
+            shell_command.upper(),  # Configured shell command upper case
+            source_cmd,  # Sourcing command,
+            shell_command,  # Configured shell command
+            complete_file,  # Complete file name
+            complete_file,  # Complete file name
+            ''.join([
+                '\talias {}="{}"\n'.format(alias['alias'], alias['command'])
+                for alias in aliases
+            ])  # Alias definitions
+        ))
 
     def install_to_shell(self):
         """Install shell features."""
