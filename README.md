@@ -15,7 +15,7 @@ __pype-cli__ is a command-line tool to manage sets of other command-line tools. 
 
 ## Quickstart
 
-* Install __pype-cli__ via `pip3 install --user pype-cli`. This will install the command `pype` on your system
+* Install __pype-cli__ via `pip3 install --user pype-cli`. This will install the command `pype` for the current user
 * To use an alternative name you need to install from source via `PYPE_CUSTOM_SHELL_COMMAND=my_cmd_name python3 setup.py install --user`
 * Run `pype pype.config shell-install` and open a new shell to activate shell completion
 * Create a new __plugin__ in your home folder: `pype pype.config plugin-register --create --name my-plugin --path ~/`
@@ -75,6 +75,8 @@ To create a new pype you need to decide to which plugin you want to add the pype
 * Open a __pype__ in your default editor: `pype myplugin --open-pype mypype`
 * Delete a __pype__: `pype myplugin --delete-pype mypype`
 
+Note that as long as you don't import some of the [convenience utilities](pype/util) of __pype__ directly, your __pype__ will remain an independent Python script.
+
 ### Un-/register aliases
 
 If you have selected a __pype__ from a __plugin__ you can set __aliases__ for it. Afterwards you need to start a new shell session or source your rc-file to activate the __aliases__. New __aliases__ are stored in the configuration file.
@@ -97,7 +99,13 @@ You can register a sample __plugin__ called [__basics__](example_pypes/basics) t
 
 For some basic information you can also refer to the built-in [template.py](pype/template.py) and [template_minimal.py](pype/template_minimal.py) that are used on creation of new __pypes__.
 
-## Development
+### Best practises
+
+__pype__ has been built around the [Click-project ("Command Line Interface Creation Kit")](https://click.palletsprojects.com/) which is a Python package for creating beautiful command line interfaces.
+To fully utilize the capabilities of __pype__ it is highly recommended to get familiar with the project and use it in your __pypes__ as well.
+Again you can refer to the [__basics__](example_pypes/basics) plugin for guidance.
+
+## pype-cli development
 
 * Run `./make venv` to create a new virtual environment
 * Run `pipenv shell` to activate a local shell with the required configurations
