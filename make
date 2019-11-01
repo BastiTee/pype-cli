@@ -86,20 +86,12 @@ publish() {
     pipenv run twine upload dist/*
 }
 
-internal_docker_make() {
-    # Private function to create a docker container from parameters
-    image_name="$1"
-    shift
-    cp dockerfiles/${image_name}.Dockerfile Dockerfile
-    docker build -t "pype-docker-${image_name}" . ||rm -f Dockerfile
-    rm -f Dockerfile
-    docker run --rm $@ "pype-docker-${image_name}"
-}
-
 dockerize_mint_install() {
     # Install pype into a dockercontainer to test mint-installation
     build
-    internal_docker_make "mint-install" -ti
+    image_name="pype-docker-mint-install"
+    docker build -t $image_name .
+    docker run -ti --rm $image_name $@
 }
 
 changelog() {

@@ -1,5 +1,4 @@
 # Mint linux container image to test basic pype installation
-
 FROM ubuntu:18.04
 
 # Install python3 interpreter and package manager
