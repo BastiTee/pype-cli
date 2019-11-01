@@ -91,9 +91,11 @@ If your __plugin__ contains shared code over all __pypes__ you can simply put it
 
 You can register a sample __plugin__ called [__basics__](example_pypes/basics) that contains some useful recipes to get you started with your own pipes.
 
-* Register the __basics__ __plugin__: `pype pype.config plugin-register --name basics --path <PYPE_REPOSITORY>/example_pypes`
+* Register the [__basics__](example_pypes/basics) __plugin__: `pype pype.config plugin-register --name basics --path <PYPE_REPOSITORY>/example_pypes`
 * Navigate to `pype basics <TAB>` to see its content
 * Open a recipe in your edior, for example: `pype basics --open-pype hello-world-opt`
+
+For some basic information you can also refer to the built-in [template.py](pype/template.py) and [template_minimal.py](pype/template_minimal.py) that are used on creation of new __pypes__.
 
 ## Development
 
