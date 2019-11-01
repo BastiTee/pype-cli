@@ -18,7 +18,7 @@ import click
 # resolve it during execution.
 from pype.core import fname_to_name
 # Import some utilities that are bundled with pype-cli
-from pype.util.cli import ask_yes_or_no, generate_dynamic_multicommand
+from pype.util.cli import generate_dynamic_multicommand
 from pype.util.iotools import resolve_path
 
 # Place to store your dynamic commands
@@ -56,12 +56,12 @@ def _command_callback(command, context):
     invoke_without_command=True,
     # Initialize dynamic subcommands using the convenience function
     cls=generate_dynamic_multicommand(
-       # Add a function to create multi commands, in this case
-       # based on the existing command registry.
-       _generate_multi_command(),
-       # Provide a callback to receive the command and the
-       # click context object.
-       _command_callback
+        # Add a function to create multi commands, in this case
+        # based on the existing command registry.
+        _generate_multi_command(),
+        # Provide a callback to receive the command and the
+        # click context object.
+        _command_callback
     )
 )
 # Add an option to extend the command registry
@@ -78,11 +78,11 @@ def main(ctx, add):
         if add in command_registry:
             print(add + ' already registered.')
             exit(0)
-        yes = ask_yes_or_no('Add ' + add + ' to commands?')
-        if yes:
-            # Register and save the new command
-            command_registry.append(add)
-            json.dump(command_registry, open(commands_registry, 'w+'))
+        click.confirm(
+            'Add ' + add + ' to commands?', default=False, abort=True)
+        # Register and save the new command
+        command_registry.append(add)
+        json.dump(command_registry, open(commands_registry, 'w+'))
     # ... else just print the help text.
     elif ctx.invoked_subcommand is None:
         print(ctx.get_help())

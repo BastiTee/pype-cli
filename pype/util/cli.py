@@ -3,16 +3,36 @@
 
 import click
 
-from pype.util import misc
-
 
 def _create_short_names_for_commands(commands):
-    short_names = misc.remove_common_prefix_from_string_list(
-        misc.remove_common_suffix_from_string_list(
+    short_names = _remove_common_prefix_from_string_list(
+        _remove_common_suffix_from_string_list(
             [command['name'] for command in commands]
         ))
     for i in range(0, len(commands)):
         commands[i]['short_name'] = short_names[i]
+
+
+def _remove_common_prefix_from_string_list(string_list):
+    """If a list of strings share the same prefix they will be removed."""
+    if any([len(string) < 2 or not string for string in string_list]):
+        return string_list
+    uniq_first_char = len(set([string[:1] for string in string_list]))
+    if uniq_first_char == 1:
+        string_list = _remove_common_prefix_from_string_list(
+            [string[1:] for string in string_list])
+    return string_list
+
+
+def _remove_common_suffix_from_string_list(string_list):
+    """If a list of strings share the same suffix they will be removed."""
+    if any([len(string) < 2 or not string for string in string_list]):
+        return string_list
+    uniq_last_char = len(set([string[-1:] for string in string_list]))
+    if uniq_last_char == 1:
+        string_list = _remove_common_suffix_from_string_list(
+            [string[:-1] for string in string_list])
+    return string_list
 
 
 def _get_command(name, commands, strip):
@@ -51,36 +71,6 @@ def generate_dynamic_multicommand(
                 callback_function(command['name'], ctx)
             return invoke_callback
     return DynamicCLI
-
-
-def ask_yes_or_no(question, default='yes'):
-    """Ask user a yes/no question and return their answer."""
-    valid = {'yes': True, 'y': True, 'ye': True,
-             'no': False, 'n': False}
-    if default is None:
-        prompt = ' [y/n] '
-    elif default == 'yes':
-        prompt = ' [Y/n] '
-    elif default == 'no':
-        prompt = ' [y/N] '
-    else:
-        raise ValueError('invalid default answer: {}'.format(default))
-
-    while True:
-        print(question + prompt)
-        choice = input().lower()
-        if default is not None and choice == '':
-            return valid[default]
-        elif choice in valid:
-            return valid[choice]
-        else:
-            print('Please respond with "yes" or "no" (or "y" or "n").')
-
-
-def ask_for_text(question):
-    """Ask user for free text input and return their answer."""
-    print(question)
-    return input('> ')
 
 
 def print_success(message):

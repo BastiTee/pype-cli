@@ -16,7 +16,6 @@ from pype.exceptions import PypeException
 from pype.type_plugin import Plugin
 from pype.util.cli import print_error, print_success, print_warning
 from pype.util.iotools import resolve_path
-from pype.util.misc import get_from_json_or_default
 
 from tabulate import tabulate
 
@@ -294,6 +293,19 @@ fi
         """Return a key from the core configuration of the config file."""
         return get_from_json_or_default(
             self.get_config_json(), 'core_config.' + key, default)
+
+
+def get_from_json_or_default(json, path, default_value):
+    """Try to load a key breadcrumb from a JSON object or return default."""
+    if not path:
+        return default_value
+    json = json if json else {}
+    try:
+        for breadcrumb in path.split('.'):
+            json = json[breadcrumb]
+        return json if json else default_value
+    except KeyError:
+        return default_value
 
 
 def fname_to_name(fname):

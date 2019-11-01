@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """I/O utilities."""
 
-from os import environ, listdir, name, path
+from os import environ, listdir, path
 from re import IGNORECASE, match
 from subprocess import PIPE, call, run
 
@@ -9,7 +9,7 @@ from pype.util.cli import print_error
 
 
 def run_interactive(cmdline, dry_run=False, verbose=False, *args, **kwargs):
-    """Call to an interactive shell."""
+    """Call an interactive shell."""
     if dry_run or verbose:
         print('$: {}'.format(cmdline))
     if dry_run:
@@ -21,7 +21,7 @@ def run_interactive(cmdline, dry_run=False, verbose=False, *args, **kwargs):
 
 
 def run_and_get_output(cmdline, dry_run=False, verbose=False, *args, **kwargs):
-    """Run a cmdline non-interactive and returns both stdout and stderr."""
+    """Call a non-interactive shell and return stdout and stderr."""
     if dry_run or verbose:
         print('$: {}'.format(cmdline))
     if dry_run:
@@ -31,7 +31,7 @@ def run_and_get_output(cmdline, dry_run=False, verbose=False, *args, **kwargs):
 
 
 def open_with_default(filepath):
-    """Open the given filepath with the OS'es default editor."""
+    """Open the given filepath with the OS'es default application."""
     try:
         # Use open command
         run(['open', filepath], check=True)
@@ -50,12 +50,6 @@ def open_with_default(filepath):
 def resolve_path(relative_path):
     """Resolve path including home folder expanding."""
     return path.abspath(path.expanduser(relative_path))
-
-
-def get_immediate_subdirs(file_path, pattern=None, ignorecase=False):
-    """Return the immediate subdirectories of a path."""
-    return get_immediate_subfiles(
-        file_path, pattern, ignorecase, is_file=False)
 
 
 def get_immediate_subfiles(
@@ -78,8 +72,3 @@ def get_immediate_subfiles(
         files.append(file_name)
     files.sort()
     return files
-
-
-def clear_screen():
-    """Clear terminal window."""
-    call('clear' if name == 'posix' else 'cls')
