@@ -1,5 +1,6 @@
 """pype-cli test suite."""
 
+from collections import namedtuple
 import tempfile
 from json import dumps
 from os import environ
@@ -28,12 +29,22 @@ VALID_CONFIG = {
 }
 
 
-def invoke_isolated_runner(component_under_test, arguments=[]):
+RunnerModel = namedtuple(
+    'RunnerModel',
+    'result runner config_file'
+)
+
+
+def invoke_isolated_test(component_under_test, arguments=[]):
     """Use click.CliRunner to component-test on isolated file system."""
     set_temporary_config_file()
     runner = CliRunner()
     with runner.isolated_filesystem():
-        return runner.invoke(component_under_test, arguments), runner
+        return RunnerModel(
+            result=runner.invoke(component_under_test, arguments),
+            runner=runner,
+            config_file=environ[ENV_CONFIG_FILE]
+        )
 
 
 def set_temporary_config_file():
