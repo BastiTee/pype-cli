@@ -75,7 +75,7 @@ To create a new pype you need to decide to which plugin you want to add the pype
 * Open a __pype__ in your default editor: `pype myplugin --open-pype mypype`
 * Delete a __pype__: `pype myplugin --delete-pype mypype`
 
-Note that as long as you don't import some of the [convenience utilities](pype/util) of __pype-cli__ directly, your __pype__ will remain an independent Python script.
+Note that as long as you don't import some of the [convenience utilities](pype/__init__.py) of __pype-cli__ directly, your __pype__ will remain [an independent Python script](example_pypes/basics/non_pype_script.py) that can be used regardless of __pype_cli__.
 
 ### Un-/register aliases
 

@@ -26,16 +26,14 @@ venv() {
 	pipenv install --dev --skip-lock
     pipenv run pip install --editable .
     # Use a venv-relative config file
-    echo "export PYPE_CONFIGURATION_FILE=$( pwd )/.venv/bin/pype-config.json" \
-    >> .venv/bin/activate
+    cfg_file="$( pwd )/.venv/bin/pype-config.json"
+    export PYPE_CONFIGURATION_FILE=$cfg_file
+    echo "export PYPE_CONFIGURATION_FILE=$cfg_file" >> .venv/bin/activate
     # Auto-activate shell completion
-    shell="$( basename $SHELL )"
-    echo "Used shell: $shell"
-    if [ "$shell" = "bash" ]; then
-        echo "eval \"\$(_PYPE_COMPLETE=source pype)\"" >> .venv/bin/activate
-    else
-        echo "eval \"\$(_PYPE_COMPLETE=source_zsh pype)\"" >> .venv/bin/activate
-    fi
+    echo "eval \"\$(_PYPE_COMPLETE=source pype)\"" >> .venv/bin/activate
+    # Register example pype
+    pipenv run pype pype.config plugin-register \
+    --name basics --path example_pypes
 }
 
 clean() {
@@ -84,7 +82,7 @@ publish() {
     pipenv run twine upload dist/*
 }
 
-dockerize_mint_install() {
+dockerize() {
     # Install pype into a dockercontainer to test mint-installation
     build
     image_name="pype-docker-mint-install"
@@ -103,9 +101,8 @@ changelog() {
 # -----------------------------------------------------------------------------
 internal_print_commands() {
     echo "$1\n"
-    {   # All functions in make or make-extension are considered targets
+    {   # All functions except prefixed "internal_"  are considered targets
         cat make 2>/dev/null
-        cat make-extension 2>/dev/null
     } | egrep -e "^[a-zA-Z_]+\(\)" | egrep -ve "^internal" |\
     tr "(" " " | awk '{print $1}' | sort
     echo
