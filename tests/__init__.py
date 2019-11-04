@@ -1,10 +1,9 @@
 """pype-cli test suite."""
 
-from collections import namedtuple
 import tempfile
+from collections import namedtuple
 from json import dumps
 from os import environ
-from tempfile import NamedTemporaryFile
 
 from click.testing import CliRunner
 
@@ -55,7 +54,7 @@ def set_temporary_config_file():
 
 def create_temporary_config_file():
     """Create a temporary configuration file for testing purposes."""
-    temp = NamedTemporaryFile()
+    temp = tempfile.NamedTemporaryFile()
     temp.write(bytes(dumps(VALID_CONFIG), 'utf-8'))
     temp.seek(0)
     return temp
