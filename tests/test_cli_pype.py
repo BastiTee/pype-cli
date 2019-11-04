@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""CLI pype tests."""
+"""$ pype."""
 
 
 from click.testing import CliRunner
