@@ -29,20 +29,20 @@ class TestPypeConfigHandlerResolveConfigFile:  # noqa: D101
 
     def test_withenv(self):  # noqa: D102
         tmpf = create_temporary_config_file()
-        environ[ENV_CONFIG_FILE] = tmpf.name
+        environ[ENV_CONFIG_FILE] = tmpf
         config = PypeConfigHandler()
         source = config.resolve_config_file()
-        assert config.get_filepath() == tmpf.name
+        assert config.get_filepath() == tmpf
         assert config.get_json() == VALID_CONFIG
         assert source == ConfigResolverSource.FROM_ENV
 
     def test_withdefaultfile(self):  # noqa: D102
         tmpf = create_temporary_config_file()
         config = PypeConfigHandler()
-        config.DEFAULT_CONFIG_FILE = tmpf.name
+        config.DEFAULT_CONFIG_FILE = tmpf
         config.LOCAL_CONFIG_FILE = '/does/not/exist'
         source = config.resolve_config_file()
-        assert config.get_filepath() == tmpf.name
+        assert config.get_filepath() == tmpf
         assert config.get_json() == VALID_CONFIG
         assert source == ConfigResolverSource.FROM_DEFAULT_PATH
 
@@ -50,9 +50,9 @@ class TestPypeConfigHandlerResolveConfigFile:  # noqa: D101
         tmpf = create_temporary_config_file()
         config = PypeConfigHandler()
         config.DEFAULT_CONFIG_FILE = '/does/not/exist'
-        config.LOCAL_CONFIG_FILE = tmpf.name
+        config.LOCAL_CONFIG_FILE = tmpf
         source = config.resolve_config_file()
-        assert config.get_filepath() == tmpf.name
+        assert config.get_filepath() == tmpf
         assert config.get_json() == VALID_CONFIG
         assert source == ConfigResolverSource.FROM_RELATIVE_FILE
 

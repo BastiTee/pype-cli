@@ -1,12 +1,12 @@
 """pype-cli test suite."""
 
-import tempfile
 from collections import namedtuple
-from json import dumps, load
+from json import dump, load
 from os import environ
 
 from click.testing import CliRunner
 
+from pype import resolve_path
 from pype.config_handler import DEFAULT_CONFIG
 from pype.constants import ENV_TEST_CONFIG_FILE
 
@@ -38,7 +38,7 @@ RunnerModel = namedtuple(
 def invoke_isolated_test(component_under_test, arguments=[]):
     """Use click.CliRunner to component-test on isolated file system."""
     temp_file = create_temporary_config_file(DEFAULT_CONFIG)
-    environ[ENV_TEST_CONFIG_FILE] = temp_file.name
+    environ[ENV_TEST_CONFIG_FILE] = temp_file
     runner = CliRunner(env=environ)
     with runner.isolated_filesystem():
         if component_under_test == 'main':
@@ -47,7 +47,7 @@ def invoke_isolated_test(component_under_test, arguments=[]):
         return RunnerModel(
             result=runner.invoke(component_under_test, arguments, env=environ),
             runner=runner,
-            config_file=temp_file.name)
+            config_file=temp_file)
 
 
 def load_config_from_test(test_run):
@@ -58,8 +58,7 @@ def load_config_from_test(test_run):
 
 def create_temporary_config_file(configuration=VALID_CONFIG):
     """Create a temporary configuration file for testing purposes."""
-    temp = tempfile.NamedTemporaryFile()
-    temp.write(bytes(dumps(configuration), 'utf-8'))
-    temp.seek(0)
-    print('- created temporary test config at {}'.format(temp.name))
-    return temp
+    temp_file = resolve_path('~/.pype-test-configuration.json')
+    dump(configuration, open(temp_file, 'w+'))
+    print('- created temporary test config at {}'.format(temp_file))
+    return temp_file

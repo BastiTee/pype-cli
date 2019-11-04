@@ -25,16 +25,17 @@ class PypeCore:
 
     SHELL_INIT_PREFIX = '.pype-initfile-'
     SHELL_COMPLETE_PREFIX = '.pype-complete-'
-    SUPPORTED_RC_FILES = [
-        resolve_path('~/.bashrc'),
-        resolve_path('~/.bash_profile'),
-        resolve_path('~/.zshrc')
-    ]
 
     def __init__(self, test_config_file=None):
         """Public constructor."""
         self.__set_environment_variables()
         self.__config = PypeConfigHandler(test_config_file)
+        self.__test_postfix = '-test' if test_config_file else ''
+        self.__rc_files = [
+            resolve_path('~/.bashrc' + self.__test_postfix),
+            resolve_path('~/.bash_profile' + self.__test_postfix),
+            resolve_path('~/.zshrc' + self.__test_postfix)
+        ]
         # load all external plugins
         self.plugins = [
             Plugin(plugin, self.get_config_filepath())
@@ -98,9 +99,12 @@ class PypeCore:
     def __write_init_file(self, init_file, aliases):
         shell_command = basename(argv[0])
         source_cmd = 'source_zsh' if init_file == 'zsh' else 'source'
-        target_file = resolve_path('~/' + self.SHELL_INIT_PREFIX + init_file)
+        target_file = resolve_path(
+            '~/' + self.SHELL_INIT_PREFIX + init_file
+            + self.__test_postfix)
         complete_file = resolve_path(
-            '~/' + self.SHELL_COMPLETE_PREFIX + init_file)
+            '~/' + self.SHELL_COMPLETE_PREFIX + init_file
+            + self.__test_postfix)
         target_handle = open(resolve_path(target_file), 'w+')
         print('Writing init-file ' + target_file)
         target_handle.write("""# PYPE-CLI INIT-FILE: {}
@@ -141,7 +145,7 @@ fi
         self.__write_init_file('bsh', aliases)
         self.__write_init_file('zsh', aliases)
         print('Add link to init-file in rc-files if present')
-        for file in self.SUPPORTED_RC_FILES:
+        for file in self.__rc_files:
             if not isfile(file):
                 continue
             print(' - "{}"'.format(file))
@@ -162,12 +166,15 @@ fi
     def uninstall_from_shell(self):
         """Uninstall shell features."""
         # Remove init files
-        self.__remove_file_silently('~/' + self.SHELL_INIT_PREFIX + 'bsh')
-        self.__remove_file_silently('~/' + self.SHELL_INIT_PREFIX + 'zsh')
-        self.__remove_file_silently('~/' + self.SHELL_COMPLETE_PREFIX + 'bsh')
-        self.__remove_file_silently('~/' + self.SHELL_COMPLETE_PREFIX + 'zsh')
+        for file in [
+            '~/' + self.SHELL_INIT_PREFIX + 'bsh' + self.__test_postfix,
+            '~/' + self.SHELL_INIT_PREFIX + 'zsh' + self.__test_postfix,
+            '~/' + self.SHELL_COMPLETE_PREFIX + 'bsh' + self.__test_postfix,
+            '~/' + self.SHELL_COMPLETE_PREFIX + 'zsh' + self.__test_postfix
+        ]:
+            self.__remove_file_silently(file)
         print('Remove link to init-file from rc-files if present')
-        for file in self.SUPPORTED_RC_FILES:
+        for file in self.__rc_files:
             if not isfile(file):
                 continue
             file_handle = open(file, 'r')

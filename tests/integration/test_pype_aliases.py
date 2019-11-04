@@ -7,7 +7,7 @@ with a string instead of a module.
 """
 
 
-from tests import load_config_from_test, invoke_isolated_test
+from tests import invoke_isolated_test, load_config_from_test
 
 
 class TestCLIPypeAliases:  # noqa: D101
