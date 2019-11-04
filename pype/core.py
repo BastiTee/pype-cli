@@ -242,7 +242,7 @@ fi
             del config_json['aliases'][obj[0]]
         self.__config.set_json(config_json)
         # update install script
-        print_success('Uninstalled alias "{}"'.format(alias))
+        print_success('Unregistered alias: {}'.format(alias))
         self.install_to_shell()
 
     def get_core_config(self, key, default=None):

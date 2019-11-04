@@ -32,7 +32,13 @@ class TestCLIPypeAliases:  # noqa: D101
             ['--register-alias', 'myalias', 'pype.config', 'plugin-register'])
         assert test_run.result.exit_code == 0
         assert 'Configured alias: myalias' in test_run.result.output
-        print(test_run.result.output)
         result_configuration = load_config_from_test(test_run)
         assert len(result_configuration['aliases']) == 1
         assert result_configuration['aliases'][0]['alias'] == 'myalias'
+        test_run = invoke_isolated_test(
+            'main',
+            ['--unregister-alias', 'myalias'])
+        assert test_run.result.exit_code == 0
+        assert 'Unregistered alias: myalias' in test_run.result.output
+        result_configuration = load_config_from_test(test_run)
+        assert len(result_configuration['aliases']) == 0
