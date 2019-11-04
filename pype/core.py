@@ -225,10 +225,10 @@ fi
         config_json = self.__config.get_json()
         if not config_json.get('aliases', None):
             print_warning('No aliases registered.')
-            return
+            exit(1)
         if not self._alias_present(config_json, alias):
             print_warning('Alias not registered.')
-            return
+            exit(1)
         for obj in enumerate(config_json['aliases']):
             if obj[1]['alias'] != alias:
                 continue
