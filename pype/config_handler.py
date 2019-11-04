@@ -2,7 +2,7 @@
 """Pype configuration handler."""
 
 from enum import Enum
-from json import dump, load
+from json import JSONDecodeError, dump, load
 from os import environ
 from os.path import dirname, isfile, join
 from sys import stderr
@@ -71,8 +71,10 @@ class PypeConfigHandler:
             config_source = ConfigResolverSource.FROM_SCRATCH_TO_DEFAULT_PATH
         try:
             self.config = load(open(self.filepath, 'r'))
-        except FileNotFoundError:
-            # Priorty 5: File name provided but file does not exist
+        except JSONDecodeError:
+            raise PypeException('Provided configuration file not valid JSON.')
+        except (FileNotFoundError, JSONDecodeError):
+            # Priorty 5: File name provided but file does not
             dump(self.DEFAULT_CONFIG, open(self.filepath, 'w+'))
             self.config = load(open(self.filepath, 'r'))
             config_source = ConfigResolverSource.FROM_SCRATCH_TO_PROVIDED_PATH
