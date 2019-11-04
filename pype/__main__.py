@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """PYPE - A command-line tool for command-line tools."""
 
-from os import environ, listdir, path
+from os import listdir, path
 from re import sub
 from sys import path as syspath
 
@@ -10,7 +10,6 @@ import click
 
 from colorama import init
 
-from pype.constants import ENV_TEST_CONFIG_FILE
 from pype.core import PypeCore, print_context_help
 from pype.exceptions import PypeException
 from pype.util.cli import fname_to_name, print_error
@@ -159,7 +158,7 @@ def _process_alias_configuration(
 
 init(autoreset=True)  # Initialize colorama
 try:
-    PYPE_CORE = PypeCore(environ.get(ENV_TEST_CONFIG_FILE, None))
+    PYPE_CORE = PypeCore()
     [
         _bind_plugin(plugin.name, plugin)
         for plugin in PYPE_CORE.get_plugins()

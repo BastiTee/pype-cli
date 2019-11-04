@@ -11,7 +11,7 @@ from sys import argv, path as syspath
 from colorama import Fore, Style
 
 from pype.config_handler import PypeConfigHandler
-from pype.constants import ENV_CONFIG_FILE
+from pype.constants import ENV_CONFIG_FILE, ENV_TEST_CONFIG_FILE
 from pype.exceptions import PypeException
 from pype.type_plugin import Plugin
 from pype.util.cli import print_error, print_success, print_warning
@@ -26,9 +26,11 @@ class PypeCore:
     SHELL_INIT_PREFIX = '.pype-initfile-'
     SHELL_COMPLETE_PREFIX = '.pype-complete-'
 
-    def __init__(self, test_config_file=None):
+    def __init__(self):
         """Public constructor."""
         self.__set_environment_variables()
+        # Check if pype-cli is currently under test Volkswagen-style
+        test_config_file = environ.get(ENV_TEST_CONFIG_FILE, None)
         self.__config = PypeConfigHandler(test_config_file)
         self.__test_postfix = '-test' if test_config_file else ''
         self.__rc_files = [
