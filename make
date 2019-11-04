@@ -53,7 +53,7 @@ coverage() {
 
 lint() {
     # Run linter / code formatting checks against source code base
-    pipenv run flake8 pype example_pypes test
+    pipenv run flake8 pype example_pypes tests
 }
 
 package() {

@@ -1,11 +1,11 @@
 """pype-cli test suite."""
 
 import tempfile
+from json import dumps
 from os import environ
+from tempfile import NamedTemporaryFile
 
 from pype.constants import ENV_CONFIG_FILE
-from json import dumps
-from tempfile import NamedTemporaryFile
 
 VALID_CONFIG = {
     'plugins': [
@@ -33,6 +33,7 @@ def set_temporary_config_file():
 
 
 def create_temporary_config_file():
+    """Create a temporary configuration file for testing purposes."""
     temp = NamedTemporaryFile()
     temp.write(bytes(dumps(VALID_CONFIG), 'utf-8'))
     temp.seek(0)
