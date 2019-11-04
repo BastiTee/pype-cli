@@ -5,6 +5,8 @@ from json import dumps
 from os import environ
 from tempfile import NamedTemporaryFile
 
+from click.testing import CliRunner
+
 from pype.constants import ENV_CONFIG_FILE
 
 VALID_CONFIG = {
@@ -24,6 +26,14 @@ VALID_CONFIG = {
     'core_config': {
     }
 }
+
+
+def invoke_isolated_runner(component_under_test, arguments=[]):
+    """Use click.CliRunner to component-test on isolated file system."""
+    set_temporary_config_file()
+    runner = CliRunner()
+    with runner.isolated_filesystem():
+        return runner.invoke(component_under_test, arguments), runner
 
 
 def set_temporary_config_file():
