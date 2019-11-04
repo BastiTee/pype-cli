@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """Pype configuration handler."""
 
+from enum import Enum
 from json import dump, load
 from os import environ
 from os.path import dirname, isfile, join
@@ -13,6 +14,16 @@ from jsonschema import ValidationError, validate
 from pype.constants import ENV_CONFIG_FILE
 from pype.exceptions import PypeException
 from pype.util.iotools import resolve_path
+
+
+class ConfigResolverSource(Enum):
+    """Source of the resolved configuration file."""
+
+    FROM_ENV = 1
+    FROM_DEFAULT_PATH = 2
+    FROM_RELATIVE_FILE = 3
+    FROM_SCRATCH_TO_DEFAULT_PATH = 4
+    FROM_SCRATCH_TO_PROVIDED_PATH = 5
 
 
 class PypeConfigHandler:
@@ -34,28 +45,39 @@ class PypeConfigHandler:
         self.filepath = None
 
     def resolve_config_file(self):
-        """Resolve the configuration using various options."""
+        """Resolve the configuration using various options.
+
+        Returns an enum that explains from where the configuration was
+        resolved.
+        """
+        config_source = None
         try:
             # Priority 1: Environment variable
             self.filepath = environ[ENV_CONFIG_FILE]
+            config_source = ConfigResolverSource.FROM_ENV
         except KeyError:
             # Priority 2: ~/.pype-config.json
             if isfile(self.DEFAULT_CONFIG_FILE):
                 self.filepath = self.DEFAULT_CONFIG_FILE
+                config_source = ConfigResolverSource.FROM_DEFAULT_PATH
             # Priority 3: ./config.json
             elif isfile(self.LOCAL_CONFIG_FILE):
                 self.filepath = self.LOCAL_CONFIG_FILE
+                config_source = ConfigResolverSource.FROM_RELATIVE_FILE
         # Priority 4: Create a template config from scratch if no path provided
         if not self.filepath:
             dump(self.DEFAULT_CONFIG, open(self.DEFAULT_CONFIG_FILE, 'w+'))
             self.filepath = self.DEFAULT_CONFIG_FILE
+            config_source = ConfigResolverSource.FROM_SCRATCH_TO_DEFAULT_PATH
         try:
             self.config = load(open(self.filepath, 'r'))
         except FileNotFoundError:
             # Priorty 5: File name provided but file does not exist
             dump(self.DEFAULT_CONFIG, open(self.filepath, 'w+'))
             self.config = load(open(self.filepath, 'r'))
+            config_source = ConfigResolverSource.FROM_SCRATCH_TO_PROVIDED_PATH
         self.validate_config(self.config)
+        return config_source
 
     def get_json(self):
         """Get pype configuration as JSON object."""
