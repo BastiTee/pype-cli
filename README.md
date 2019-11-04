@@ -75,8 +75,6 @@ To create a new pype you need to decide to which plugin you want to add the pype
 * Open a __pype__ in your default editor: `pype myplugin --open-pype mypype`
 * Delete a __pype__: `pype myplugin --delete-pype mypype`
 
-Note that as long as you don't import some of the [convenience utilities](pype/__init__.py) of __pype-cli__ directly, your __pype__ will remain [an independent Python script](example_pypes/basics/non_pype_script.py) that can be used regardless of __pype_cli__.
-
 ### Un-/register aliases
 
 If you have selected a __pype__ from a __plugin__ you can set __aliases__ for it. Afterwards you need to start a new shell session or source your rc-file to activate the __aliases__. New __aliases__ are stored in the configuration file.
@@ -98,6 +96,8 @@ You can register a sample __plugin__ called [__basics__](example_pypes/basics) t
 * Open a recipe in your edior, for example: `pype basics --open-pype hello-world-opt`
 
 For some basic information you can also refer to the built-in [template.py](pype/template.py) and [template_minimal.py](pype/template_minimal.py) that are used on creation of new __pypes__.
+
+Note that as long as you don't import some of the [convenience utilities](pype/__init__.py) of __pype-cli__ directly, your __pype__ will remain [an independent Python script](example_pypes/basics/non_pype_script.py) that can be used regardless of __pype_cli__.
 
 ### Best practises
 
