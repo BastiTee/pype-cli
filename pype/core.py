@@ -31,10 +31,10 @@ class PypeCore:
         resolve_path('~/.zshrc')
     ]
 
-    def __init__(self):
+    def __init__(self, test_config_file=None):
         """Public constructor."""
         self.__set_environment_variables()
-        self.__config = PypeConfigHandler()
+        self.__config = PypeConfigHandler(test_config_file)
         # load all external plugins
         self.plugins = [
             Plugin(plugin, self.get_config_filepath())

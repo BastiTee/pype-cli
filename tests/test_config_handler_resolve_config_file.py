@@ -3,7 +3,8 @@
 
 from os import environ, path, remove
 
-from pype.config_handler import ConfigResolverSource, PypeConfigHandler
+from pype.config_handler import (
+    ConfigResolverSource, DEFAULT_CONFIG, PypeConfigHandler)
 from pype.constants import ENV_CONFIG_FILE
 
 from pytest import fixture
@@ -61,5 +62,5 @@ class TestPypeConfigHandlerResolveConfigFile:  # noqa: D101
         config.LOCAL_CONFIG_FILE = '/does/not/exist'
         source = config.resolve_config_file()
         assert config.get_filepath() == 'test_config.json'
-        assert config.get_json() == config.DEFAULT_CONFIG
+        assert config.get_json() == DEFAULT_CONFIG
         assert source == ConfigResolverSource.FROM_SCRATCH_TO_DEFAULT_PATH
