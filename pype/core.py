@@ -290,14 +290,14 @@ fi
         """Delete pype from the given plugin."""
         if plugin.internal:
             print_error('Deleting internal pypes is not supported.')
-            return
+            exit(1)
         source_name = sub('-', '_', sub(r'\.py$', '', pype_name))
         source_name = join(plugin.abspath, source_name + '.py')
         try:
             remove(source_name)
         except FileNotFoundError:
             print_error('No such pype')
-            return
+            exit(1)
         print_success('Deleted pype ' + source_name)
 
     @staticmethod
