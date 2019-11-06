@@ -2,6 +2,7 @@
 .dockerignore
 Pipfile.lock
 requirements.txt
+config.json
 
 # PyCharm
 .idea/
