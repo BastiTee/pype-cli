@@ -79,19 +79,23 @@ def create_test_env(configuration=Configuration.EMPTY):
         shutil.rmtree(working_dir)
 
 
-def invoke_runner(component_under_test, arguments=[]):
+def invoke_runner(component_under_test, arguments=None):
     """Create and invoke a test runner."""
+    if arguments is None:
+        arguments = []
     with create_test_env() as test_env:
         return create_runner(test_env, component_under_test, arguments)
 
 
-def create_runner(test_env, component_under_test, arguments=[]):
+def create_runner(test_env, component_under_test, arguments=None):
     """Create a test runner with a provided test environment.
 
     We need to delay the import of pype.__main__ until we set the environment
     variables correctly. That is why tests.invoke_runner gets called
     with a string instead of a module.
     """
+    if arguments is None:
+        arguments = []
     environ[ENV_TEST_CONFIG_FILE] = test_env.config_file
     runner = CliRunner(env=environ)
     main_lib = importlib.reload(__main__)
