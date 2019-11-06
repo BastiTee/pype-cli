@@ -17,7 +17,7 @@ def _load_command_registry():
     """Load the available commands from a json file."""
     try:
         commands = json.load(open(commands_registry, 'r'))
-    except (ValueError, FileNotFoundError):
+    except (json.decoder.JSONDecodeError, FileNotFoundError):
         commands = []  # Fallback on first initialization
     return commands
 
