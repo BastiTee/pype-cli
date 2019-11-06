@@ -5,7 +5,8 @@ import click
 
 import pkg_resources
 
-from pype.core import fname_to_name, get_pype_basepath
+from pype.core import get_pype_basepath
+from pype.util.cli import fname_to_name
 
 
 @click.command(name=fname_to_name(__file__), help=__doc__)

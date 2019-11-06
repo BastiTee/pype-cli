@@ -14,9 +14,12 @@
 - Run a full build: `./make build`
 - Start release, e.g., for release 0.0.1: `git flow release start 0.0.1`
 - Finish release by..
+  - setting final version number for release
   - getting the latest changelog via `./make changelog` and edit CHANGELOG file
+  - committing changelog
 - Finish release: `git flow release finish --tagname 0.0.1 0.0.1`
 - Bump version to next version in setup.py, e.g., `0.0.2`
+- Commit version bump
 - Push all changes: `git push --tags && git push`
 - Check [Travis](https://travis-ci.org/BastiTee/pype/branches) for successful builds
-- Push to PyPi using `git checkout master && ./make publish`
+- Push to PyPi using `git checkout master && ./make publish && git checkout develop`

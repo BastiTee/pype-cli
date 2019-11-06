@@ -3,8 +3,8 @@
 
 import click
 
-from pype.core import PypeCore, fname_to_name
-from pype.util.cli import print_success
+from pype.core import PypeCore
+from pype.util.cli import fname_to_name, print_success
 
 
 @click.command(name=fname_to_name(__file__), help=__doc__)

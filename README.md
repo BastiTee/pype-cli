@@ -1,21 +1,21 @@
-# pype
+# pype-cli
 
 > A command-line tool for command-line tools
-<img align="right" src="res/icon.png" alt="alt text" width="150" height="150">
+<img align="right" src="res/icon.png" alt="pype-cli Logo" width="150" height="150">
 
 [![Build Status](https://travis-ci.org/BastiTee/pype-cli.svg?branch=develop)](https://travis-ci.org/BastiTee/pype-cli)
 ![PyPU - Version](https://img.shields.io/pypi/v/pype-cli.svg)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/pype-cli.svg)
 
-**DISCLAIMER: This project is in alpha stage and interfaces can still change a lot.**
-
 ## In a nutshell
 
 __pype-cli__ is a command-line tool to manage sets of other command-line tools. It simplifies the creation, orchestration and access of Python scripts that you require for your development work, process automation, etc.
 
+<img src="res/terminalizer/pype-cli.gif" alt="pype-cli GIF" width="550">
+
 ## Quickstart
 
-* Install __pype-cli__ via `pip3 install --user pype-cli`. This will install the command `pype` on your system
+* Install __pype-cli__ via `pip3 install --user pype-cli`. This will install the command `pype` for the current user
 * To use an alternative name you need to install from source via `PYPE_CUSTOM_SHELL_COMMAND=my_cmd_name python3 setup.py install --user`
 * Run `pype pype.config shell-install` and open a new shell to activate shell completion
 * Create a new __plugin__ in your home folder: `pype pype.config plugin-register --create --name my-plugin --path ~/`
@@ -89,13 +89,23 @@ If your __plugin__ contains shared code over all __pypes__ you can simply put it
 
 ### Example recipes
 
-You can register a sample __plugin__ called __basics__ that contains some useful recipes to get you started with your own pipes.
+You can register a sample __plugin__ called [__basics__](example_pypes/basics) that contains some useful recipes to get you started with your own pipes.
 
-* Register the __basics__ __plugin__: `pype pype.config plugin-register --name basics --path <PYPE_REPOSITORY>/example_pypes`
+* Register the [__basics__](example_pypes/basics) __plugin__: `pype pype.config plugin-register --name basics --path <PYPE_REPOSITORY>/example_pypes`
 * Navigate to `pype basics <TAB>` to see its content
 * Open a recipe in your edior, for example: `pype basics --open-pype hello-world-opt`
 
-## Development
+For some basic information you can also refer to the built-in [template.py](pype/template.py) and [template_minimal.py](pype/template_minimal.py) that are used on creation of new __pypes__.
+
+Note that as long as you don't import some of the [convenience utilities](pype/__init__.py) of __pype-cli__ directly, your __pype__ will remain [an independent Python script](example_pypes/basics/non_pype_script.py) that can be used regardless of __pype_cli__.
+
+### Best practises
+
+__pype-cli__ has been built around the [Click-project ("Command Line Interface Creation Kit")](https://click.palletsprojects.com/) which is a Python package for creating beautiful command line interfaces.
+To fully utilize the capabilities of __pype-cli__ it is highly recommended to get familiar with the project and use it in your __pypes__ as well.
+Again you can refer to the [__basics__](example_pypes/basics) plugin for guidance.
+
+## pype-cli development
 
 * Run `./make venv` to create a new virtual environment
 * Run `pipenv shell` to activate a local shell with the required configurations

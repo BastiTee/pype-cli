@@ -14,8 +14,6 @@ export PIPENV_VENV_IN_PROJECT=${PIPENV_VENV_IN_PROJECT:-1}
 export PIPENV_IGNORE_VIRTUALENVS=${PIPENV_IGNORE_VIRTUALENVS:-1}
 # Setup python path
 export PYTHONPATH=${PYTHONPATH:-.}
-# Setup modules used for linting
-export LINTED_MODULES=${LINTED_MODULES:-pype}
 # Make sure we are running with an explicit encoding
 export LC_ALL=${PYPE_ENCODING:-${LC_ALL}}
 export LANG=${PYPE_ENCODING:--${LANG}}
@@ -28,16 +26,14 @@ venv() {
 	pipenv install --dev --skip-lock
     pipenv run pip install --editable .
     # Use a venv-relative config file
-    echo "export PYPE_CONFIGURATION_FILE=.venv/bin/pype-config.json" \
-    >> .venv/bin/activate
+    cfg_file="$( pwd )/.venv/bin/pype-config.json"
+    export PYPE_CONFIGURATION_FILE=$cfg_file
+    echo "export PYPE_CONFIGURATION_FILE=$cfg_file" >> .venv/bin/activate
     # Auto-activate shell completion
-    shell="$( basename $SHELL )"
-    echo "Used shell: $shell"
-    if [ "$shell" = "bash" ]; then
-        echo "eval \"\$(_PYPE_COMPLETE=source pype)\"" >> .venv/bin/activate
-    else
-        echo "eval \"\$(_PYPE_COMPLETE=source_zsh pype)\"" >> .venv/bin/activate
-    fi
+    echo "eval \"\$(_PYPE_COMPLETE=source pype)\"" >> .venv/bin/activate
+    # Register example pype
+    pipenv run pype pype.config plugin-register \
+    --name basics --path example_pypes
 }
 
 clean() {
@@ -57,7 +53,7 @@ coverage() {
 
 lint() {
     # Run linter / code formatting checks against source code base
-    pipenv run flake8 $LINTED_MODULES tests
+    pipenv run flake8 pype example_pypes tests
 }
 
 package() {
@@ -86,20 +82,12 @@ publish() {
     pipenv run twine upload dist/*
 }
 
-internal_docker_make() {
-    # Private function to create a docker container from parameters
-    image_name="$1"
-    shift
-    cp dockerfiles/${image_name}.Dockerfile Dockerfile
-    docker build -t "pype-docker-${image_name}" . ||rm -f Dockerfile
-    rm -f Dockerfile
-    docker run --rm $@ "pype-docker-${image_name}"
-}
-
-dockerize_mint_install() {
+dockerize() {
     # Install pype into a dockercontainer to test mint-installation
     build
-    internal_docker_make "mint-install" -ti
+    image_name="pype-docker-mint-install"
+    docker build -t $image_name .
+    docker run -ti --rm $image_name $@
 }
 
 changelog() {
@@ -113,9 +101,8 @@ changelog() {
 # -----------------------------------------------------------------------------
 internal_print_commands() {
     echo "$1\n"
-    {   # All functions in make or make-extension are considered targets
+    {   # All functions except prefixed "internal_"  are considered targets
         cat make 2>/dev/null
-        cat make-extension 2>/dev/null
     } | egrep -e "^[a-zA-Z_]+\(\)" | egrep -ve "^internal" |\
     tr "(" " " | awk '{print $1}' | sort
     echo

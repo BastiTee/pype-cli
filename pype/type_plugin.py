@@ -3,16 +3,18 @@
 
 import getpass
 import importlib
+from glob import glob
 from os import path
 from re import sub
 from sys import path as syspath
 
+from pype.constants import NOT_DOCUMENTED_YET
 from pype.exceptions import PypeException
 from pype.type_pype import Pype
-from pype.util.iotools import get_immediate_subfiles, resolve_path
+from pype.util.iotools import resolve_path
 
 
-class Plugin():
+class Plugin:
     """Data structure defining a plugin, i.e., a set of pypes."""
 
     def __init__(self, plugin_config, config_path):
@@ -39,29 +41,37 @@ class Plugin():
                 __file__), plugin_config['name'])
         try:
             self.module = importlib.import_module(self.name)
-        except ModuleNotFoundError:  # noqa: F821
+        # This used to be a ModuleNotFoundException but it's only Python >= 3.6
+        except Exception:  # noqa: F821
             raise PypeException('No plugin named "{}" found at {}'
                                 .format(self.name, self.abspath))
         self.doc = self.__get_docu_or_default(self.module)
+        subfiles = [
+            path.basename(file)
+            for file in glob(self.abspath + '/*.py')
+        ]
+        subfiles = [file for file in subfiles
+                    if not file.startswith('__')]
         self.pypes = [
             Pype(path.join(self.abspath, subfile), subfile, self)
-            for subfile in
-            get_immediate_subfiles(self.abspath, r'^(?!__).*(?!__)\.py$')
+            for subfile in subfiles
         ]
         self.active = True
 
-    def __handle_relative_path(self, plugin_path, config_path):
+    @staticmethod
+    def __handle_relative_path(plugin_path, config_path):
         if not plugin_path.startswith('.'):
             return plugin_path
         return sub(r'^\.[/]*', path.dirname(config_path) + '/', plugin_path)
 
-    def __get_docu_or_default(self, module):
+    @staticmethod
+    def __get_docu_or_default(module):
         return (
-            sub(r'[\.]+$', '', module.__doc__)  # replace trailing dots
-            if module.__doc__ else 'Not documented yet'
+            module.__doc__ if module.__doc__ else NOT_DOCUMENTED_YET
         )
 
-    def __valid_for_user(self, plugin_config):
+    @staticmethod
+    def __valid_for_user(plugin_config):
         plugin_users = plugin_config.get('users', [])
         if len(plugin_users) == 0:
             return True

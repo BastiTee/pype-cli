@@ -2,7 +2,7 @@
 """Pype core initializer."""
 
 from importlib import import_module
-from os import environ, remove, sep
+from os import environ, remove
 from os.path import abspath, basename, dirname, isfile, join
 from re import sub
 from shutil import copyfile
@@ -11,23 +11,33 @@ from sys import argv, path as syspath
 from colorama import Fore, Style
 
 from pype.config_handler import PypeConfigHandler
-from pype.constants import ENV_CONFIG_FILE
+from pype.constants import ENV_CONFIG_FILE, ENV_TEST_CONFIG_FILE
 from pype.exceptions import PypeException
 from pype.type_plugin import Plugin
 from pype.util.cli import print_error, print_success, print_warning
 from pype.util.iotools import resolve_path
-from pype.util.misc import get_from_json_or_default
 
 from tabulate import tabulate
 
 
-class PypeCore():
+class PypeCore:
     """Pype core initializer."""
+
+    SHELL_INIT_PREFIX = '.pype-initfile-'
+    SHELL_COMPLETE_PREFIX = '.pype-complete-'
 
     def __init__(self):
         """Public constructor."""
         self.__set_environment_variables()
-        self.__config = PypeConfigHandler()
+        # Check if pype-cli is currently under test Volkswagen-style
+        test_config_file = environ.get(ENV_TEST_CONFIG_FILE, None)
+        self.__config = PypeConfigHandler(test_config_file)
+        self.__test_postfix = '-test' if test_config_file else ''
+        self.__rc_files = [
+            resolve_path('~/.bashrc' + self.__test_postfix),
+            resolve_path('~/.bash_profile' + self.__test_postfix),
+            resolve_path('~/.zshrc' + self.__test_postfix)
+        ]
         # load all external plugins
         self.plugins = [
             Plugin(plugin, self.get_config_filepath())
@@ -41,10 +51,6 @@ class PypeCore():
             'name': 'config',
             'users': []
         }, self.get_config_filepath()))
-
-    def __set_environment_variables(self):
-        environ['LC_ALL'] = 'C.UTF-8'
-        environ['LANG'] = 'C.UTF-8'
 
     def get_plugins(self):
         """Get list of configured plugins."""
@@ -83,101 +89,53 @@ class PypeCore():
         sorted_alias_keys = sorted([alias['alias'] for alias in aliases])
         alias_table = []
 
-        def find_alias(aliases, key):
-            for alias in aliases:
-                if key == alias['alias']:
-                    return alias
-
         for alias in sorted_alias_keys:
             alias_table.append([
                 '{}{}{}'.format(Style.BRIGHT, Fore.BLUE, alias),
                 Style.RESET_ALL + '=',
                 '{}{}{}'.format(Style.BRIGHT, Fore.LIGHTBLACK_EX,
-                                find_alias(aliases, alias)['command'])
+                                self._find_alias(aliases, alias)['command'])
             ])
         print(tabulate(alias_table, tablefmt='plain'))
-
-    def create_pype_or_exit(self, pype_name, plugin, minimal):
-        """Create a new pype inside the given plugin."""
-        if plugin.internal:
-            print_error('Creating internal pypes is not supported.')
-            exit(1)
-        # Normalize filename to be PEP8-conform
-        target_name = sub('-', '_', sub(r'\.py$', '', pype_name))
-        # Create absolute path
-        target_file = join(plugin.abspath, target_name + '.py')
-        if isfile(target_file):
-            print_warning('Pype already present')
-            exit(1)
-        # Depending on user input create a documented or simple template
-        template_name = ('template_minimal.py' if minimal
-                         else 'template.py')
-        source_name = join(dirname(__file__), template_name)
-        copyfile(source_name, target_file)
-        print_success('Created new pype ' + target_file)
-        return target_file
-
-    def delete_pype(self, pype_name, plugin):
-        """Delete pype from the given plugin."""
-        if plugin.internal:
-            print_error('Deleting internal pypes is not supported.')
-            return
-        source_name = sub('-', '_', sub(r'\.py$', '', pype_name))
-        source_name = join(plugin.abspath, source_name + '.py')
-        try:
-            remove(source_name)
-        except FileNotFoundError:
-            print_error('No such pype')
-            return
-        print_success('Deleted pype ' + source_name)
-
-    def get_abspath_to_pype(self, plugin, name):
-        """Get absoulte path to pype Python script."""
-        for pype in plugin.pypes:
-            if name == pype.name:
-                return pype.abspath
-        return None
-
-    SHELL_INIT_PREFIX = '.pype-initfile-'
-    SHELL_COMPLETE_PREFIX = '.pype-complete-'
-    SUPPORTED_RC_FILES = [
-        resolve_path('~/.bashrc'),
-        resolve_path('~/.bash_profile'),
-        resolve_path('~/.zshrc')
-    ]
 
     def __write_init_file(self, init_file, aliases):
         shell_command = basename(argv[0])
         source_cmd = 'source_zsh' if init_file == 'zsh' else 'source'
-        target_file = resolve_path('~/' + self.SHELL_INIT_PREFIX + init_file)
+        target_file = resolve_path(
+            '~/' + self.SHELL_INIT_PREFIX + init_file
+            + self.__test_postfix)
         complete_file = resolve_path(
-            '~/' + self.SHELL_COMPLETE_PREFIX + init_file)
+            '~/' + self.SHELL_COMPLETE_PREFIX + init_file
+            + self.__test_postfix)
         target_handle = open(resolve_path(target_file), 'w+')
         print('Writing init-file ' + target_file)
-        target_handle.write("""# PYPE-CLI INIT-FILE: """ + init_file + """
-export PATH=$PATH:""" + dirname(argv[0]) + """
-if [ ! -z "$( command -v """ + shell_command + """ )" ] # Only if installed
+        target_handle.write("""# PYPE-CLI INIT-FILE: {}
+export PATH=$PATH:{}
+if [ ! -z "$( command -v {} )" ] # Only if installed
 then
-    if [ ! -f """ + complete_file + """ ]
+    if [ ! -f {} ]
     then
-        _""" + shell_command.upper() + """_COMPLETE=""" + source_cmd + """ """ + shell_command + """ > """ + complete_file + """
+        _{}_COMPLETE={} {} > {}
     fi
-    . """ + complete_file + """
+    . {}
 
-""" + ''.join([
-            '\talias {}="{}"\n'.format(alias['alias'], alias['command'])
-            for alias in aliases
-        ]) + """
+{}
 fi
-""")
-
-    def __remove_file_silently(self, target_file):
-        target_file = resolve_path(target_file)
-        print('Removing init-file ' + target_file)
-        try:
-            remove(target_file)
-        except FileNotFoundError:
-            pass  # Silent ignore to make function idempotent
+""".format(
+            init_file,  # Init-file descriptor
+            dirname(argv[0]),  # Path to console script
+            shell_command,  # Configured shell command
+            complete_file,  # Complete file name
+            shell_command.upper(),  # Configured shell command upper case
+            source_cmd,  # Sourcing command,
+            shell_command,  # Configured shell command
+            complete_file,  # Complete file name
+            complete_file,  # Complete file name
+            ''.join([
+                '\talias {}="{}"\n'.format(alias['alias'], alias['command'])
+                for alias in aliases
+            ])  # Alias definitions
+        ))
 
     def install_to_shell(self):
         """Install shell features."""
@@ -189,7 +147,7 @@ fi
         self.__write_init_file('bsh', aliases)
         self.__write_init_file('zsh', aliases)
         print('Add link to init-file in rc-files if present')
-        for file in self.SUPPORTED_RC_FILES:
+        for file in self.__rc_files:
             if not isfile(file):
                 continue
             print(' - "{}"'.format(file))
@@ -210,19 +168,23 @@ fi
     def uninstall_from_shell(self):
         """Uninstall shell features."""
         # Remove init files
-        self.__remove_file_silently('~/' + self.SHELL_INIT_PREFIX + 'bsh')
-        self.__remove_file_silently('~/' + self.SHELL_INIT_PREFIX + 'zsh')
-        self.__remove_file_silently('~/' + self.SHELL_COMPLETE_PREFIX + 'bsh')
-        self.__remove_file_silently('~/' + self.SHELL_COMPLETE_PREFIX + 'zsh')
+        for file in [
+            '~/' + self.SHELL_INIT_PREFIX + 'bsh' + self.__test_postfix,
+            '~/' + self.SHELL_INIT_PREFIX + 'zsh' + self.__test_postfix,
+            '~/' + self.SHELL_COMPLETE_PREFIX + 'bsh' + self.__test_postfix,
+            '~/' + self.SHELL_COMPLETE_PREFIX + 'zsh' + self.__test_postfix
+        ]:
+            self.__remove_file_silently(file)
         print('Remove link to init-file from rc-files if present')
-        for file in self.SUPPORTED_RC_FILES:
+        for file in self.__rc_files:
             if not isfile(file):
                 continue
             file_handle = open(file, 'r')
             content = file_handle.readlines()
             file_handle.close()
             # Don't rewrite if rc file does not link to initfile
-            if not any(list(filter(
+            if not any(
+                list(filter(
                     lambda x: self.SHELL_INIT_PREFIX in x, content))):
                 continue
             # Delete initfile-links from rc file
@@ -272,33 +234,106 @@ fi
         config_json = self.__config.get_json()
         if not config_json.get('aliases', None):
             print_warning('No aliases registered.')
-            return
+            exit(1)
         if not self._alias_present(config_json, alias):
             print_warning('Alias not registered.')
-            return
+            exit(1)
         for obj in enumerate(config_json['aliases']):
             if obj[1]['alias'] != alias:
                 continue
             del config_json['aliases'][obj[0]]
         self.__config.set_json(config_json)
         # update install script
-        print_success('Uninstalled alias "{}"'.format(alias))
+        print_success('Unregistered alias: {}'.format(alias))
         self.install_to_shell()
-
-    def _alias_present(self, config_json, alias):
-        return any(
-            [existing_alias for existing_alias in config_json.get('aliases')
-             if existing_alias['alias'] == alias])
 
     def get_core_config(self, key, default=None):
         """Return a key from the core configuration of the config file."""
         return get_from_json_or_default(
             self.get_config_json(), 'core_config.' + key, default)
 
+    @staticmethod
+    def _find_alias(aliases, key):
+        for alias in aliases:
+            if key == alias['alias']:
+                return alias
 
-def fname_to_name(fname):
-    """Use the filename as command name."""
-    return sub('_', '-', fname[:-3].split(sep)[-1])
+    @staticmethod
+    def _alias_present(config_json, alias):
+        return any(
+            [existing_alias for existing_alias in config_json.get('aliases')
+             if existing_alias['alias'] == alias])
+
+    @staticmethod
+    def create_pype_or_exit(pype_name, plugin, minimal):
+        """Create a new pype inside the given plugin."""
+        if plugin.internal:
+            print_error('Creating internal pypes is not supported.')
+            exit(1)
+        # Normalize filename to be PEP8-conform
+        target_name = sub('-', '_', sub(r'\.py$', '', pype_name))
+        # Create absolute path
+        target_file = join(plugin.abspath, target_name + '.py')
+        if isfile(target_file):
+            print_warning('Pype already present')
+            exit(1)
+        # Depending on user input create a documented or simple template
+        template_name = ('template_minimal.py' if minimal
+                         else 'template.py')
+        source_name = join(dirname(__file__), template_name)
+        copyfile(source_name, target_file)
+        print_success('Created new pype ' + target_file)
+        return target_file
+
+    @staticmethod
+    def delete_pype(pype_name, plugin):
+        """Delete pype from the given plugin."""
+        if plugin.internal:
+            print_error('Deleting internal pypes is not supported.')
+            exit(1)
+        source_name = sub('-', '_', sub(r'\.py$', '', pype_name))
+        source_name = join(plugin.abspath, source_name + '.py')
+        try:
+            remove(source_name)
+        except FileNotFoundError:
+            print_error('No such pype')
+            exit(1)
+        print_success('Deleted pype ' + source_name)
+
+    @staticmethod
+    def get_abspath_to_pype(plugin, name):
+        """Get absoulte path to pype Python script."""
+        for pype in plugin.pypes:
+            if name == pype.name:
+                return pype.abspath
+        return None
+
+    @staticmethod
+    def __remove_file_silently(target_file):
+        target_file = resolve_path(target_file)
+        print('Removing init-file ' + target_file)
+        try:
+            remove(target_file)
+        except FileNotFoundError:
+            pass  # Silent ignore to make function idempotent
+
+    @staticmethod
+    def __set_environment_variables():
+        environ['LC_ALL'] = 'C.UTF-8'
+        environ['LANG'] = 'C.UTF-8'
+
+
+def get_from_json_or_default(json, path, default_value):
+    """Try to load a key breadcrumb from a JSON object or return default."""
+    if not path:
+        return default_value
+    json = json if json else {}
+    try:
+        for breadcrumb in path.split('.'):
+            json = json[breadcrumb]
+        return json if json else default_value
+    except KeyError:
+        return default_value
 
 
 def load_module(name, path):
@@ -306,7 +341,8 @@ def load_module(name, path):
     syspath.append(abspath(path))
     try:
         return import_module(name)
-    except ModuleNotFoundError as e:  # noqa: F821
+    # This used to be a ModuleNotFoundException but it's only Python >= 3.6
+    except Exception as e:  # noqa: F821
         raise PypeException(e)
 
 

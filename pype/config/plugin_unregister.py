@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
-"""Unregister an existing pype plugin."""
+"""Unregister an existing plugin."""
 
 
 import click
 
-from pype.core import PypeCore, fname_to_name
-from pype.util.cli import print_success, print_warning
+from pype.core import PypeCore
+from pype.util.cli import fname_to_name, print_success, print_warning
 
 
 @click.command(name=fname_to_name(__file__), help=__doc__)
-@click.option('--name', '-n', help='Plugin module name',
+@click.option('--name', '-n', help='Plugin name.',
               metavar='NAME', required=True)
 def main(name):
     """Script's main entry point."""
