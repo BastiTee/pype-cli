@@ -1,5 +1,27 @@
 # Changelog
 
+## Version 0.4.0
+
+- Breaking changes
+  - Remove unused code in util package
+  - Introduce pype-cli [import facade](pype/__init__.py) to be able to only import pype
+- Code improvements
+  - Add support for Python 3.8
+  - Better catch bad JSON configuration file
+  - Heavily extended integration tests
+  - Fix a handful of errors in CLI-documentation
+  - Remove obsolete package imports
+- Build process
+  - Remove tox.ini since it is not used
+  - Fix command line linter
+- Documentation
+  - Add GIF to README for better documentation
+  - Add example script in 'basics' plugin that is 100% independent from pype-cli
+  - Document that pypes are not bound to be used in pype-cli
+  - Extend documentation of example pypes
+  - Reference click in documentation to highlight heavy usage
+  - Reference templates in example documentation
+
 ## Version 0.3.7
 
 - run_interactive and run_and_get_output now always shell=True
