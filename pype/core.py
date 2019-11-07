@@ -11,7 +11,7 @@ from sys import argv, path as syspath
 from colorama import Fore, Style
 
 from pype.config_handler import PypeConfigHandler
-from pype.constants import ENV_CONFIG_FILE, ENV_TEST_CONFIG_FILE
+from pype.constants import ENV_CONFIG_FOLDER
 from pype.exceptions import PypeException
 from pype.type_plugin import Plugin
 from pype.util.cli import print_error, print_success, print_warning
@@ -29,14 +29,11 @@ class PypeCore:
     def __init__(self):
         """Public constructor."""
         self.__set_environment_variables()
-        # Check if pype-cli is currently under test Volkswagen-style
-        test_config_file = environ.get(ENV_TEST_CONFIG_FILE, None)
-        self.__config = PypeConfigHandler(test_config_file)
-        self.__test_postfix = '-test' if test_config_file else ''
+        self.__config = PypeConfigHandler()
         self.__rc_files = [
-            resolve_path('~/.bashrc' + self.__test_postfix),
-            resolve_path('~/.bash_profile' + self.__test_postfix),
-            resolve_path('~/.zshrc' + self.__test_postfix)
+            resolve_path('~/.bashrc'),
+            resolve_path('~/.bash_profile'),
+            resolve_path('~/.zshrc')
         ]
         # load all external plugins
         self.plugins = [
@@ -103,10 +100,10 @@ class PypeCore:
         source_cmd = 'source_zsh' if init_file == 'zsh' else 'source'
         target_file = resolve_path(
             '~/' + self.SHELL_INIT_PREFIX + init_file
-            + self.__test_postfix)
+        )
         complete_file = resolve_path(
             '~/' + self.SHELL_COMPLETE_PREFIX + init_file
-            + self.__test_postfix)
+        )
         target_handle = open(resolve_path(target_file), 'w+')
         print('Writing init-file ' + target_file)
         target_handle.write("""# PYPE-CLI INIT-FILE: {}
@@ -157,7 +154,7 @@ fi
             init_file = (init_file + 'zsh' if 'zshrc' in file
                          else init_file + 'bsh')
             file_handle.write('export {}="{}" # {}\n'.format(
-                ENV_CONFIG_FILE,
+                ENV_CONFIG_FOLDER,
                 resolve_path(self.get_config_filepath()),
                 self.SHELL_INIT_PREFIX
             ))
@@ -169,10 +166,10 @@ fi
         """Uninstall shell features."""
         # Remove init files
         for file in [
-            '~/' + self.SHELL_INIT_PREFIX + 'bsh' + self.__test_postfix,
-            '~/' + self.SHELL_INIT_PREFIX + 'zsh' + self.__test_postfix,
-            '~/' + self.SHELL_COMPLETE_PREFIX + 'bsh' + self.__test_postfix,
-            '~/' + self.SHELL_COMPLETE_PREFIX + 'zsh' + self.__test_postfix
+            '~/' + self.SHELL_INIT_PREFIX + 'bsh',
+            '~/' + self.SHELL_INIT_PREFIX + 'zsh',
+            '~/' + self.SHELL_COMPLETE_PREFIX + 'bsh',
+            '~/' + self.SHELL_COMPLETE_PREFIX + 'zsh'
         ]:
             self.__remove_file_silently(file)
         print('Remove link to init-file from rc-files if present')

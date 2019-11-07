@@ -18,17 +18,16 @@ export PYTHONPATH=${PYTHONPATH:-.}
 export LC_ALL=${PYPE_ENCODING:-${LC_ALL}}
 export LANG=${PYPE_ENCODING:--${LANG}}
 # Default pype configuration file (always use the one relative to make file)
-export PYPE_CONFIGURATION_FILE="$( pwd )/config.json"
+export PYPE_CONFIG_FOLDER="$( pwd )/.pype-cli"
 
 venv() {
     # Create a pipenv virtual environment for IDE/coding support
-    rm -rf .venv
+    rm -rf .venv $PYPE_CONFIG_FOLDER
 	pipenv install --dev --skip-lock
     pipenv run pip install --editable .
     # Use a venv-relative config file
-    cfg_file="$( pwd )/.venv/bin/pype-config.json"
-    export PYPE_CONFIGURATION_FILE=$cfg_file
-    echo "export PYPE_CONFIGURATION_FILE=$cfg_file" >> .venv/bin/activate
+    mkdir -p $PYPE_CONFIG_FOLDER
+    echo "export PYPE_CONFIG_FOLDER=$PYPE_CONFIG_FOLDER" >> .venv/bin/activate
     # Auto-activate shell completion
     echo "eval \"\$(_PYPE_COMPLETE=source pype)\"" >> .venv/bin/activate
     # Register example pype
@@ -38,7 +37,7 @@ venv() {
 
 clean() {
     # Clean project base by deleting any non-VC files
-    rm -rf .venv build dist .pytest_cache *.egg-info
+    rm -rf .venv build dist .pytest_cache *.egg-info .pype-cli*
 }
 
 test() {

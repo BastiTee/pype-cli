@@ -7,7 +7,7 @@ from os import environ
 
 import click
 
-from pype.constants import ENV_CONFIG_FILE
+from pype.constants import ENV_CONFIG_FOLDER
 from pype.util.cli import fname_to_name
 
 from tabulate import tabulate
@@ -25,6 +25,6 @@ def main():
         ['RELEASE', platform.release()], ['SYSTEM', platform.system()],
         ['PY VERSION', sys.version], ['PY VERSION_INFO', sys.version_info],
         ['SHELL', environ.get('SHELL', unset)],
-        ['CONFIG FILE', environ.get(ENV_CONFIG_FILE, unset)]
+        ['CONFIG FOLDER', environ.get(ENV_CONFIG_FOLDER, unset)]
     ]
     print(tabulate(infos))

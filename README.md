@@ -29,7 +29,7 @@ You'll find more information on the commands in the sections below.
 
 __pype-cli__ builds upon __plugins__ and __pypes__. A __pype__ is a single Python script whereas a __plugin__ is essentially a Python module that extens __pype-cli__ with a collection of __pypes__.
 
-__pype-cli__ ships with one built-in __plugin__ called `pype.config` that is used to configure __pype-cli__. All of the required information will be stored to a local JSON-configuration file that defaults to `~/.pype-config.json`. To configure a custom configuration file use the environment variable `PYPE_CONFIGURATION_FILE`, e.g. in your `~/.bashrc` file set `export PYPE_CONFIGURATION_FILE=/path/to/myconfig.json`.
+__pype-cli__ ships with one built-in __plugin__ called `pype.config` that is used to configure __pype-cli__. All of the required information will be stored to a local JSON-configuration file that defaults to `~/.pype-cli/config.json`. To configure a custom configuration folder use the environment variable `PYPE_CONFIG_FOLDER`. For example to use `/path/to/pype-cli/config.json` as configuration folder/file put into your `~/.bashrc` file: `export PYPE_CONFIG_FOLDER=/path/to/pype-cli`.
 
 ### Basic operations
 
