@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 0.4.1
+
+- Add [short aliases](pype/__init__.py) for run_interactive and run_and_get_output
+
 ## Version 0.4.0
 
 - Breaking changes
