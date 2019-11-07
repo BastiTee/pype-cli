@@ -101,6 +101,10 @@ class PypeConfigHandler:
         """Get absolute filepath to configuration JSON file."""
         return self.filepath
 
+    def get_config_dir(self):
+        """Get absolute filepath to configuration directory."""
+        return path.dirname(self.filepath)
+
     def set_json(self, config):
         """Validate, set and persist configuration from JSON object."""
         self.validate_config(config)

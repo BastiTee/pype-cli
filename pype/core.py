@@ -2,7 +2,7 @@
 """Pype core initializer."""
 
 from importlib import import_module
-from os import environ, remove
+from os import environ, path, remove
 from os.path import abspath, basename, dirname, isfile, join
 from re import sub
 from shutil import copyfile
@@ -23,14 +23,16 @@ from tabulate import tabulate
 class PypeCore:
     """Pype core initializer."""
 
-    SHELL_INIT_PREFIX = '.pype-initfile-'
-    SHELL_COMPLETE_PREFIX = '.pype-complete-'
+    SHELL_INIT_PREFIX = 'initfile-'
+    SHELL_COMPLETE_PREFIX = 'complete-'
+    SHELL_RC_HINT = '# pype-cli'
 
     def __init__(self):
         """Public constructor."""
         self.__set_environment_variables()
         self.__config = PypeConfigHandler()
         self.__rc_files = [
+            resolve_path('./.venv/bin/activate'),
             resolve_path('~/.bashrc'),
             resolve_path('~/.bash_profile'),
             resolve_path('~/.zshrc')
@@ -97,12 +99,13 @@ class PypeCore:
 
     def __write_init_file(self, init_file, aliases):
         shell_command = basename(argv[0])
+        cfg_dir = self.__config.get_config_dir()
         source_cmd = 'source_zsh' if init_file == 'zsh' else 'source'
         target_file = resolve_path(
-            '~/' + self.SHELL_INIT_PREFIX + init_file
+            path.join(cfg_dir, self.SHELL_INIT_PREFIX + init_file)
         )
         complete_file = resolve_path(
-            '~/' + self.SHELL_COMPLETE_PREFIX + init_file
+            path.join(cfg_dir, self.SHELL_COMPLETE_PREFIX + init_file)
         )
         target_handle = open(resolve_path(target_file), 'w+')
         print('Writing init-file ' + target_file)
@@ -150,26 +153,36 @@ fi
             print(' - "{}"'.format(file))
             # Append link to init-file and set config file
             file_handle = open(file, 'a+')
-            init_file = '~/' + self.SHELL_INIT_PREFIX
+            cfg_dir = self.__config.get_config_dir()
+            print(cfg_dir)
+            init_file = path.join(
+                self.__config.get_config_dir(), self.SHELL_INIT_PREFIX
+            )
             init_file = (init_file + 'zsh' if 'zshrc' in file
                          else init_file + 'bsh')
-            file_handle.write('export {}="{}" # {}\n'.format(
+            file_handle.write('export {}="{}" {}\n'.format(
                 ENV_CONFIG_FOLDER,
-                resolve_path(self.get_config_filepath()),
-                self.SHELL_INIT_PREFIX
+                resolve_path(self.__config.get_config_dir()),
+                self.SHELL_RC_HINT
             ))
-            file_handle.write('. ' + init_file + '\n')
+            file_handle.write('. {} {}\n'.format(
+                init_file, self.SHELL_RC_HINT
+            ))
             file_handle.close()
+            if '.venv' in file:
+                print('Running in .venv. Skipping system rc files.')
+                break
         print_success('Successfully written init-files')
 
     def uninstall_from_shell(self):
         """Uninstall shell features."""
         # Remove init files
+        cfg_dir = self.__config.get_config_dir()
         for file in [
-            '~/' + self.SHELL_INIT_PREFIX + 'bsh',
-            '~/' + self.SHELL_INIT_PREFIX + 'zsh',
-            '~/' + self.SHELL_COMPLETE_PREFIX + 'bsh',
-            '~/' + self.SHELL_COMPLETE_PREFIX + 'zsh'
+            path.join(cfg_dir, self.SHELL_INIT_PREFIX + 'bsh'),
+            path.join(cfg_dir, self.SHELL_INIT_PREFIX + 'zsh'),
+            path.join(cfg_dir, self.SHELL_COMPLETE_PREFIX + 'bsh'),
+            path.join(cfg_dir, self.SHELL_COMPLETE_PREFIX + 'zsh')
         ]:
             self.__remove_file_silently(file)
         print('Remove link to init-file from rc-files if present')
@@ -182,14 +195,17 @@ fi
             # Don't rewrite if rc file does not link to initfile
             if not any(
                 list(filter(
-                    lambda x: self.SHELL_INIT_PREFIX in x, content))):
+                    lambda x: self.SHELL_RC_HINT in x, content))):
                 continue
             # Delete initfile-links from rc file
             print(' - "{}"'.format(file))
             file_handle = open(file, 'w')
             [file_handle.write(cn)
-             for cn in content if self.SHELL_INIT_PREFIX not in cn]
+             for cn in content if self.SHELL_RC_HINT not in cn]
             file_handle.close()
+            if '.venv' in file:
+                print('Running in .venv. Skipping system rc files.')
+                break
 
     def register_alias(self, ctx):
         """Register a new alias."""

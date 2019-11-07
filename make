@@ -27,12 +27,12 @@ venv() {
     pipenv run pip install --editable .
     # Use a venv-relative config file
     mkdir -p $PYPE_CONFIG_FOLDER
-    echo "export PYPE_CONFIG_FOLDER=$PYPE_CONFIG_FOLDER" >> .venv/bin/activate
-    # Auto-activate shell completion
-    echo "eval \"\$(_PYPE_COMPLETE=source pype)\"" >> .venv/bin/activate
-    # Register example pype
-    pipenv run pype pype.config plugin-register \
-    --name basics --path example_pypes
+    echo "export PYPE_CONFIG_FOLDER=$PYPE_CONFIG_FOLDER # pype-cli" \
+    >> .venv/bin/activate
+    # Setup pype
+    # pipenv run pype pype.config plugin-register \
+    # --name basics --path example_pypes
+    # pipenv run pype pype.config shell-install
 }
 
 clean() {
