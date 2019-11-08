@@ -19,7 +19,7 @@ console_scripts = ['{}=pype.__main__:main'.format(shell_command)]
 setup(
     # Basic project information
     name='pype-cli',
-    version='0.4.2',
+    version='0.5.0',
     # Authorship and online reference
     author='Basti Tee',
     author_email='basti.tee@posteo.de',
