@@ -37,6 +37,10 @@ def main(name, path, create, user_only):
     # Append plugin to global configuration
     core = PypeCore()
     config_json = core.get_config_json()
+    if any([plugin for plugin in config_json['plugins']
+            if plugin['name'] == name]):
+        print_error('There is already a plugin named "{}".'.format(name))
+        exit(1)
     path = _replace_parentfolder_if_relative_to_config(
         path, core.get_config_filepath())
     path = _replace_homefolder_with_tilde(path)

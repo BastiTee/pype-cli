@@ -33,6 +33,26 @@ class TestCLIPypePluginRegister:  # noqa: D101
         assert test_run.result.exit_code == 0
         assert 'successfully created' in test_run.result.output
 
+    def test_register_twice(self):  # noqa: D102
+        with create_test_env() as test_env:
+            # Register plugin
+            test_run = create_runner(
+                test_env,
+                plugin_register.main,
+                ['--name', 'plug', '--path', '%CONFIG_DIR%', '--create'])
+            assert test_run.result.exit_code == 0
+            assert 'successfully created' in test_run.result.output
+            result_configuration = reload_config(test_run)
+            assert len(result_configuration['plugins']) == 1
+            assert result_configuration['plugins'][0]['name'] == 'plug'
+            # Try to register again
+            result = test_run.runner.invoke(
+                plugin_register.main,
+                ['--name', 'plug', '--path', test_run.test_env.config_dir])
+            assert result.exit_code == 1
+            assert 'already a plugin named' in result.output
+            assert len(result_configuration['plugins']) == 1
+
     def test_register_unregister_and_reregister(self):  # noqa: D102
         with create_test_env() as test_env:
             # Register plugin
