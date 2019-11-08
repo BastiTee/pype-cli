@@ -39,7 +39,7 @@ class PypeCore:
         ]
         # load all external plugins
         self.plugins = [
-            Plugin(plugin, self.get_config_filepath())
+            Plugin(plugin, self.get_config_file_path())
             for plugin in get_from_json_or_default(
                 self.__config.get_json(), 'plugins', [])
         ]
@@ -49,7 +49,7 @@ class PypeCore:
         self.plugins.append(Plugin({
             'name': 'config',
             'users': []
-        }, self.get_config_filepath()))
+        }, self.get_config_file_path()))
 
     def get_plugins(self):
         """Get list of configured plugins."""
@@ -63,9 +63,13 @@ class PypeCore:
         """Set configuration from JSON object."""
         self.__config.set_json(json)
 
-    def get_config_filepath(self):
+    def get_config_file_path(self):
         """Get absolute filepath to configuration JSON file."""
-        return self.__config.get_filepath()
+        return self.__config.get_file_path()
+
+    def get_config_dir_path(self):
+        """Get absolute filepath to configuration JSON file."""
+        return self.__config.get_config_dir_path()
 
     def list_pypes(self):
         """Print list of pypes to console."""
@@ -99,7 +103,7 @@ class PypeCore:
 
     def __write_init_file(self, init_file, aliases):
         shell_command = basename(argv[0])
-        cfg_dir = self.__config.get_config_dir()
+        cfg_dir = self.__config.get_config_dir_path()
         source_cmd = 'source_zsh' if init_file == 'zsh' else 'source'
         target_file = resolve_path(
             path.join(cfg_dir, self.SHELL_INIT_PREFIX + init_file)
@@ -154,12 +158,12 @@ fi
             # Append link to init-file and set config file
             file_handle = open(file, 'a+')
             init_file = path.join(
-                self.__config.get_config_dir(), self.SHELL_INIT_PREFIX)
+                self.__config.get_config_dir_path(), self.SHELL_INIT_PREFIX)
             init_file = (init_file + 'zsh' if 'zshrc' in file
                          else init_file + 'bsh')
             file_handle.write('export {}="{}" {}\n'.format(
                 ENV_CONFIG_FOLDER,
-                resolve_path(self.__config.get_config_dir()),
+                resolve_path(self.__config.get_config_dir_path()),
                 self.SHELL_RC_HINT
             ))
             file_handle.write('. {} {}\n'.format(
@@ -174,7 +178,7 @@ fi
     def uninstall_from_shell(self):
         """Uninstall shell features."""
         # Remove init files
-        cfg_dir = self.__config.get_config_dir()
+        cfg_dir = self.__config.get_config_dir_path()
         for file in [
             path.join(cfg_dir, self.SHELL_INIT_PREFIX + 'bsh'),
             path.join(cfg_dir, self.SHELL_INIT_PREFIX + 'zsh'),

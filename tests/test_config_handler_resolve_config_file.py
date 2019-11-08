@@ -20,7 +20,7 @@ class TestPypeConfigHandlerResolveConfigFile:  # noqa: D101
             environ[ENV_CONFIG_FOLDER] = test_env.config_dir
             config = PypeConfigHandler(init=False)
             source = config.resolve_config_file()
-            assert config.get_filepath() == test_env.config_file
+            assert config.get_file_path() == test_env.config_file
             assert config.get_json() == VALID_CONFIG
             assert source == ConfigResolverSource.FROM_ENV
 
@@ -38,7 +38,7 @@ class TestPypeConfigHandlerResolveConfigFile:  # noqa: D101
             config.DEFAULT_CONFIG_FILE = test_env.config_file
             config.LOCAL_CONFIG_FILE = '/does/not/exist'
             source = config.resolve_config_file()
-            assert config.get_filepath() == test_env.config_file
+            assert config.get_file_path() == test_env.config_file
             assert config.get_json() == VALID_CONFIG
             assert source == ConfigResolverSource.FROM_DEFAULT_PATH
 
@@ -49,7 +49,7 @@ class TestPypeConfigHandlerResolveConfigFile:  # noqa: D101
             config.DEFAULT_CONFIG_FILE = 'test_config.json'
             config.LOCAL_CONFIG_FILE = '/does/not/exist'
             source = config.resolve_config_file()
-            assert config.get_filepath() == path.join(
+            assert config.get_file_path() == path.join(
                 test_env.config_dir, 'test_config.json')
             assert config.get_json() == DEFAULT_CONFIG
             assert source == ConfigResolverSource.FROM_SCRATCH_TO_DEFAULT_PATH
@@ -59,7 +59,7 @@ class TestPypeConfigHandlerResolveConfigFile:  # noqa: D101
             environ[ENV_CONFIG_FOLDER] = test_env.config_dir
             config = PypeConfigHandler(init=False)
             source = config.resolve_config_file()
-            assert config.get_filepath() == path.join(
+            assert config.get_file_path() == path.join(
                 test_env.config_dir, 'config.json')
             assert config.get_json() == DEFAULT_CONFIG
             assert source == ConfigResolverSource.FROM_SCRATCH_TO_PROVIDED_PATH

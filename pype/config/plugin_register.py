@@ -42,7 +42,7 @@ def main(name, path, create, user_only):
         print_error('There is already a plugin named "{}".'.format(name))
         exit(1)
     path = _replace_parentfolder_if_relative_to_config(
-        path, core.get_config_filepath())
+        path, core.get_config_file_path())
     path = _replace_homefolder_with_tilde(path)
     users = [getpass.getuser()] if user_only else []
     config_json['plugins'].append({
