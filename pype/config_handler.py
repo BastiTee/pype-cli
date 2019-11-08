@@ -4,7 +4,6 @@
 from enum import Enum
 from json import JSONDecodeError, dump, load
 from os import environ, mkdir, path
-from os.path import dirname, isfile, join
 from sys import stderr
 
 from colorama import Fore, Style
@@ -37,7 +36,8 @@ class PypeConfigHandler:
 
     DEFAULT_CONFIG_FOLDER = resolve_path('~/.pype-cli')
     DEFAULT_CONFIG_FILE = 'config.json'
-    CONFIG_SCHEMA_PATH = join(dirname(__file__), 'config-schema.json')
+    CONFIG_SCHEMA_PATH = path.join(path.dirname(__file__),
+                                   'config-schema.json')
     CONFIG_SCHEMA = load(open(CONFIG_SCHEMA_PATH))
 
     def __init__(self, init=True):
@@ -71,7 +71,7 @@ class PypeConfigHandler:
             config_source = ConfigResolverSource.FROM_ENV
         except KeyError:
             # Priority 2: ~/.pype-cli/config.json
-            if isfile(default_config_file):
+            if path.isfile(default_config_file):
                 self.filepath = default_config_file
                 config_source = ConfigResolverSource.FROM_DEFAULT_PATH
         # Priority 3: Create template config from scratch if nothing was found
