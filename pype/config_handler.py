@@ -97,6 +97,13 @@ class PypeConfigHandler:
         """Get pype configuration as JSON object."""
         return self.config
 
+    def set_json(self, config):
+        """Validate, set and persist configuration from JSON object."""
+        self.validate_config(config)
+        self.config = config
+        # always update config file as well
+        dump(self.config, open(self.filepath, 'w+'), indent=4)
+
     def get_file_path(self):
         """Get absolute filepath to configuration JSON file."""
         return self.filepath
@@ -104,13 +111,6 @@ class PypeConfigHandler:
     def get_config_dir_path(self):
         """Get absolute filepath to configuration directory."""
         return path.dirname(self.filepath)
-
-    def set_json(self, config):
-        """Validate, set and persist configuration from JSON object."""
-        self.validate_config(config)
-        self.config = config
-        # always update config file as well
-        dump(self.config, open(self.filepath, 'w+'), indent=4)
 
     def validate_config(self, config):
         """Validate given config file against schema definition."""
