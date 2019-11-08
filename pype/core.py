@@ -142,8 +142,8 @@ fi
         # Clean up first
         self.uninstall_from_shell()
         print_success('Successfully cleaned up existing configurations')
-        config_json = self.__config.get_json()
-        aliases = get_from_json_or_default(config_json, 'aliases', [])
+        aliases = get_from_json_or_default(
+            self.__config.get_json(), 'aliases', [])
         self.__write_init_file('bsh', aliases)
         self.__write_init_file('zsh', aliases)
         print('Add link to init-file in rc-files if present')
@@ -153,11 +153,8 @@ fi
             print(' - "{}"'.format(file))
             # Append link to init-file and set config file
             file_handle = open(file, 'a+')
-            cfg_dir = self.__config.get_config_dir()
-            print(cfg_dir)
             init_file = path.join(
-                self.__config.get_config_dir(), self.SHELL_INIT_PREFIX
-            )
+                self.__config.get_config_dir(), self.SHELL_INIT_PREFIX)
             init_file = (init_file + 'zsh' if 'zshrc' in file
                          else init_file + 'bsh')
             file_handle.write('export {}="{}" {}\n'.format(

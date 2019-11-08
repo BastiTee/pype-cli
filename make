@@ -30,9 +30,16 @@ venv() {
     echo "export PYPE_CONFIG_FOLDER=$PYPE_CONFIG_FOLDER # pype-cli" \
     >> .venv/bin/activate
     # Setup pype
-    # pipenv run pype pype.config plugin-register \
-    # --name basics --path example_pypes
-    # pipenv run pype pype.config shell-install
+    pype_cfg="pipenv run pype pype.config"
+    $pype_cfg plugin-register --name basics --path example_pypes
+    $pype_cfg shell-install
+    $pype_cfg version
+}
+
+shell() {
+    # Open virtual environment with forced bash shell (required for venv)
+    [ ! -d .venv ] && venv
+    bash -c "pipenv shell; $SHELL"
 }
 
 clean() {
