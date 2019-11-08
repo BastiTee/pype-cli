@@ -40,7 +40,7 @@ def main(ctx, list_pypes, aliases,
         print_context_help(ctx, level=1)
         return
     if open_config:
-        open_with_default(PYPE_CORE.get_config_file_path())
+        PYPE_CORE.open_config_with_default()
     elif list_pypes:
         PYPE_CORE.list_pypes()
         return

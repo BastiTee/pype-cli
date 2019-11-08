@@ -14,7 +14,7 @@ from pype.constants import ENV_CONFIG_FOLDER
 from pype.exceptions import PypeException
 from pype.type_plugin import Plugin
 from pype.util.cli import print_error, print_success, print_warning
-from pype.util.iotools import resolve_path
+from pype.util.iotools import open_with_default, resolve_path
 
 from tabulate import tabulate
 
@@ -38,7 +38,7 @@ class PypeCore:
         ]
         # load all external plugins
         self.plugins = [
-            Plugin(plugin, self.get_config_file_path())
+            Plugin(plugin, self.__config.get_file_path())
             for plugin in get_from_json_or_default(
                 self.__config.get_json(), 'plugins', [])
         ]
@@ -48,27 +48,15 @@ class PypeCore:
         self.plugins.append(Plugin({
             'name': 'config',
             'users': []
-        }, self.get_config_file_path()))
+        }, self.__config.get_file_path()))
 
     def get_plugins(self):
         """Get list of configured plugins."""
         return self.plugins
 
-    def get_config_json(self):
-        """Get pype configuration as JSON object."""
-        return self.__config.get_json()
-
-    def set_config_json(self, json):
-        """Set configuration from JSON object."""
-        self.__config.set_json(json)
-
-    def get_config_file_path(self):
+    def open_config_with_default(self):
         """Get absolute filepath to configuration JSON file."""
-        return self.__config.get_file_path()
-
-    def get_config_dir_path(self):
-        """Get absolute filepath to configuration JSON file."""
-        return self.__config.get_config_dir_path()
+        return open_with_default(self.__config.get_file_path())
 
     def list_pypes(self):
         """Print list of pypes to console."""
@@ -87,7 +75,7 @@ class PypeCore:
 
     def list_aliases(self):
         """Print list of aliases to console."""
-        aliases = self.get_config_json().get('aliases')
+        aliases = self.__config.get_json().get('aliases')
         sorted_alias_keys = sorted([alias['alias'] for alias in aliases])
         alias_table = []
 
@@ -117,12 +105,12 @@ class PypeCore:
             # Append link to init-file and set config file
             file_handle = open(file, 'a+')
             init_file = path.join(
-                self.__config.get_config_dir_path(), self.SHELL_INIT_PREFIX)
+                self.__config.get_dir_path(), self.SHELL_INIT_PREFIX)
             init_file = (init_file + 'zsh' if 'zshrc' in file
                          else init_file + 'bsh')
             file_handle.write('export {}="{}" {}\n'.format(
                 ENV_CONFIG_FOLDER,
-                resolve_path(self.__config.get_config_dir_path()),
+                resolve_path(self.__config.get_dir_path()),
                 self.SHELL_RC_HINT
             ))
             file_handle.write('. {} {}\n'.format(
@@ -137,7 +125,7 @@ class PypeCore:
     def uninstall_from_shell(self):
         """Uninstall shell features."""
         # Remove init files
-        cfg_dir = self.__config.get_config_dir_path()
+        cfg_dir = self.__config.get_dir_path()
         for file in [
             path.join(cfg_dir, self.SHELL_INIT_PREFIX + 'bsh'),
             path.join(cfg_dir, self.SHELL_INIT_PREFIX + 'zsh'),
@@ -222,7 +210,7 @@ class PypeCore:
 
     def __write_init_file(self, init_file, aliases):
         shell_command = path.basename(argv[0])
-        cfg_dir = self.__config.get_config_dir_path()
+        cfg_dir = self.__config.get_dir_path()
         source_cmd = 'source_zsh' if init_file == 'zsh' else 'source'
         target_file = resolve_path(
             path.join(cfg_dir, self.SHELL_INIT_PREFIX + init_file)

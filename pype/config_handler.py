@@ -108,7 +108,7 @@ class PypeConfigHandler:
         """Get absolute filepath to configuration JSON file."""
         return self.filepath
 
-    def get_config_dir_path(self):
+    def get_dir_path(self):
         """Get absolute filepath to configuration directory."""
         return path.dirname(self.filepath)
 
