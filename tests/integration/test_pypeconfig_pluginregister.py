@@ -22,16 +22,36 @@ class TestCLIPypePluginRegister:  # noqa: D101
     def test_register_without_create(self):  # noqa: D102
         test_run = invoke_runner(
             plugin_register.main,
-            ['--name', 'plug', '--path', '.'])
+            ['--name', 'plug', '--path', '%CONFIG_DIR%'])
         assert test_run.result.exit_code == 1
         assert 'Could not find a python module' in test_run.result.output
 
     def test_register_with_create(self):  # noqa: D102
         test_run = invoke_runner(
             plugin_register.main,
-            ['--name', 'plug', '--path', '.', '--create'])
+            ['--name', 'plug', '--path', '%CONFIG_DIR%', '--create'])
         assert test_run.result.exit_code == 0
         assert 'successfully created' in test_run.result.output
+
+    def test_register_twice(self):  # noqa: D102
+        with create_test_env() as test_env:
+            # Register plugin
+            test_run = create_runner(
+                test_env,
+                plugin_register.main,
+                ['--name', 'plug', '--path', '%CONFIG_DIR%', '--create'])
+            assert test_run.result.exit_code == 0
+            assert 'successfully created' in test_run.result.output
+            result_configuration = reload_config(test_run)
+            assert len(result_configuration['plugins']) == 1
+            assert result_configuration['plugins'][0]['name'] == 'plug'
+            # Try to register again
+            result = test_run.runner.invoke(
+                plugin_register.main,
+                ['--name', 'plug', '--path', test_run.test_env.config_dir])
+            assert result.exit_code == 1
+            assert 'already a plugin named' in result.output
+            assert len(result_configuration['plugins']) == 1
 
     def test_register_unregister_and_reregister(self):  # noqa: D102
         with create_test_env() as test_env:
@@ -39,7 +59,7 @@ class TestCLIPypePluginRegister:  # noqa: D101
             test_run = create_runner(
                 test_env,
                 plugin_register.main,
-                ['--name', 'plug', '--path', '.', '--create'])
+                ['--name', 'plug', '--path', '%CONFIG_DIR%', '--create'])
             assert test_run.result.exit_code == 0
             assert 'successfully created' in test_run.result.output
             result_configuration = reload_config(test_run)
@@ -58,7 +78,7 @@ class TestCLIPypePluginRegister:  # noqa: D101
             # Register plugin again
             result = test_run.runner.invoke(
                 plugin_register.main,
-                ['--name', 'plug', '--path', '.'])
+                ['--name', 'plug', '--path', '%CONFIG_DIR%'])
             assert result.exit_code == 0
             assert 'successfully registered' in result.output
             result_configuration = reload_config(test_run)

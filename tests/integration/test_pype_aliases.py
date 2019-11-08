@@ -7,13 +7,13 @@ from tests import create_runner, create_test_env, invoke_runner, reload_config
 class TestCLIPypeAliases:  # noqa: D101
 
     def test_no_aliases_present(self):  # noqa: D102
-        test_run = invoke_runner('main', '--aliases')
+        test_run = invoke_runner('%MAIN%', '--aliases')
         assert test_run.result.exit_code == 0
         assert not test_run.result.output.strip()
 
     def test_unregister_non_existing_alias(self):  # noqa: D102
         test_run = invoke_runner(
-            'main',
+            '%MAIN%',
             ['--unregister-alias', 'notpresent'])
         assert test_run.result.exit_code == 1
         assert 'No aliases registered' in test_run.result.output
@@ -22,7 +22,7 @@ class TestCLIPypeAliases:  # noqa: D101
         with create_test_env() as test_env:
             test_run = create_runner(
                 test_env,
-                'main',
+                '%MAIN%',
                 [
                     '--register-alias', 'myalias', 'pype.config',
                     'plugin-register'

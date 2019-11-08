@@ -2,7 +2,10 @@
 .dockerignore
 Pipfile.lock
 requirements.txt
-config.json
+
+# Local configuration files
+.pype-cli/
+.pype-cli-tests/
 
 # PyCharm
 .idea/

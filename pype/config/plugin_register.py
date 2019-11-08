@@ -8,8 +8,9 @@ from re import IGNORECASE, sub
 
 import click
 
+from pype.config_handler import PypeConfigHandler
 from pype.constants import NOT_DOCUMENTED_YET
-from pype.core import PypeCore, load_module
+from pype.core import load_module
 from pype.exceptions import PypeException
 from pype.util.cli import fname_to_name, print_error, print_success
 from pype.util.iotools import resolve_path
@@ -35,10 +36,14 @@ def main(name, path, create, user_only):
                     .format(name, path))
         exit(1)
     # Append plugin to global configuration
-    core = PypeCore()
-    config_json = core.get_config_json()
+    config_handler = PypeConfigHandler()
+    config_json = config_handler.get_json()
+    if any([plugin for plugin in config_json['plugins']
+            if plugin['name'] == name]):
+        print_error('There is already a plugin named "{}".'.format(name))
+        exit(1)
     path = _replace_parentfolder_if_relative_to_config(
-        path, core.get_config_filepath())
+        path, config_handler.get_file_path())
     path = _replace_homefolder_with_tilde(path)
     users = [getpass.getuser()] if user_only else []
     config_json['plugins'].append({
@@ -46,7 +51,7 @@ def main(name, path, create, user_only):
         'path': path,
         'users': users
     })
-    core.set_config_json(config_json)
+    config_handler.set_json(config_json)
 
     print_success('Plugin "{}" successfully registered.'.format(name))
 

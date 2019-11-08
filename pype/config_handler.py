@@ -3,15 +3,14 @@
 
 from enum import Enum
 from json import JSONDecodeError, dump, load
-from os import environ
-from os.path import dirname, isfile, join
+from os import environ, mkdir, path
 from sys import stderr
 
 from colorama import Fore, Style
 
 from jsonschema import ValidationError, validate
 
-from pype.constants import ENV_CONFIG_FILE
+from pype.constants import ENV_CONFIG_FOLDER
 from pype.exceptions import PypeException
 from pype.util.iotools import resolve_path
 
@@ -19,12 +18,10 @@ from pype.util.iotools import resolve_path
 class ConfigResolverSource(Enum):
     """Source of the resolved configuration file."""
 
-    FROM_TEST_SETUP = 0
     FROM_ENV = 1
     FROM_DEFAULT_PATH = 2
-    FROM_RELATIVE_FILE = 3
-    FROM_SCRATCH_TO_DEFAULT_PATH = 4
-    FROM_SCRATCH_TO_PROVIDED_PATH = 5
+    FROM_SCRATCH_TO_DEFAULT_PATH = 3
+    FROM_SCRATCH_TO_PROVIDED_PATH = 4
 
 
 DEFAULT_CONFIG = {
@@ -37,16 +34,18 @@ DEFAULT_CONFIG = {
 class PypeConfigHandler:
     """Pype configuration handler."""
 
-    DEFAULT_CONFIG_FILE = resolve_path('~/.pype-config.json')
-    LOCAL_CONFIG_FILE = join(dirname(dirname(__file__)), 'config.json')
-    CONFIG_SCHEMA_PATH = join(dirname(__file__), 'config-schema.json')
+    DEFAULT_CONFIG_FOLDER = resolve_path('~/.pype-cli')
+    DEFAULT_CONFIG_FILE = 'config.json'
+    CONFIG_SCHEMA_PATH = path.join(path.dirname(__file__),
+                                   'config-schema.json')
     CONFIG_SCHEMA = load(open(CONFIG_SCHEMA_PATH))
 
-    def __init__(self, test_config_file=None):
+    def __init__(self, init=True):
         """Construct a default configuaration handler."""
-        self.config = None
         self.filepath = None
-        self.test_config_file = test_config_file
+        self.config = None
+        if init:
+            self.resolve_config_file()
 
     def resolve_config_file(self):
         """Resolve the configuration using various options.
@@ -54,37 +53,41 @@ class PypeConfigHandler:
         Returns an enum that explains from where the configuration was
         resolved.
         """
-        # Evaluate test bypass to ignore any environment configuration
-        if self.test_config_file:
-            self.filepath = self.test_config_file
-            self.config = load(open(self.filepath, 'r'))
-            return ConfigResolverSource.FROM_TEST_SETUP
         config_source = None
+        default_config_file = path.join(
+            self.DEFAULT_CONFIG_FOLDER,
+            self.DEFAULT_CONFIG_FILE
+        )
         try:
             # Priority 1: Environment variable
-            self.filepath = environ[ENV_CONFIG_FILE]
+            env_config_folder = environ[ENV_CONFIG_FOLDER]
+            if not path.isdir(env_config_folder):
+                raise PypeException(
+                    'Provided configuration folder {} does not exist!'
+                    .format(env_config_folder))
+            self.filepath = path.join(
+                env_config_folder, self.DEFAULT_CONFIG_FILE
+            )
             config_source = ConfigResolverSource.FROM_ENV
         except KeyError:
-            # Priority 2: ~/.pype-config.json
-            if isfile(self.DEFAULT_CONFIG_FILE):
-                self.filepath = self.DEFAULT_CONFIG_FILE
+            # Priority 2: ~/.pype-cli/config.json
+            if path.isfile(default_config_file):
+                self.filepath = default_config_file
                 config_source = ConfigResolverSource.FROM_DEFAULT_PATH
-            # Priority 3: ./config.json
-            elif isfile(self.LOCAL_CONFIG_FILE):
-                self.filepath = self.LOCAL_CONFIG_FILE
-                config_source = ConfigResolverSource.FROM_RELATIVE_FILE
-        # Priority 4: Create a template config from scratch if no path provided
+        # Priority 3: Create template config from scratch if nothing was found
         if not self.filepath:
-            dump(DEFAULT_CONFIG, open(self.DEFAULT_CONFIG_FILE, 'w+'))
-            self.filepath = self.DEFAULT_CONFIG_FILE
+            if not path.isdir(self.DEFAULT_CONFIG_FOLDER):
+                mkdir(self.DEFAULT_CONFIG_FOLDER)
+            dump(DEFAULT_CONFIG, open(default_config_file, 'w+'), indent=4)
+            self.filepath = default_config_file
             config_source = ConfigResolverSource.FROM_SCRATCH_TO_DEFAULT_PATH
         try:
             self.config = load(open(self.filepath, 'r'))
         except JSONDecodeError:
             raise PypeException('Provided configuration file not valid JSON.')
-        except (FileNotFoundError, JSONDecodeError):
-            # Priorty 5: File name provided but file does not
-            dump(DEFAULT_CONFIG, open(self.filepath, 'w+'))
+        except FileNotFoundError:
+            # Priorty 4: File name provided but file does not exist
+            dump(DEFAULT_CONFIG, open(self.filepath, 'w+'), indent=4)
             self.config = load(open(self.filepath, 'r'))
             config_source = ConfigResolverSource.FROM_SCRATCH_TO_PROVIDED_PATH
         self.validate_config(self.config)
@@ -92,15 +95,7 @@ class PypeConfigHandler:
 
     def get_json(self):
         """Get pype configuration as JSON object."""
-        if not self.config:
-            self.resolve_config_file()
         return self.config
-
-    def get_filepath(self):
-        """Get absolute filepath to configuration JSON file."""
-        if not self.config:
-            self.resolve_config_file()
-        return self.filepath
 
     def set_json(self, config):
         """Validate, set and persist configuration from JSON object."""
@@ -108,6 +103,14 @@ class PypeConfigHandler:
         self.config = config
         # always update config file as well
         dump(self.config, open(self.filepath, 'w+'), indent=4)
+
+    def get_file_path(self):
+        """Get absolute filepath to configuration JSON file."""
+        return self.filepath
+
+    def get_dir_path(self):
+        """Get absolute filepath to configuration directory."""
+        return path.dirname(self.filepath)
 
     def validate_config(self, config):
         """Validate given config file against schema definition."""
