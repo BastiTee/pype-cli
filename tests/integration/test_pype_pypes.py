@@ -19,7 +19,7 @@ class TestCLIPypePypes:  # noqa: D101
             pytest.test_run = create_runner(
                 test_env,
                 plugin_register.main,
-                ['--name', self.plugin, '--path', '.', '--create'])
+                ['--name', self.plugin, '--path', '%CONFIG_DIR%', '--create'])
             assert pytest.test_run.result.exit_code == 0
             assert 'successfully created' in pytest.test_run.result.output
 

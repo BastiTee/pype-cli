@@ -9,6 +9,7 @@ from enum import Enum
 from json import dump, load
 from os import environ, mkdir, path
 from random import choice
+from re import sub
 from string import ascii_lowercase
 
 from click.testing import CliRunner
@@ -16,7 +17,7 @@ from click.testing import CliRunner
 from pype import __main__
 from pype import resolve_path
 from pype.config_handler import DEFAULT_CONFIG
-from pype.constants import ENV_TEST_CONFIG_FILE
+from pype.constants import ENV_CONFIG_FOLDER
 
 VALID_CONFIG = {
     'plugins': [
@@ -86,6 +87,10 @@ def create_test_env(configuration=Configuration.EMPTY):
         )
     finally:
         shutil.rmtree(config_dir)
+        try:
+            del environ[ENV_CONFIG_FOLDER]
+        except KeyError:
+            pass  # Might not have been set but if so it has to be deleted
 
 
 def invoke_runner(component_under_test, arguments=None):
@@ -105,11 +110,16 @@ def create_runner(test_env, component_under_test, arguments=None):
     """
     if arguments is None:
         arguments = []
-    environ[ENV_TEST_CONFIG_FILE] = test_env.config_file
+    if isinstance(arguments, str):
+        arguments = [arguments]
+    environ[ENV_CONFIG_FOLDER] = test_env.config_dir
     runner = CliRunner(env=environ)
     main_lib = importlib.reload(__main__)
-    if component_under_test == 'main':
+    if component_under_test == r'%MAIN%':
         component_under_test = main_lib.main
+    # Replace %CONFIG_DIR% in arguments with actual test-config dir
+    arguments = [
+        sub(r'%CONFIG_DIR%', test_env.config_dir, arg) for arg in arguments]
     return TestRunner(
         result=runner.invoke(component_under_test, arguments, env=environ),
         runner=runner,

@@ -15,14 +15,6 @@ from tests import Configuration, VALID_CONFIG, create_test_env
 
 class TestPypeConfigHandlerResolveConfigFile:  # noqa: D101
 
-    @pytest.fixture(autouse=True)
-    def _run_around_tests(self):
-        # Before each
-        try:
-            del environ[ENV_CONFIG_FOLDER]
-        except KeyError:
-            pass
-
     def test_withenv(self):  # noqa: D102
         with create_test_env(Configuration.VALID) as test_env:
             environ[ENV_CONFIG_FOLDER] = test_env.config_dir
@@ -37,10 +29,12 @@ class TestPypeConfigHandlerResolveConfigFile:  # noqa: D101
         config = PypeConfigHandler(init=False)
         with pytest.raises(PypeException):
             config.resolve_config_file()
+        del environ[ENV_CONFIG_FOLDER]
 
     def test_withdefaultfile(self):  # noqa: D102
         with create_test_env(Configuration.VALID) as test_env:
             config = PypeConfigHandler(init=False)
+            config.DEFAULT_CONFIG_FOLDER = test_env.config_dir
             config.DEFAULT_CONFIG_FILE = test_env.config_file
             config.LOCAL_CONFIG_FILE = '/does/not/exist'
             source = config.resolve_config_file()
