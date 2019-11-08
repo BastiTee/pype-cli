@@ -3,7 +3,6 @@
 
 from importlib import import_module
 from os import environ, path, remove
-from os.path import abspath, basename, dirname, isfile, join
 from re import sub
 from shutil import copyfile
 from sys import argv, path as syspath
@@ -97,49 +96,9 @@ class PypeCore:
                 '{}{}{}'.format(Style.BRIGHT, Fore.BLUE, alias),
                 Style.RESET_ALL + '=',
                 '{}{}{}'.format(Style.BRIGHT, Fore.LIGHTBLACK_EX,
-                                self._find_alias(aliases, alias)['command'])
+                                self.__find_alias(aliases, alias)['command'])
             ])
         print(tabulate(alias_table, tablefmt='plain'))
-
-    def __write_init_file(self, init_file, aliases):
-        shell_command = basename(argv[0])
-        cfg_dir = self.__config.get_config_dir_path()
-        source_cmd = 'source_zsh' if init_file == 'zsh' else 'source'
-        target_file = resolve_path(
-            path.join(cfg_dir, self.SHELL_INIT_PREFIX + init_file)
-        )
-        complete_file = resolve_path(
-            path.join(cfg_dir, self.SHELL_COMPLETE_PREFIX + init_file)
-        )
-        target_handle = open(resolve_path(target_file), 'w+')
-        print('Writing init-file ' + target_file)
-        target_handle.write("""# PYPE-CLI INIT-FILE: {}
-export PATH=$PATH:{}
-if [ ! -z "$( command -v {} )" ] # Only if installed
-then
-    if [ ! -f {} ]
-    then
-        _{}_COMPLETE={} {} > {}
-    fi
-    . {}
-
-{}
-fi
-""".format(
-            init_file,  # Init-file descriptor
-            dirname(argv[0]),  # Path to console script
-            shell_command,  # Configured shell command
-            complete_file,  # Complete file name
-            shell_command.upper(),  # Configured shell command upper case
-            source_cmd,  # Sourcing command,
-            shell_command,  # Configured shell command
-            complete_file,  # Complete file name
-            complete_file,  # Complete file name
-            ''.join([
-                '\talias {}="{}"\n'.format(alias['alias'], alias['command'])
-                for alias in aliases
-            ])  # Alias definitions
-        ))
 
     def install_to_shell(self):
         """Install shell features."""
@@ -152,7 +111,7 @@ fi
         self.__write_init_file('zsh', aliases)
         print('Add link to init-file in rc-files if present')
         for file in self.__rc_files:
-            if not isfile(file):
+            if not path.isfile(file):
                 continue
             print(' - "{}"'.format(file))
             # Append link to init-file and set config file
@@ -188,7 +147,7 @@ fi
             self.__remove_file_silently(file)
         print('Remove link to init-file from rc-files if present')
         for file in self.__rc_files:
-            if not isfile(file):
+            if not path.isfile(file):
                 continue
             file_handle = open(file, 'r')
             content = file_handle.readlines()
@@ -228,7 +187,7 @@ fi
         config_json = self.__config.get_json()
         if not config_json.get('aliases', None):
             config_json['aliases'] = []
-        if self._alias_present(config_json, alias):
+        if self.__alias_present(config_json, alias):
             print_warning('Alias already registered.')
             return
         config_json.get('aliases').append({
@@ -249,7 +208,7 @@ fi
         if not config_json.get('aliases', None):
             print_warning('No aliases registered.')
             exit(1)
-        if not self._alias_present(config_json, alias):
+        if not self.__alias_present(config_json, alias):
             print_warning('Alias not registered.')
             exit(1)
         for obj in enumerate(config_json['aliases']):
@@ -261,22 +220,45 @@ fi
         print_success('Unregistered alias: {}'.format(alias))
         self.install_to_shell()
 
-    def get_core_config(self, key, default=None):
-        """Return a key from the core configuration of the config file."""
-        return get_from_json_or_default(
-            self.get_config_json(), 'core_config.' + key, default)
+    def __write_init_file(self, init_file, aliases):
+        shell_command = path.basename(argv[0])
+        cfg_dir = self.__config.get_config_dir_path()
+        source_cmd = 'source_zsh' if init_file == 'zsh' else 'source'
+        target_file = resolve_path(
+            path.join(cfg_dir, self.SHELL_INIT_PREFIX + init_file)
+        )
+        complete_file = resolve_path(
+            path.join(cfg_dir, self.SHELL_COMPLETE_PREFIX + init_file)
+        )
+        target_handle = open(resolve_path(target_file), 'w+')
+        print('Writing init-file ' + target_file)
+        target_handle.write("""# PYPE-CLI INIT-FILE: {}
+export PATH=$PATH:{}
+if [ ! -z "$( command -v {} )" ] # Only if installed
+then
+    if [ ! -f {} ]
+    then
+        _{}_COMPLETE={} {} > {}
+    fi
+    . {}
 
-    @staticmethod
-    def _find_alias(aliases, key):
-        for alias in aliases:
-            if key == alias['alias']:
-                return alias
-
-    @staticmethod
-    def _alias_present(config_json, alias):
-        return any(
-            [existing_alias for existing_alias in config_json.get('aliases')
-             if existing_alias['alias'] == alias])
+{}
+fi
+""".format(
+            init_file,  # Init-file descriptor
+            path.dirname(argv[0]),  # Path to console script
+            shell_command,  # Configured shell command
+            complete_file,  # Complete file name
+            shell_command.upper(),  # Configured shell command upper case
+            source_cmd,  # Sourcing command,
+            shell_command,  # Configured shell command
+            complete_file,  # Complete file name
+            complete_file,  # Complete file name
+            ''.join([
+                '\talias {}="{}"\n'.format(alias['alias'], alias['command'])
+                for alias in aliases
+            ])  # Alias definitions
+        ))
 
     @staticmethod
     def create_pype_or_exit(pype_name, plugin, minimal):
@@ -287,14 +269,14 @@ fi
         # Normalize filename to be PEP8-conform
         target_name = sub('-', '_', sub(r'\.py$', '', pype_name))
         # Create absolute path
-        target_file = join(plugin.abspath, target_name + '.py')
-        if isfile(target_file):
+        target_file = path.join(plugin.abspath, target_name + '.py')
+        if path.isfile(target_file):
             print_warning('Pype already present')
             exit(1)
         # Depending on user input create a documented or simple template
         template_name = ('template_minimal.py' if minimal
                          else 'template.py')
-        source_name = join(dirname(__file__), template_name)
+        source_name = path.join(path.dirname(__file__), template_name)
         copyfile(source_name, target_file)
         print_success('Created new pype ' + target_file)
         return target_file
@@ -306,7 +288,7 @@ fi
             print_error('Deleting internal pypes is not supported.')
             exit(1)
         source_name = sub('-', '_', sub(r'\.py$', '', pype_name))
-        source_name = join(plugin.abspath, source_name + '.py')
+        source_name = path.join(plugin.abspath, source_name + '.py')
         try:
             remove(source_name)
         except FileNotFoundError:
@@ -336,6 +318,18 @@ fi
         environ['LC_ALL'] = 'C.UTF-8'
         environ['LANG'] = 'C.UTF-8'
 
+    @staticmethod
+    def __find_alias(aliases, key):
+        for alias in aliases:
+            if key == alias['alias']:
+                return alias
+
+    @staticmethod
+    def __alias_present(config_json, alias):
+        return any(
+            [existing_alias for existing_alias in config_json.get('aliases')
+             if existing_alias['alias'] == alias])
+
 
 def get_from_json_or_default(json, path, default_value):
     """Try to load a key breadcrumb from a JSON object or return default."""
@@ -350,9 +344,9 @@ def get_from_json_or_default(json, path, default_value):
         return default_value
 
 
-def load_module(name, path):
+def load_module(name, module_path):
     """Try to import the module at the provided path using classloader."""
-    syspath.append(abspath(path))
+    syspath.append(path.abspath(module_path))
     try:
         return import_module(name)
     # This used to be a ModuleNotFoundException but it's only Python >= 3.6
@@ -362,7 +356,7 @@ def load_module(name, path):
 
 def get_pype_basepath():
     """Get directory filename of this pype installation."""
-    return dirname(dirname(__file__))
+    return path.dirname(path.dirname(__file__))
 
 
 def print_context_help(ctx, level=0):
