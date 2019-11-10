@@ -47,7 +47,33 @@
             }
         },
         "core_config": {
-            "type": "object"
+            "type": "object",
+            "properties": {
+                "logging": {
+                    "type": "object",
+                    "properties": {
+                        "enabled": {
+                            "type": "boolean"
+                        },
+                        "level": {
+                            "type": "string",
+                            "enum": [
+                                "FATAL",
+                                "ERROR",
+                                "WARN",
+                                "INFO",
+                                "DEBUG"
+                            ]
+                        },
+                        "pattern": {
+                            "type": "string"
+                        },
+                        "directory": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
         }
     },
     "required": [

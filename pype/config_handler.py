@@ -30,15 +30,22 @@ DEFAULT_CONFIG = {
     'core_config': {}
 }
 
+DEFAULT_CORE_CONFIG_LOGGING = {
+    'enabled': False,
+    'level': 'INFO',
+    'pattern': '%(asctime)s %(levelname)s %(name)s %(message)s',
+    'directory': None
+}
+
+CONFIG_SCHEMA_PATH = path.join(path.dirname(__file__), 'config-schema.json')
+CONFIG_SCHEMA = load(open(CONFIG_SCHEMA_PATH))
+
 
 class PypeConfigHandler:
     """Pype configuration handler."""
 
     DEFAULT_CONFIG_FOLDER = resolve_path('~/.pype-cli')
     DEFAULT_CONFIG_FILE = 'config.json'
-    CONFIG_SCHEMA_PATH = path.join(path.dirname(__file__),
-                                   'config-schema.json')
-    CONFIG_SCHEMA = load(open(CONFIG_SCHEMA_PATH))
 
     def __init__(self, init=True):
         """Construct a default configuaration handler."""
@@ -115,11 +122,39 @@ class PypeConfigHandler:
     def validate_config(self, config):
         """Validate given config file against schema definition."""
         try:
-            validate(instance=config, schema=self.CONFIG_SCHEMA)
+            validate(instance=config, schema=CONFIG_SCHEMA)
         except ValidationError as err:
             print(Fore.RED + str(err) + Style.RESET_ALL + '\n', file=stderr)
             raise PypeException(
                 'Configuration file is not valid. See above for details '
                 + 'and refer to the schema file at {}'.format(
-                    self.CONFIG_SCHEMA_PATH))
+                    CONFIG_SCHEMA_PATH))
         return True
+
+    def get_core_config_logging(self, return_default_if_empty=False):
+        """Return current or default logging configuration."""
+        core_config = self.get_json().get('core_config', None)
+        default_config = DEFAULT_CORE_CONFIG_LOGGING
+        # Set default logging directory to pypes config folder
+        default_config['directory'] = path.dirname(self.filepath)
+        if not core_config:
+            return default_config if return_default_if_empty else None
+        logging_config = core_config.get('logging', None)
+        if not logging_config:
+            return default_config if return_default_if_empty else None
+        return logging_config
+
+    def set_core_config_logging(self, logging_config):
+        """Set logging configuration."""
+        config_json = self.get_json()
+        if not config_json.get('core_config', None):
+            config_json['core_config'] = {}
+        config_json['core_config']['logging'] = logging_config
+        self.set_json(config_json)  # Setter takes care of validation
+
+
+def get_supported_log_levels():
+    """Return supported log levels to be used with pype."""
+    return (sorted(CONFIG_SCHEMA
+                   ['properties']['core_config']['properties']['logging']
+                   ['properties']['level']['enum']))

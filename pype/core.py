@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """Pype core initializer."""
 
+import logging
 from importlib import import_module
 from os import environ, path, remove
 from re import sub
@@ -30,6 +31,7 @@ class PypeCore:
         """Public constructor."""
         self.__set_environment_variables()
         self.__config = PypeConfigHandler()
+        self.__setup_logging(self.__config)
         self.__rc_files = [
             resolve_path('./.venv/bin/activate'),
             resolve_path('~/.bashrc'),
@@ -322,6 +324,18 @@ fi
         return any(
             [existing_alias for existing_alias in config_json.get('aliases')
              if existing_alias['alias'] == alias])
+
+    @staticmethod
+    def __setup_logging(config):
+        log_cfg = config.get_core_config_logging()
+        if not log_cfg or not log_cfg.get('enabled', False):
+            return
+        logging.basicConfig(
+            level=log_cfg['level'],
+            format=log_cfg['pattern'],
+            filename=path.join(log_cfg['directory'], 'pype-cli.log')
+        )
+        logging.getLogger('pype-cli')
 
 
 def get_from_json_or_default(json, path, default_value):
