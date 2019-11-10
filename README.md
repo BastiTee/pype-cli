@@ -82,6 +82,17 @@ If you have selected a __pype__ from a __plugin__ you can set __aliases__ for it
 * Register an __alias__: `pype --alias-register mm myplugin mypype` → `alias mm="pype myplugin mypype"`
 * Register an __alias with options__: `pype --alias-register mm myplugin mypype --option opt1 --toggle` → `alias mm="pype myplugin mypype --option opt1 --toggle"`
 * Unregister an __alias__: `pype --alias-unregister mm`
+* List all avaliable __aliases__: `pype --aliases`
+
+### Global logging configuration
+
+__pype-cli__ contains a built-in logger setup. To configure it use the __pype__ `pype pype.config logger`. In your __pypes__ you can use it right away [like in the provided example](example_pypes/basics/logger.py).
+
+* Enable/disable global logging: `pype pype.config logger enable/disable`
+* Print current configuration: `pype pype.config logger print-config`
+* Set logging folder: `pype pype.config logger set-directory /your/login/folder`
+* Set logging level: `pype pype.config logger set-level DEBUG`
+* Set logging pattern: `pype pype.config logger set-pattern "%(asctime)s %(levelname)s %(name)s %(message)s"`
 
 ### Shared code for plugins
 
