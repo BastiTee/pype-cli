@@ -87,18 +87,22 @@ def _bind_plugin(plugin_name, plugin):
                 print_error(str(import_error))
                 exit(1)
 
-    @click.option('--create-pype', '-c',
+        def get_pype_command_names():
+            return [sub('_', '-', pype.name) for pype in plugin.pypes]
+
+    @click.option('--create-pype', '-c', metavar='PYPE',
                   help='Create new pype with given name.')
+    @click.option('--open-pype', '-o', metavar='PYPE',
+                  help='Open pype with given name in default editor.')
+    @click.option('--delete-pype', '-d', metavar='PYPE',
+                  help='Delete pype with given name.',
+                  type=click.Choice(PypeCLI.get_pype_command_names()))
     @click.option('--minimal', '-m', is_flag=True,
                   help='Use a minimal template with less boilerplate '
-                  + '(only used along with "-c" option).')
+                  + '(only used along with "--create-pype" option).')
     @click.option('--edit', '-e', is_flag=True,
                   help='Open new pype immediately for editing '
-                  + '(only used along with "-c" option).')
-    @click.option('--delete-pype', '-d',
-                  help='Delete pype with given name.')
-    @click.option('--open-pype', '-o',
-                  help='Open pype with given name in default editor.')
+                  + '(only used along with "--create-pype" option).')
     @click.pass_context
     def _plugin_bind_plugin_function(
             ctx, create_pype, minimal, edit, delete_pype, open_pype):
