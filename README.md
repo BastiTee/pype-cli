@@ -79,9 +79,9 @@ To create a new pype you need to decide to which plugin you want to add the pype
 
 If you have selected a __pype__ from a __plugin__ you can set __aliases__ for it. Afterwards you need to start a new shell session or source your rc-file to activate the __aliases__. New __aliases__ are stored in the configuration file.
 
-* Register an __alias__: `pype --register-alias mm myplugin mypype` → `alias mm="pype myplugin mypype"`
-* Register an __alias with options__: `pype --register-alias mm myplugin mypype --option opt1 --toggle` → `alias mm="pype myplugin mypype --option opt1 --toggle"`
-* Unregister an __alias__: `pype --unregister-alias mm`
+* Register an __alias__: `pype --alias-register mm myplugin mypype` → `alias mm="pype myplugin mypype"`
+* Register an __alias with options__: `pype --alias-register mm myplugin mypype --option opt1 --toggle` → `alias mm="pype myplugin mypype --option opt1 --toggle"`
+* Unregister an __alias__: `pype --alias-unregister mm`
 
 ### Shared code for plugins
 

@@ -27,19 +27,19 @@ PYPE_CORE = PypeCore()
               help='Print all available pypes.')
 @click.option('--aliases', '-a', is_flag=True,
               help='Print all available aliases.')
-@click.option('--open-config', '-o', is_flag=True,
-              help='Open config file in default editor.')
-@click.option('--register-alias', '-r', metavar='ALIAS',
+@click.option('--alias-register', '-r', metavar='ALIAS',
               help='Register alias for following pype.')
-@click.option('--unregister-alias', '-u', metavar='ALIAS',
+@click.option('--alias-unregister', '-u', metavar='ALIAS',
               type=click.Choice(PYPE_CORE.get_aliases()),
               help='Unregister alias.')
+@click.option('--open-config', '-o', is_flag=True,
+              help='Open config file in default editor.')
 @click.pass_context
 def main(ctx, list_pypes, aliases,
-         open_config, register_alias, unregister_alias):
+         open_config, alias_register, alias_unregister):
     """Pype main entry point."""
     if not _process_alias_configuration(
-            ctx, list_pypes, open_config, register_alias, unregister_alias):
+            ctx, list_pypes, open_config, alias_register, alias_unregister):
         print_context_help(ctx, level=1)
         return
     if open_config:
@@ -50,8 +50,8 @@ def main(ctx, list_pypes, aliases,
     elif aliases:
         PYPE_CORE.print_aliases()
         return
-    elif unregister_alias:
-        PYPE_CORE.unregister_alias(unregister_alias)
+    elif alias_unregister:
+        PYPE_CORE.alias_unregister(alias_unregister)
         return
     elif ctx.invoked_subcommand is None:
         print_error('No pype selected.')
@@ -130,8 +130,8 @@ def _bind_plugin(plugin_name, plugin):
                 return
             open_with_default(pype_abspath)
             toggle_invoked = True
-        if ctx.parent.register_alias:
-            PYPE_CORE.register_alias(ctx)
+        if ctx.parent.alias_register:
+            PYPE_CORE.alias_register(ctx)
             exit(0)
         # Handle case that no toggles were used and no commands selected
         if not toggle_invoked and not ctx.invoked_subcommand:
@@ -143,19 +143,19 @@ def _bind_plugin(plugin_name, plugin):
 
 
 def _process_alias_configuration(
-        ctx, list_pypes, open_config, register_alias, unregister_alias):
-    if register_alias and unregister_alias:
+        ctx, list_pypes, open_config, alias_register, alias_unregister):
+    if alias_register and alias_unregister:
         print_error('Options -r and -u cannot be combined.')
         return False
     other_options = open_config or list_pypes
-    if register_alias and other_options:
+    if alias_register and other_options:
         print_error('Option -r cannot be combined with other options.')
         return False
-    if unregister_alias and other_options:
+    if alias_unregister and other_options:
         print_error('Option -u cannot be combined with other options.')
         return False
     # piggy-back context
-    ctx.register_alias = register_alias
+    ctx.alias_register = alias_register
     return True
 
 

@@ -14,7 +14,7 @@ class TestCLIPypeAliases:  # noqa: D101
     def test_unregister_non_existing_alias(self):  # noqa: D102
         test_run = invoke_runner(
             '%MAIN%',
-            ['--unregister-alias', 'notpresent'])
+            ['--alias-unregister', 'notpresent'])
         assert test_run.result.exit_code == 2
         assert 'choose from' in test_run.result.output
 
@@ -24,7 +24,7 @@ class TestCLIPypeAliases:  # noqa: D101
                 test_env,
                 '%MAIN%',
                 [
-                    '--register-alias', 'myalias', 'pype.config',
+                    '--alias-register', 'myalias', 'pype.config',
                     'plugin-register'
                 ])
             assert test_run.result.exit_code == 0
@@ -34,7 +34,7 @@ class TestCLIPypeAliases:  # noqa: D101
             assert result_configuration['aliases'][0]['alias'] == 'myalias'
             result = test_run.runner.invoke(
                 test_run.main,
-                ['--unregister-alias', 'myalias'])
+                ['--alias-unregister', 'myalias'])
             assert result.exit_code == 0
             assert 'Unregistered alias: myalias' in result.output
             result_configuration = reload_config(test_run)

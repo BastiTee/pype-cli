@@ -162,9 +162,9 @@ class PypeCore:
                 print('Running in .venv. Skipping system rc files.')
                 break
 
-    def register_alias(self, ctx):
+    def alias_register(self, ctx):
         """Register a new alias."""
-        alias = ctx.parent.register_alias
+        alias = ctx.parent.alias_register
         # Combine the current context's command path with remaining CL-args
         cmd_path = ctx.command_path.split(' ')
         cmd_path_last = cmd_path[-1]
@@ -194,7 +194,7 @@ class PypeCore:
         # update install script
         self.install_to_shell()
 
-    def unregister_alias(self, alias):
+    def alias_unregister(self, alias):
         """Unregister the provided alias."""
         if not alias:
             return
