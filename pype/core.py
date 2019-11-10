@@ -2,6 +2,7 @@
 """Pype core initializer."""
 
 import logging
+import sys
 from importlib import import_module
 from os import environ, path, remove
 from re import sub
@@ -124,7 +125,7 @@ class PypeCore:
                 init_file, self.SHELL_RC_HINT
             ))
             file_handle.close()
-            if '.venv' in file:
+            if hasattr(sys, 'real_prefix'):
                 print('Running in .venv. Skipping system rc files.')
                 break
         print_success('Successfully written init-files')
@@ -158,7 +159,7 @@ class PypeCore:
             [file_handle.write(cn)
              for cn in content if self.SHELL_RC_HINT not in cn]
             file_handle.close()
-            if '.venv' in file:
+            if hasattr(sys, 'real_prefix'):
                 print('Running in .venv. Skipping system rc files.')
                 break
 
