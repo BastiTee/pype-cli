@@ -15,6 +15,8 @@ from pype.exceptions import PypeException
 from pype.util.cli import fname_to_name, print_error
 from pype.util.iotools import open_with_default
 
+PYPE_CORE = PypeCore()
+
 
 @click.group(
     invoke_without_command=True,
@@ -30,6 +32,7 @@ from pype.util.iotools import open_with_default
 @click.option('--register-alias', '-r', metavar='ALIAS',
               help='Register alias for following pype.')
 @click.option('--unregister-alias', '-u', metavar='ALIAS',
+              type=click.Choice(PYPE_CORE.get_aliases()),
               help='Unregister alias.')
 @click.pass_context
 def main(ctx, list_pypes, aliases,
@@ -45,7 +48,7 @@ def main(ctx, list_pypes, aliases,
         PYPE_CORE.list_pypes()
         return
     elif aliases:
-        PYPE_CORE.list_aliases()
+        PYPE_CORE.print_aliases()
         return
     elif unregister_alias:
         PYPE_CORE.unregister_alias(unregister_alias)
@@ -158,7 +161,6 @@ def _process_alias_configuration(
 
 init(autoreset=True)  # Initialize colorama
 try:
-    PYPE_CORE = PypeCore()
     [
         _bind_plugin(plugin.name, plugin)
         for plugin in PYPE_CORE.get_plugins()

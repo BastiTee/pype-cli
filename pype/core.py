@@ -73,7 +73,12 @@ class PypeCore:
                 ))
             print()
 
-    def list_aliases(self):
+    def get_aliases(self):
+        """Return available aliases."""
+        aliases = self.__config.get_json().get('aliases')
+        return sorted([alias['alias'] for alias in aliases])
+
+    def print_aliases(self):
         """Print list of aliases to console."""
         aliases = self.__config.get_json().get('aliases')
         sorted_alias_keys = sorted([alias['alias'] for alias in aliases])
