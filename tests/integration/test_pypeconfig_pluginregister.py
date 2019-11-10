@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """$ pype pype-config plugin-register/plugin-unregister."""
 
+import importlib
+
 from pype.config import plugin_register, plugin_unregister
 
 from tests import create_runner, create_test_env, invoke_runner, reload_config
@@ -67,8 +69,10 @@ class TestCLIPypePluginRegister:  # noqa: D101
             assert result_configuration['plugins'][0]['name'] == 'plug'
 
             # Unregister plugin (doesn't delete)
+            # Reload to activate current test_env
+            plugin_unregister_reload = importlib.reload(plugin_unregister)
             result = test_run.runner.invoke(
-                plugin_unregister.main,
+                plugin_unregister_reload.main,
                 ['--name', 'plug'])
             assert result.exit_code == 0
             assert 'successfully unregistered' in result.output

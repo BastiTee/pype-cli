@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """$ pype <plugin> --create-pype/--delete-pype."""
 
+import importlib
+
 from pype.config import plugin_register, plugin_unregister
 
 import pytest
@@ -27,8 +29,10 @@ class TestCLIPypePypes:  # noqa: D101
             yield
 
             # After all
+            # Reload to activate current test_env
+            plugin_unregister_reload = importlib.reload(plugin_unregister)
             result = pytest.test_run.runner.invoke(
-                plugin_unregister.main,
+                plugin_unregister_reload.main,
                 ['--name', self.plugin])
             assert result.exit_code == 0
             assert 'successfully unregistered' in result.output

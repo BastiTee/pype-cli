@@ -15,8 +15,8 @@ class TestCLIPypeAliases:  # noqa: D101
         test_run = invoke_runner(
             '%MAIN%',
             ['--unregister-alias', 'notpresent'])
-        assert test_run.result.exit_code == 1
-        assert 'No aliases registered' in test_run.result.output
+        assert test_run.result.exit_code == 2
+        assert 'choose from' in test_run.result.output
 
     def test_registered_alias_found_in_config(self):  # noqa: D102
         with create_test_env() as test_env:
