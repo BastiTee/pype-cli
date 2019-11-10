@@ -5,7 +5,6 @@ import getpass
 import importlib
 from glob import glob
 from os import path
-from re import sub
 from sys import path as syspath
 
 from pype.constants import NOT_DOCUMENTED_YET
