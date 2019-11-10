@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""How to use the global logging tool."""
+"""How to use the global logging subsystem."""
 
 import logging
 
@@ -12,7 +12,7 @@ import pype
 def main():
     """Script's main entry point."""
     # For this to work it is required that you've set up global logging
-    # via 'pype pype.config logger before. See its help pages to get yourself
+    # via 'pype pype.config logger' before. See its help pages to get yourself
     # familiar with the options.
 
     # Name your logger. Note that this can be omitted but you will end up
