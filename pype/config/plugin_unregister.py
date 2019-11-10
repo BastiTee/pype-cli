@@ -8,8 +8,14 @@ from pype.config_handler import PypeConfigHandler
 from pype.util.cli import fname_to_name, print_success, print_warning
 
 
+def _resolve_available_plugins():
+    return [plugin['name']
+            for plugin in PypeConfigHandler().get_json()['plugins']]
+
+
 @click.command(name=fname_to_name(__file__), help=__doc__)
 @click.option('--name', '-n', help='Plugin name.',
+              type=click.Choice(_resolve_available_plugins()),
               metavar='NAME', required=True)
 def main(name):
     """Script's main entry point."""
