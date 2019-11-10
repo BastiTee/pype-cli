@@ -33,7 +33,7 @@ class TestCLIPypeAliases:  # noqa: D101
             assert len(result_configuration['aliases']) == 1
             assert result_configuration['aliases'][0]['alias'] == 'myalias'
             result = test_run.runner.invoke(
-                test_run.main,
+                test_run.reload_and_get_main,
                 ['--alias-unregister', 'myalias'])
             assert result.exit_code == 0
             assert 'Unregistered alias: myalias' in result.output

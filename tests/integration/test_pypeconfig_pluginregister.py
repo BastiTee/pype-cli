@@ -70,9 +70,9 @@ class TestCLIPypePluginRegister:  # noqa: D101
 
             # Unregister plugin (doesn't delete)
             # Reload to activate current test_env
-            plugin_unregister_reload = importlib.reload(plugin_unregister)
+            importlib.reload(plugin_unregister)
             result = test_run.runner.invoke(
-                plugin_unregister_reload.main,
+                plugin_unregister.main,
                 ['--name', 'plug'])
             assert result.exit_code == 0
             assert 'successfully unregistered' in result.output

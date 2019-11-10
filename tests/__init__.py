@@ -39,7 +39,7 @@ VALID_CONFIG = {
 
 TestRunner = namedtuple(
     'TestRunner',
-    'result runner main test_env'
+    'result runner reload_and_get_main test_env'
 )
 
 TestEnvironment = namedtuple(
@@ -114,16 +114,16 @@ def create_runner(test_env, component_under_test, arguments=None):
         arguments = [arguments]
     environ[ENV_CONFIG_FOLDER] = test_env.config_dir
     runner = CliRunner(env=environ)
-    main_lib = importlib.reload(__main__)
+    importlib.reload(__main__)
     if component_under_test == r'%MAIN%':
-        component_under_test = main_lib.main
+        component_under_test = __main__.main
     # Replace %CONFIG_DIR% in arguments with actual test-config dir
     arguments = [
         sub(r'%CONFIG_DIR%', test_env.config_dir, arg) for arg in arguments]
     return TestRunner(
         result=runner.invoke(component_under_test, arguments, env=environ),
         runner=runner,
-        main=importlib.reload(__main__).main,
+        reload_and_get_main=importlib.reload(__main__).main,
         test_env=test_env
     )
 

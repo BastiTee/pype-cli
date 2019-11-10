@@ -30,23 +30,23 @@ class TestCLIPypePypes:  # noqa: D101
 
             # After all
             # Reload to activate current test_env
-            plugin_unregister_reload = importlib.reload(plugin_unregister)
+            importlib.reload(plugin_unregister)
             result = pytest.test_run.runner.invoke(
-                plugin_unregister_reload.main,
+                plugin_unregister.main,
                 ['--name', self.plugin])
             assert result.exit_code == 0
             assert 'successfully unregistered' in result.output
 
     def test_registered_plugin_found(self):  # noqa: D102
         result = pytest.test_run.runner.invoke(
-            pytest.test_run.main
+            pytest.test_run.reload_and_get_main
         )
         assert result.exit_code == 0
         assert self.plugin in result.output
 
     def test_plugin_called_without_options(self):  # noqa: D102
         result = pytest.test_run.runner.invoke(
-            pytest.test_run.main, [
+            pytest.test_run.reload_and_get_main, [
                 self.plugin
             ]
         )
@@ -55,26 +55,18 @@ class TestCLIPypePypes:  # noqa: D101
 
     def test_delete_non_existing_pype(self):  # noqa: D102
         result = pytest.test_run.runner.invoke(
-            pytest.test_run.main, [
+            pytest.test_run.reload_and_get_main, [
                 self.plugin, '--delete-pype', 'nan'
             ]
         )
-        assert result.exit_code == 1
-        assert 'No such pype' in result.output
+        assert result.exit_code == 2
+        assert 'choose from' in result.output
 
-    def test_create_and_delete_pype(self):  # noqa: D102
+    def test_create_pype(self):  # noqa: D102
         result = pytest.test_run.runner.invoke(
-            pytest.test_run.main, [
+            pytest.test_run.reload_and_get_main, [
                 self.plugin, '--create-pype', 'test'
             ]
         )
         assert result.exit_code == 0
         assert 'Created new pype' in result.output
-
-        result = pytest.test_run.runner.invoke(
-            pytest.test_run.main, [
-                self.plugin, '--delete-pype', 'test'
-            ]
-        )
-        assert result.exit_code == 0
-        assert 'Deleted pype' in result.output
