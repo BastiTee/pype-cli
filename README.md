@@ -11,7 +11,7 @@
 
 __pype-cli__ is a command-line tool to manage sets of other command-line tools. It simplifies the creation, orchestration and access of Python scripts that you require for your development work, process automation, etc.
 
-<img src="res/terminalizer/pype-cli.gif" alt="pype-cli GIF" width="550">
+<img src="res/pype-cli.gif" alt="pype-cli GIF" width="550">
 
 ## Quickstart
 
