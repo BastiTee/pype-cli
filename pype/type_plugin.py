@@ -5,7 +5,6 @@ import getpass
 import importlib
 from glob import glob
 from os import path
-from re import sub
 from sys import path as syspath
 
 from pype.constants import NOT_DOCUMENTED_YET
@@ -62,7 +61,10 @@ class Plugin:
     def __handle_relative_path(plugin_path, config_path):
         if not plugin_path.startswith('.'):
             return plugin_path
-        return sub(r'^\.[/]*', path.dirname(config_path) + '/', plugin_path)
+        return resolve_path(path.join(
+            path.dirname(config_path),
+            plugin_path
+        ))
 
     @staticmethod
     def __get_docu_or_default(module):

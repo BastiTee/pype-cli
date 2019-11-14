@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 """Pype core initializer."""
 
+import logging
+import sys
 from importlib import import_module
-from os import environ, remove
-from os.path import abspath, basename, dirname, isfile, join
+from os import environ, path, remove
 from re import sub
 from shutil import copyfile
 from sys import argv, path as syspath
@@ -11,11 +12,11 @@ from sys import argv, path as syspath
 from colorama import Fore, Style
 
 from pype.config_handler import PypeConfigHandler
-from pype.constants import ENV_CONFIG_FILE, ENV_TEST_CONFIG_FILE
+from pype.constants import ENV_CONFIG_FOLDER
 from pype.exceptions import PypeException
 from pype.type_plugin import Plugin
 from pype.util.cli import print_error, print_success, print_warning
-from pype.util.iotools import resolve_path
+from pype.util.iotools import open_with_default, resolve_path
 
 from tabulate import tabulate
 
@@ -23,24 +24,24 @@ from tabulate import tabulate
 class PypeCore:
     """Pype core initializer."""
 
-    SHELL_INIT_PREFIX = '.pype-initfile-'
-    SHELL_COMPLETE_PREFIX = '.pype-complete-'
+    SHELL_INIT_PREFIX = 'initfile-'
+    SHELL_COMPLETE_PREFIX = 'complete-'
+    SHELL_RC_HINT = '# pype-cli'
 
     def __init__(self):
         """Public constructor."""
         self.__set_environment_variables()
-        # Check if pype-cli is currently under test Volkswagen-style
-        test_config_file = environ.get(ENV_TEST_CONFIG_FILE, None)
-        self.__config = PypeConfigHandler(test_config_file)
-        self.__test_postfix = '-test' if test_config_file else ''
+        self.__config = PypeConfigHandler()
+        self.__setup_logging(self.__config)
         self.__rc_files = [
-            resolve_path('~/.bashrc' + self.__test_postfix),
-            resolve_path('~/.bash_profile' + self.__test_postfix),
-            resolve_path('~/.zshrc' + self.__test_postfix)
+            resolve_path('./.venv/bin/activate'),
+            resolve_path('~/.bashrc'),
+            resolve_path('~/.bash_profile'),
+            resolve_path('~/.zshrc')
         ]
         # load all external plugins
         self.plugins = [
-            Plugin(plugin, self.get_config_filepath())
+            Plugin(plugin, self.__config.get_file_path())
             for plugin in get_from_json_or_default(
                 self.__config.get_json(), 'plugins', [])
         ]
@@ -50,23 +51,15 @@ class PypeCore:
         self.plugins.append(Plugin({
             'name': 'config',
             'users': []
-        }, self.get_config_filepath()))
+        }, self.__config.get_file_path()))
 
     def get_plugins(self):
         """Get list of configured plugins."""
         return self.plugins
 
-    def get_config_json(self):
-        """Get pype configuration as JSON object."""
-        return self.__config.get_json()
-
-    def set_config_json(self, json):
-        """Set configuration from JSON object."""
-        self.__config.set_json(json)
-
-    def get_config_filepath(self):
+    def open_config_with_default(self):
         """Get absolute filepath to configuration JSON file."""
-        return self.__config.get_filepath()
+        return open_with_default(self.__config.get_file_path())
 
     def list_pypes(self):
         """Print list of pypes to console."""
@@ -83,9 +76,14 @@ class PypeCore:
                 ))
             print()
 
-    def list_aliases(self):
+    def get_aliases(self):
+        """Return available aliases."""
+        aliases = self.__config.get_json().get('aliases')
+        return sorted([alias['alias'] for alias in aliases])
+
+    def print_aliases(self):
         """Print list of aliases to console."""
-        aliases = self.get_config_json().get('aliases')
+        aliases = self.__config.get_json().get('aliases')
         sorted_alias_keys = sorted([alias['alias'] for alias in aliases])
         alias_table = []
 
@@ -94,90 +92,58 @@ class PypeCore:
                 '{}{}{}'.format(Style.BRIGHT, Fore.BLUE, alias),
                 Style.RESET_ALL + '=',
                 '{}{}{}'.format(Style.BRIGHT, Fore.LIGHTBLACK_EX,
-                                self._find_alias(aliases, alias)['command'])
+                                self.__find_alias(aliases, alias)['command'])
             ])
         print(tabulate(alias_table, tablefmt='plain'))
-
-    def __write_init_file(self, init_file, aliases):
-        shell_command = basename(argv[0])
-        source_cmd = 'source_zsh' if init_file == 'zsh' else 'source'
-        target_file = resolve_path(
-            '~/' + self.SHELL_INIT_PREFIX + init_file
-            + self.__test_postfix)
-        complete_file = resolve_path(
-            '~/' + self.SHELL_COMPLETE_PREFIX + init_file
-            + self.__test_postfix)
-        target_handle = open(resolve_path(target_file), 'w+')
-        print('Writing init-file ' + target_file)
-        target_handle.write("""# PYPE-CLI INIT-FILE: {}
-export PATH=$PATH:{}
-if [ ! -z "$( command -v {} )" ] # Only if installed
-then
-    if [ ! -f {} ]
-    then
-        _{}_COMPLETE={} {} > {}
-    fi
-    . {}
-
-{}
-fi
-""".format(
-            init_file,  # Init-file descriptor
-            dirname(argv[0]),  # Path to console script
-            shell_command,  # Configured shell command
-            complete_file,  # Complete file name
-            shell_command.upper(),  # Configured shell command upper case
-            source_cmd,  # Sourcing command,
-            shell_command,  # Configured shell command
-            complete_file,  # Complete file name
-            complete_file,  # Complete file name
-            ''.join([
-                '\talias {}="{}"\n'.format(alias['alias'], alias['command'])
-                for alias in aliases
-            ])  # Alias definitions
-        ))
 
     def install_to_shell(self):
         """Install shell features."""
         # Clean up first
         self.uninstall_from_shell()
         print_success('Successfully cleaned up existing configurations')
-        config_json = self.__config.get_json()
-        aliases = get_from_json_or_default(config_json, 'aliases', [])
+        aliases = get_from_json_or_default(
+            self.__config.get_json(), 'aliases', [])
         self.__write_init_file('bsh', aliases)
         self.__write_init_file('zsh', aliases)
         print('Add link to init-file in rc-files if present')
         for file in self.__rc_files:
-            if not isfile(file):
+            if not path.isfile(file):
                 continue
             print(' - "{}"'.format(file))
             # Append link to init-file and set config file
             file_handle = open(file, 'a+')
-            init_file = '~/' + self.SHELL_INIT_PREFIX
+            init_file = path.join(
+                self.__config.get_dir_path(), self.SHELL_INIT_PREFIX)
             init_file = (init_file + 'zsh' if 'zshrc' in file
                          else init_file + 'bsh')
-            file_handle.write('export {}="{}" # {}\n'.format(
-                ENV_CONFIG_FILE,
-                resolve_path(self.get_config_filepath()),
-                self.SHELL_INIT_PREFIX
+            file_handle.write('export {}="{}" {}\n'.format(
+                ENV_CONFIG_FOLDER,
+                resolve_path(self.__config.get_dir_path()),
+                self.SHELL_RC_HINT
             ))
-            file_handle.write('. ' + init_file + '\n')
+            file_handle.write('. {} {}\n'.format(
+                init_file, self.SHELL_RC_HINT
+            ))
             file_handle.close()
+            if hasattr(sys, 'real_prefix'):
+                print('Running in .venv. Skipping system rc files.')
+                break
         print_success('Successfully written init-files')
 
     def uninstall_from_shell(self):
         """Uninstall shell features."""
         # Remove init files
+        cfg_dir = self.__config.get_dir_path()
         for file in [
-            '~/' + self.SHELL_INIT_PREFIX + 'bsh' + self.__test_postfix,
-            '~/' + self.SHELL_INIT_PREFIX + 'zsh' + self.__test_postfix,
-            '~/' + self.SHELL_COMPLETE_PREFIX + 'bsh' + self.__test_postfix,
-            '~/' + self.SHELL_COMPLETE_PREFIX + 'zsh' + self.__test_postfix
+            path.join(cfg_dir, self.SHELL_INIT_PREFIX + 'bsh'),
+            path.join(cfg_dir, self.SHELL_INIT_PREFIX + 'zsh'),
+            path.join(cfg_dir, self.SHELL_COMPLETE_PREFIX + 'bsh'),
+            path.join(cfg_dir, self.SHELL_COMPLETE_PREFIX + 'zsh')
         ]:
             self.__remove_file_silently(file)
         print('Remove link to init-file from rc-files if present')
         for file in self.__rc_files:
-            if not isfile(file):
+            if not path.isfile(file):
                 continue
             file_handle = open(file, 'r')
             content = file_handle.readlines()
@@ -185,18 +151,21 @@ fi
             # Don't rewrite if rc file does not link to initfile
             if not any(
                 list(filter(
-                    lambda x: self.SHELL_INIT_PREFIX in x, content))):
+                    lambda x: self.SHELL_RC_HINT in x, content))):
                 continue
             # Delete initfile-links from rc file
             print(' - "{}"'.format(file))
             file_handle = open(file, 'w')
             [file_handle.write(cn)
-             for cn in content if self.SHELL_INIT_PREFIX not in cn]
+             for cn in content if self.SHELL_RC_HINT not in cn]
             file_handle.close()
+            if hasattr(sys, 'real_prefix'):
+                print('Running in .venv. Skipping system rc files.')
+                break
 
-    def register_alias(self, ctx):
+    def alias_register(self, ctx):
         """Register a new alias."""
-        alias = ctx.parent.register_alias
+        alias = ctx.parent.alias_register
         # Combine the current context's command path with remaining CL-args
         cmd_path = ctx.command_path.split(' ')
         cmd_path_last = cmd_path[-1]
@@ -214,7 +183,7 @@ fi
         config_json = self.__config.get_json()
         if not config_json.get('aliases', None):
             config_json['aliases'] = []
-        if self._alias_present(config_json, alias):
+        if self.__alias_present(config_json, alias):
             print_warning('Alias already registered.')
             return
         config_json.get('aliases').append({
@@ -226,7 +195,7 @@ fi
         # update install script
         self.install_to_shell()
 
-    def unregister_alias(self, alias):
+    def alias_unregister(self, alias):
         """Unregister the provided alias."""
         if not alias:
             return
@@ -235,7 +204,7 @@ fi
         if not config_json.get('aliases', None):
             print_warning('No aliases registered.')
             exit(1)
-        if not self._alias_present(config_json, alias):
+        if not self.__alias_present(config_json, alias):
             print_warning('Alias not registered.')
             exit(1)
         for obj in enumerate(config_json['aliases']):
@@ -247,22 +216,45 @@ fi
         print_success('Unregistered alias: {}'.format(alias))
         self.install_to_shell()
 
-    def get_core_config(self, key, default=None):
-        """Return a key from the core configuration of the config file."""
-        return get_from_json_or_default(
-            self.get_config_json(), 'core_config.' + key, default)
+    def __write_init_file(self, init_file, aliases):
+        shell_command = path.basename(argv[0])
+        cfg_dir = self.__config.get_dir_path()
+        source_cmd = 'source_zsh' if init_file == 'zsh' else 'source'
+        target_file = resolve_path(
+            path.join(cfg_dir, self.SHELL_INIT_PREFIX + init_file)
+        )
+        complete_file = resolve_path(
+            path.join(cfg_dir, self.SHELL_COMPLETE_PREFIX + init_file)
+        )
+        target_handle = open(resolve_path(target_file), 'w+')
+        print('Writing init-file ' + target_file)
+        target_handle.write("""# PYPE-CLI INIT-FILE: {}
+export PATH=$PATH:{}
+if [ ! -z "$( command -v {} )" ] # Only if installed
+then
+    if [ ! -f {} ]
+    then
+        _{}_COMPLETE={} {} > {}
+    fi
+    . {}
 
-    @staticmethod
-    def _find_alias(aliases, key):
-        for alias in aliases:
-            if key == alias['alias']:
-                return alias
-
-    @staticmethod
-    def _alias_present(config_json, alias):
-        return any(
-            [existing_alias for existing_alias in config_json.get('aliases')
-             if existing_alias['alias'] == alias])
+{}
+fi
+""".format(
+            init_file,  # Init-file descriptor
+            path.dirname(argv[0]),  # Path to console script
+            shell_command,  # Configured shell command
+            complete_file,  # Complete file name
+            shell_command.upper(),  # Configured shell command upper case
+            source_cmd,  # Sourcing command,
+            shell_command,  # Configured shell command
+            complete_file,  # Complete file name
+            complete_file,  # Complete file name
+            ''.join([
+                '\talias {}="{}"\n'.format(alias['alias'], alias['command'])
+                for alias in aliases
+            ])  # Alias definitions
+        ))
 
     @staticmethod
     def create_pype_or_exit(pype_name, plugin, minimal):
@@ -273,14 +265,14 @@ fi
         # Normalize filename to be PEP8-conform
         target_name = sub('-', '_', sub(r'\.py$', '', pype_name))
         # Create absolute path
-        target_file = join(plugin.abspath, target_name + '.py')
-        if isfile(target_file):
+        target_file = path.join(plugin.abspath, target_name + '.py')
+        if path.isfile(target_file):
             print_warning('Pype already present')
             exit(1)
         # Depending on user input create a documented or simple template
         template_name = ('template_minimal.py' if minimal
                          else 'template.py')
-        source_name = join(dirname(__file__), template_name)
+        source_name = path.join(path.dirname(__file__), template_name)
         copyfile(source_name, target_file)
         print_success('Created new pype ' + target_file)
         return target_file
@@ -292,7 +284,7 @@ fi
             print_error('Deleting internal pypes is not supported.')
             exit(1)
         source_name = sub('-', '_', sub(r'\.py$', '', pype_name))
-        source_name = join(plugin.abspath, source_name + '.py')
+        source_name = path.join(plugin.abspath, source_name + '.py')
         try:
             remove(source_name)
         except FileNotFoundError:
@@ -322,6 +314,30 @@ fi
         environ['LC_ALL'] = 'C.UTF-8'
         environ['LANG'] = 'C.UTF-8'
 
+    @staticmethod
+    def __find_alias(aliases, key):
+        for alias in aliases:
+            if key == alias['alias']:
+                return alias
+
+    @staticmethod
+    def __alias_present(config_json, alias):
+        return any(
+            [existing_alias for existing_alias in config_json.get('aliases')
+             if existing_alias['alias'] == alias])
+
+    @staticmethod
+    def __setup_logging(config):
+        log_cfg = config.get_core_config_logging()
+        if not log_cfg or not log_cfg.get('enabled', False):
+            return
+        logging.basicConfig(
+            level=log_cfg['level'],
+            format=log_cfg['pattern'],
+            filename=path.join(log_cfg['directory'], 'pype-cli.log')
+        )
+        logging.getLogger('pype-cli')
+
 
 def get_from_json_or_default(json, path, default_value):
     """Try to load a key breadcrumb from a JSON object or return default."""
@@ -336,9 +352,9 @@ def get_from_json_or_default(json, path, default_value):
         return default_value
 
 
-def load_module(name, path):
+def load_module(name, module_path):
     """Try to import the module at the provided path using classloader."""
-    syspath.append(abspath(path))
+    syspath.append(path.abspath(module_path))
     try:
         return import_module(name)
     # This used to be a ModuleNotFoundException but it's only Python >= 3.6
@@ -348,7 +364,7 @@ def load_module(name, path):
 
 def get_pype_basepath():
     """Get directory filename of this pype installation."""
-    return dirname(dirname(__file__))
+    return path.dirname(path.dirname(__file__))
 
 
 def print_context_help(ctx, level=0):

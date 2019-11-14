@@ -11,7 +11,7 @@
 
 __pype-cli__ is a command-line tool to manage sets of other command-line tools. It simplifies the creation, orchestration and access of Python scripts that you require for your development work, process automation, etc.
 
-<img src="res/terminalizer/pype-cli.gif" alt="pype-cli GIF" width="550">
+<img src="res/pype-cli.gif" alt="pype-cli GIF" width="550">
 
 ## Quickstart
 
@@ -29,7 +29,7 @@ You'll find more information on the commands in the sections below.
 
 __pype-cli__ builds upon __plugins__ and __pypes__. A __pype__ is a single Python script whereas a __plugin__ is essentially a Python module that extens __pype-cli__ with a collection of __pypes__.
 
-__pype-cli__ ships with one built-in __plugin__ called `pype.config` that is used to configure __pype-cli__. All of the required information will be stored to a local JSON-configuration file that defaults to `~/.pype-config.json`. To configure a custom configuration file use the environment variable `PYPE_CONFIGURATION_FILE`, e.g. in your `~/.bashrc` file set `export PYPE_CONFIGURATION_FILE=/path/to/myconfig.json`.
+__pype-cli__ ships with one built-in __plugin__ called `pype.config` that is used to configure __pype-cli__. All of the required information will be stored to a local JSON-configuration file that defaults to `~/.pype-cli/config.json`. To configure a custom configuration folder use the environment variable `PYPE_CONFIG_FOLDER`. For example to use `/path/to/pype-cli/config.json` as configuration folder/file put into your `~/.bashrc` file: `export PYPE_CONFIG_FOLDER=/path/to/pype-cli`.
 
 ### Basic operations
 
@@ -79,9 +79,20 @@ To create a new pype you need to decide to which plugin you want to add the pype
 
 If you have selected a __pype__ from a __plugin__ you can set __aliases__ for it. Afterwards you need to start a new shell session or source your rc-file to activate the __aliases__. New __aliases__ are stored in the configuration file.
 
-* Register an __alias__: `pype --register-alias mm myplugin mypype` → `alias mm="pype myplugin mypype"`
-* Register an __alias with options__: `pype --register-alias mm myplugin mypype --option opt1 --toggle` → `alias mm="pype myplugin mypype --option opt1 --toggle"`
-* Unregister an __alias__: `pype --unregister-alias mm`
+* Register an __alias__: `pype --alias-register mm myplugin mypype` → `alias mm="pype myplugin mypype"`
+* Register an __alias with options__: `pype --alias-register mm myplugin mypype --option opt1 --toggle` → `alias mm="pype myplugin mypype --option opt1 --toggle"`
+* Unregister an __alias__: `pype --alias-unregister mm`
+* List all avaliable __aliases__: `pype --aliases`
+
+### Global logging configuration
+
+__pype-cli__ contains a built-in logger setup. To configure it use the __pype__ `pype pype.config logger`. In your __pypes__ you can use it right away [like in the provided example](example_pypes/basics/logger.py).
+
+* Enable/disable global logging: `pype pype.config logger enable/disable`
+* Print current configuration: `pype pype.config logger print-config`
+* Set logging folder: `pype pype.config logger set-directory /your/login/folder`
+* Set logging level: `pype pype.config logger set-level DEBUG`
+* Set logging pattern: `pype pype.config logger set-pattern "%(asctime)s %(levelname)s %(name)s %(message)s"`
 
 ### Shared code for plugins
 

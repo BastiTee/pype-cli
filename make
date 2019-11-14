@@ -18,37 +18,50 @@ export PYTHONPATH=${PYTHONPATH:-.}
 export LC_ALL=${PYPE_ENCODING:-${LC_ALL}}
 export LANG=${PYPE_ENCODING:--${LANG}}
 # Default pype configuration file (always use the one relative to make file)
-export PYPE_CONFIGURATION_FILE="$( pwd )/config.json"
+export PYPE_CONFIG_FOLDER="$( pwd )/.pype-cli"
+export PYPE_CONFIG="pipenv run pype pype.config"
 
 venv() {
     # Create a pipenv virtual environment for IDE/coding support
-    rm -rf .venv
+    rm -rf .venv $PYPE_CONFIG_FOLDER
 	pipenv install --dev --skip-lock
     pipenv run pip install --editable .
     # Use a venv-relative config file
-    cfg_file="$( pwd )/.venv/bin/pype-config.json"
-    export PYPE_CONFIGURATION_FILE=$cfg_file
-    echo "export PYPE_CONFIGURATION_FILE=$cfg_file" >> .venv/bin/activate
-    # Auto-activate shell completion
-    echo "eval \"\$(_PYPE_COMPLETE=source pype)\"" >> .venv/bin/activate
-    # Register example pype
-    pipenv run pype pype.config plugin-register \
-    --name basics --path example_pypes
+    mkdir -p $PYPE_CONFIG_FOLDER
+    echo "export PYPE_CONFIG_FOLDER=$PYPE_CONFIG_FOLDER # pype-cli" \
+    >> .venv/bin/activate
+    # Setup pype
+    $PYPE_CONFIG plugin-register --name basics --path example_pypes
+    $PYPE_CONFIG shell-install
+    $PYPE_CONFIG version
+}
+
+reset_shell_config() {
+    # Reset .venv config after it has been reconfigured due to a test
+    $PYPE_CONFIG shell-install 2>&1 > /dev/null
+}
+
+shell() {
+    # Open virtual environment with forced bash shell (required for venv)
+    [ ! -d .venv ] && venv
+    bash -c "pipenv shell; $SHELL"
 }
 
 clean() {
     # Clean project base by deleting any non-VC files
-    rm -rf .venv build dist .pytest_cache *.egg-info
+    rm -rf .venv build dist .pytest_cache *.egg-info .pype-cli*
 }
 
 test() {
     # Run all tests in default virtualenv
     pipenv run py.test $@
+    reset_shell_config
 }
 
 coverage() {
     # Run test coverage checks
     pipenv run py.test -c .coveragerc --verbose tests
+    reset_shell_config
 }
 
 lint() {

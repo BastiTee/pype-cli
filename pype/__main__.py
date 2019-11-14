@@ -15,6 +15,8 @@ from pype.exceptions import PypeException
 from pype.util.cli import fname_to_name, print_error
 from pype.util.iotools import open_with_default
 
+PYPE_CORE = PypeCore()
+
 
 @click.group(
     invoke_without_command=True,
@@ -25,30 +27,31 @@ from pype.util.iotools import open_with_default
               help='Print all available pypes.')
 @click.option('--aliases', '-a', is_flag=True,
               help='Print all available aliases.')
+@click.option('--alias-register', '-r', metavar='ALIAS',
+              help='Register alias for following pype.')
+@click.option('--alias-unregister', '-u', metavar='ALIAS',
+              type=click.Choice(PYPE_CORE.get_aliases()),
+              help='Unregister alias.')
 @click.option('--open-config', '-o', is_flag=True,
               help='Open config file in default editor.')
-@click.option('--register-alias', '-r', metavar='ALIAS',
-              help='Register alias for following pype.')
-@click.option('--unregister-alias', '-u', metavar='ALIAS',
-              help='Unregister alias.')
 @click.pass_context
 def main(ctx, list_pypes, aliases,
-         open_config, register_alias, unregister_alias):
+         open_config, alias_register, alias_unregister):
     """Pype main entry point."""
     if not _process_alias_configuration(
-            ctx, list_pypes, open_config, register_alias, unregister_alias):
+            ctx, list_pypes, open_config, alias_register, alias_unregister):
         print_context_help(ctx, level=1)
         return
     if open_config:
-        open_with_default(PYPE_CORE.get_config_filepath())
+        PYPE_CORE.open_config_with_default()
     elif list_pypes:
         PYPE_CORE.list_pypes()
         return
     elif aliases:
-        PYPE_CORE.list_aliases()
+        PYPE_CORE.print_aliases()
         return
-    elif unregister_alias:
-        PYPE_CORE.unregister_alias(unregister_alias)
+    elif alias_unregister:
+        PYPE_CORE.alias_unregister(alias_unregister)
         return
     elif ctx.invoked_subcommand is None:
         print_error('No pype selected.')
@@ -84,18 +87,22 @@ def _bind_plugin(plugin_name, plugin):
                 print_error(str(import_error))
                 exit(1)
 
-    @click.option('--create-pype', '-c',
+        def get_pype_command_names():
+            return [sub('_', '-', pype.name) for pype in plugin.pypes]
+
+    @click.option('--create-pype', '-c', metavar='PYPE',
                   help='Create new pype with given name.')
+    @click.option('--open-pype', '-o', metavar='PYPE',
+                  help='Open pype with given name in default editor.')
+    @click.option('--delete-pype', '-d', metavar='PYPE',
+                  help='Delete pype with given name.',
+                  type=click.Choice(PypeCLI.get_pype_command_names()))
     @click.option('--minimal', '-m', is_flag=True,
                   help='Use a minimal template with less boilerplate '
-                  + '(only used along with "-c" option).')
+                  + '(only used along with "--create-pype" option).')
     @click.option('--edit', '-e', is_flag=True,
                   help='Open new pype immediately for editing '
-                  + '(only used along with "-c" option).')
-    @click.option('--delete-pype', '-d',
-                  help='Delete pype with given name.')
-    @click.option('--open-pype', '-o',
-                  help='Open pype with given name in default editor.')
+                  + '(only used along with "--create-pype" option).')
     @click.pass_context
     def _plugin_bind_plugin_function(
             ctx, create_pype, minimal, edit, delete_pype, open_pype):
@@ -127,8 +134,8 @@ def _bind_plugin(plugin_name, plugin):
                 return
             open_with_default(pype_abspath)
             toggle_invoked = True
-        if ctx.parent.register_alias:
-            PYPE_CORE.register_alias(ctx)
+        if ctx.parent.alias_register:
+            PYPE_CORE.alias_register(ctx)
             exit(0)
         # Handle case that no toggles were used and no commands selected
         if not toggle_invoked and not ctx.invoked_subcommand:
@@ -140,25 +147,24 @@ def _bind_plugin(plugin_name, plugin):
 
 
 def _process_alias_configuration(
-        ctx, list_pypes, open_config, register_alias, unregister_alias):
-    if register_alias and unregister_alias:
+        ctx, list_pypes, open_config, alias_register, alias_unregister):
+    if alias_register and alias_unregister:
         print_error('Options -r and -u cannot be combined.')
         return False
     other_options = open_config or list_pypes
-    if register_alias and other_options:
+    if alias_register and other_options:
         print_error('Option -r cannot be combined with other options.')
         return False
-    if unregister_alias and other_options:
+    if alias_unregister and other_options:
         print_error('Option -u cannot be combined with other options.')
         return False
     # piggy-back context
-    ctx.register_alias = register_alias
+    ctx.alias_register = alias_register
     return True
 
 
 init(autoreset=True)  # Initialize colorama
 try:
-    PYPE_CORE = PypeCore()
     [
         _bind_plugin(plugin.name, plugin)
         for plugin in PYPE_CORE.get_plugins()

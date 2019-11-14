@@ -2,6 +2,7 @@
 """A dynamic multi-command creator."""
 
 import json
+from os import path
 
 # Import the "Command Line Interface Creation Kit"
 # <https://click.palletsprojects.com>
@@ -9,8 +10,9 @@ import click
 
 import pype
 
-# Place to store your dynamic commands
-commands_registry = pype.resolve_path('~/.pype-example-multicommands')
+# Store your dynamic commands along other pype configuration files
+commands_registry = path.join(
+    pype.Config().get_dir_path(), 'example-multicommands')
 
 
 def _load_command_registry():
