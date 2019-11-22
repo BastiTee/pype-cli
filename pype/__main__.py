@@ -93,7 +93,8 @@ def _bind_plugin(plugin_name, plugin):
     @click.option('--create-pype', '-c', metavar='PYPE',
                   help='Create new pype with given name.')
     @click.option('--open-pype', '-o', metavar='PYPE',
-                  help='Open pype with given name in default editor.')
+                  help='Open pype with given name in default editor.',
+                  type=click.Choice(PypeCLI.get_pype_command_names()))
     @click.option('--delete-pype', '-d', metavar='PYPE',
                   help='Delete pype with given name.',
                   type=click.Choice(PypeCLI.get_pype_command_names()))
