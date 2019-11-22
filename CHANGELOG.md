@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 0.5.1
+
+- Complete `pype <plugin> --open-pype <pype>`
+
 ## Version 0.5.0
 
 - Functionality
