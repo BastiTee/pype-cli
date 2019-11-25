@@ -4,7 +4,8 @@ cd "$( cd "$( dirname "$0" )"; pwd )"
 
 # Check python and pipenv installation
 [ -z "$( command -v python3 )" ] && { echo "python3 not available."; exit 1; }
-[ -z "$( command -v pipenv )" ] && { echo "pipenv not available."; exit 1; }
+[ -z "$( command -v p3ipenv )" ] && { echo "pipenv not available. \
+Please run 'python3 -m pip install pipenv'."; exit 1; }
 
 # Suppress warning if pipenv is started inside .venv
 export PIPENV_VERBOSITY=${PIPENV_VERBOSITY:--1}
