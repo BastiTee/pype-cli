@@ -1,5 +1,28 @@
 # Changelog
 
+## Version 0.5.1
+
+- Complete `pype <plugin> --open-pype <pype>`
+
+## Version 0.5.0
+
+- Functionality
+  - Store configurations in a ~/.pype folder instead of separate files
+  - Add logging capabilities that are saved in configuration file
+  - Remove mechanism that resolves plugins relative to configuration file (too complex)
+  - Disallow re-registering of plugin with same name
+  - Autocomplete pype names on `--delete-pype` option for each plugin
+  - Autocomplete aliases on `pype --aliases-unregister`
+  - Autocomplete plugins on `pype pype.config plugin-unregister`
+  - Flip option name for `pype --register-alias` and `pype --unregister-alias`
+
+- Development
+  - Make pype .venv-aware to support system-independent development
+  - Fix bash-setup for venv
+
+- Code improvements
+  - Remove facading of config handler in core
+
 ## Version 0.4.1
 
 - Add [short aliases](pype/__init__.py) for run_interactive and run_and_get_output
