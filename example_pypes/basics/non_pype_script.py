@@ -12,3 +12,7 @@ import click
 def main():
     """Script's main entry point."""
     print('I am a pype-cli independent script!')
+
+
+if __name__ == '__main__':
+    main()
