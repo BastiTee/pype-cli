@@ -16,7 +16,8 @@ from pype.constants import ENV_CONFIG_FOLDER
 from pype.exceptions import PypeException
 from pype.type_plugin import Plugin
 from pype.util.cli import print_error, print_success, print_warning
-from pype.util.iotools import open_with_default, resolve_path
+from pype.util.iotools import (
+    benchmark_print_info, open_with_default, resolve_path)
 
 from tabulate import tabulate
 
@@ -40,6 +41,7 @@ class PypeCore:
             resolve_path('~/.zshrc')
         ]
         # load all external plugins
+        benchmark_print_info('Loading plugin information')
         self.plugins = [
             Plugin(plugin, self.__config.get_file_path())
             for plugin in get_from_json_or_default(
@@ -52,6 +54,7 @@ class PypeCore:
             'name': 'config',
             'users': []
         }, self.__config.get_file_path()))
+        benchmark_print_info('Plugins loaded')
 
     def get_plugins(self):
         """Get list of configured plugins."""

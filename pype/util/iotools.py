@@ -53,8 +53,13 @@ def resolve_path(relative_path):
     return path.abspath(path.expanduser(relative_path))
 
 
-def print_elapsed(key, start_time):
+def benchmark_print_elapsed(key, start_time):
     """Print elapsed time since previous timestamp in milliseconds."""
     if int(environ.get(ENV_BENCHMARK_INIT, 0)) == 1:
         elapsed_ms = round((time() - start_time) * 1000, 5)
         print_benchmark('{} | {} ms'.format(key, elapsed_ms))
+
+
+def benchmark_print_info(info_text):
+    """Print a benchmark information text."""
+    print_benchmark('– ' + info_text)

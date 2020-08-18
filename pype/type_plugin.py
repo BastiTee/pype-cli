@@ -11,7 +11,7 @@ from time import time
 from pype.constants import NOT_DOCUMENTED_YET
 from pype.exceptions import PypeException
 from pype.type_pype import Pype
-from pype.util.iotools import print_elapsed, resolve_path
+from pype.util.iotools import benchmark_print_elapsed, resolve_path
 
 
 class Plugin:
@@ -58,7 +58,7 @@ class Plugin:
             for subfile in subfiles
         ]
         self.active = True
-        print_elapsed(plugin_config['name'], start)
+        benchmark_print_elapsed(plugin_config['name'], start)
 
     @ staticmethod
     def __handle_relative_path(plugin_path, config_path):
