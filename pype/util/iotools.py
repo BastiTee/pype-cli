@@ -62,4 +62,5 @@ def benchmark_print_elapsed(key, start_time):
 
 def benchmark_print_info(info_text):
     """Print a benchmark information text."""
-    print_benchmark('– ' + info_text)
+    if int(environ.get(ENV_BENCHMARK_INIT, 0)) == 1:
+        print_benchmark('– ' + info_text)
