@@ -6,11 +6,12 @@ import importlib
 from glob import glob
 from os import path
 from sys import path as syspath
+from time import time
 
 from pype.constants import NOT_DOCUMENTED_YET
 from pype.exceptions import PypeException
 from pype.type_pype import Pype
-from pype.util.iotools import resolve_path
+from pype.util.iotools import print_elapsed, resolve_path
 
 
 class Plugin:
@@ -18,6 +19,7 @@ class Plugin:
 
     def __init__(self, plugin_config, config_path):
         """Activate plugins for the provided configuration."""
+        start = time()
         self.active = False
         if not self.__valid_for_user(plugin_config):
             return
@@ -56,8 +58,9 @@ class Plugin:
             for subfile in subfiles
         ]
         self.active = True
+        print_elapsed(plugin_config['name'], start)
 
-    @staticmethod
+    @ staticmethod
     def __handle_relative_path(plugin_path, config_path):
         if not plugin_path.startswith('.'):
             return plugin_path
@@ -66,13 +69,13 @@ class Plugin:
             plugin_path
         ))
 
-    @staticmethod
+    @ staticmethod
     def __get_docu_or_default(module):
         return (
             module.__doc__ if module.__doc__ else NOT_DOCUMENTED_YET
         )
 
-    @staticmethod
+    @ staticmethod
     def __valid_for_user(plugin_config):
         plugin_users = plugin_config.get('users', [])
         if len(plugin_users) == 0:
