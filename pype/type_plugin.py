@@ -60,7 +60,7 @@ class Plugin:
         self.active = True
         benchmark_print_elapsed(plugin_config['name'], start)
 
-    @ staticmethod
+    @staticmethod
     def __handle_relative_path(plugin_path, config_path):
         if not plugin_path.startswith('.'):
             return plugin_path
@@ -69,13 +69,13 @@ class Plugin:
             plugin_path
         ))
 
-    @ staticmethod
+    @staticmethod
     def __get_docu_or_default(module):
         return (
             module.__doc__ if module.__doc__ else NOT_DOCUMENTED_YET
         )
 
-    @ staticmethod
+    @staticmethod
     def __valid_for_user(plugin_config):
         plugin_users = plugin_config.get('users', [])
         if len(plugin_users) == 0:
