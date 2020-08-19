@@ -3,10 +3,8 @@
 
 from os import environ, path
 from subprocess import PIPE, call, run
-from time import time
 
-from pype.constants import ENV_BENCHMARK_INIT
-from pype.util.cli import print_benchmark, print_error
+from pype.util.cli import print_error
 
 
 def run_interactive(cmdline, dry_run=False, verbose=False, *args, **kwargs):
@@ -51,16 +49,3 @@ def open_with_default(filepath):
 def resolve_path(relative_path):
     """Resolve path including home folder expanding."""
     return path.abspath(path.expanduser(relative_path))
-
-
-def benchmark_print_elapsed(key, start_time):
-    """Print elapsed time since previous timestamp in milliseconds."""
-    if int(environ.get(ENV_BENCHMARK_INIT, 0)) == 1:
-        elapsed_ms = round((time() - start_time) * 1000, 5)
-        print_benchmark('{} | {} ms'.format(key, elapsed_ms))
-
-
-def benchmark_print_info(info_text):
-    """Print a benchmark information text."""
-    if int(environ.get(ENV_BENCHMARK_INIT, 0)) == 1:
-        print_benchmark('– ' + info_text)

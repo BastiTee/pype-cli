@@ -33,11 +33,6 @@ def print_error(message):
     _print_highlight(message, '✘', 'red')
 
 
-def print_benchmark(message):
-    """Print a message with a blue highlight."""
-    _print_highlight(message, '', 'blue')
-
-
 def _print_highlight(message, prefix, color):
     prefix = prefix + ' ' if prefix else ''
     click.echo(click.style(prefix + message.strip(), fg=color, bold=True))

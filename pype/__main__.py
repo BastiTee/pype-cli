@@ -5,17 +5,15 @@
 from os import listdir, path
 from re import sub
 from sys import path as syspath
-from time import time
 
 import click
-
 from colorama import init
 
 from pype.core import PypeCore, print_context_help
 from pype.exceptions import PypeException
+from pype.util.benchmark import Benchmark
 from pype.util.cli import fname_to_name, print_error
-from pype.util.iotools import (
-    benchmark_print_elapsed, benchmark_print_info, open_with_default)
+from pype.util.iotools import open_with_default
 
 PYPE_CORE = PypeCore()
 
@@ -71,8 +69,8 @@ def _bind_plugin(plugin_name, plugin):
                 *args, **kwargs)
 
         def list_commands(self, ctx):
-            benchmark_print_info('Loading pypes from plugin {}'
-                                 .format(plugin_name))
+            Benchmark.print_info(
+                'Loading pypes from plugin {}'.format(plugin_name))
             rv = []
             for filename in listdir(plugin.abspath):
                 if filename.endswith('.py') and '__' not in filename:
@@ -83,12 +81,11 @@ def _bind_plugin(plugin_name, plugin):
         def get_command(self, ctx, name):
             name = sub('-', '_', name)
             full_name = plugin.name + '.' + name
-            start = time()
             try:
-                syspath.append(path.dirname(plugin.abspath))
-                mod = __import__(full_name, {}, {}, ['main'])
-                benchmark_print_elapsed(full_name, start)
-                return mod.main
+                with Benchmark(key=full_name):
+                    syspath.append(path.dirname(plugin.abspath))
+                    mod = __import__(full_name, {}, {}, ['main'])
+                    return mod.main
             except ImportError as import_error:
                 print_error(str(import_error))
                 exit(1)
