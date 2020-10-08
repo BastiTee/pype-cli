@@ -1,5 +1,12 @@
 # Changelog
 
+## Version 0.5.2
+
+- Add load time benchmarking using `PYPE_BENCHMARK_INIT=1` as trigger variable
+- Replace make script with Makefile
+- Replace Travis CI with GitHub actions
+- Upgrade build environment
+
 ## Version 0.5.1
 
 - Complete `pype <plugin> --open-pype <pype>`
