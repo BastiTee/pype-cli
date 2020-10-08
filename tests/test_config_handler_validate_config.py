@@ -3,11 +3,10 @@
 
 import copy
 
-from pype.config_handler import PypeConfigHandler
-from pype.exceptions import PypeException
-
 from pytest import raises
 
+from pype.config_handler import PypeConfigHandler
+from pype.exceptions import PypeException
 from tests import VALID_CONFIG
 
 

@@ -27,8 +27,8 @@ def main(name):
         if plugin['name'] != name
     ]
     if config_json['plugins'] == new_plugins:
-        print_warning('Plugin "{}" not found. Nothing to do.'.format(name))
+        print_warning(f'Plugin "{name}" not found. Nothing to do.')
         return
     config_json['plugins'] = new_plugins
     config_handler.set_json(config_json)
-    print_success('Plugin "{}" successfully unregistered.'.format(name))
+    print_success(f'Plugin "{name}" successfully unregistered.')

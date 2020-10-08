@@ -30,7 +30,7 @@ def main():  # noqa: D103
 def set_level(level):  # noqa: D103
     with open_configuration() as log_cfg:
         log_cfg['level'] = level
-    print_success('Log level set to {}.'.format(level))
+    print_success(f'Log level set to {level}.')
 
 
 @main.command(help='Configure log pattern')
@@ -42,7 +42,7 @@ def set_pattern(pattern):  # noqa: D103, A002
     pattern = pattern.strip()
     with open_configuration() as log_cfg:
         log_cfg['pattern'] = pattern
-    print_success('Log pattern set to \'{}\'.'.format(pattern))
+    print_success(f'Log pattern set to \'{pattern}\'.')
 
 
 @main.command(help='Configure target directory')
@@ -51,7 +51,7 @@ def set_pattern(pattern):  # noqa: D103, A002
 def set_directory(directory):  # noqa: D103
     with open_configuration() as log_cfg:
         log_cfg['directory'] = directory
-    print_success('Log directory set to \'{}\'.'.format(directory))
+    print_success(f'Log directory set to \'{directory}\'.')
 
 
 @main.command(help='Enable global logger')

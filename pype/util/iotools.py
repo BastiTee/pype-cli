@@ -10,7 +10,7 @@ from pype.util.cli import print_error
 def run_interactive(cmdline, dry_run=False, verbose=False, *args, **kwargs):
     """Call an interactive shell."""
     if dry_run or verbose:
-        print('$: {}'.format(cmdline))
+        print(f'$: {cmdline}')
     if dry_run:
         return
     try:
@@ -22,7 +22,7 @@ def run_interactive(cmdline, dry_run=False, verbose=False, *args, **kwargs):
 def run_and_get_output(cmdline, dry_run=False, verbose=False, *args, **kwargs):
     """Call a non-interactive shell and return stdout and stderr."""
     if dry_run or verbose:
-        print('$: {}'.format(cmdline))
+        print(f'$: {cmdline}')
     if dry_run:
         return '', ''
     proc = run(cmdline, shell=True, stdout=PIPE, stderr=PIPE, *args, **kwargs)

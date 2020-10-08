@@ -3,10 +3,9 @@
 
 import importlib
 
-from pype.config import plugin_register, plugin_unregister
-
 import pytest
 
+from pype.config import plugin_register, plugin_unregister
 from tests import create_runner, create_test_env
 
 

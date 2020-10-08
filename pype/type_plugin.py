@@ -47,8 +47,8 @@ class Plugin:
             self.module = importlib.import_module(self.name)
         # This used to be a ModuleNotFoundException but it's only Python >= 3.6
         except Exception:  # noqa: F821
-            raise PypeException('No plugin named "{}" found at {}'
-                                .format(self.name, self.abspath))
+            raise PypeException(
+                f'No plugin named "{self.name}" found at {self.abspath}')
         self.doc = self.__get_docu_or_default(self.module)
         subfiles = [
             path.basename(file)
