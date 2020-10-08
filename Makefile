@@ -57,3 +57,12 @@ isort-apply:
 lint:
 	@echo Run code formatting checks against source code base
 	pipenv run flake8 pype tests example_pypes
+
+dockerize: build
+	@echo Install pype into a dockercontainer to test mint installation
+	docker build -t "pype-docker-mint-install" .
+	docker run -ti --rm "pype-docker-mint-install"
+
+publish:
+	@echo Publish pype to pypi.org
+	pipenv run twine upload dist/*
