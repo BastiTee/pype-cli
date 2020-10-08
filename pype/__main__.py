@@ -69,8 +69,7 @@ def _bind_plugin(plugin_name, plugin):
                 *args, **kwargs)
 
         def list_commands(self, ctx):
-            Benchmark.print_info(
-                'Loading pypes from plugin {}'.format(plugin_name))
+            Benchmark.print_info(f'Loading pypes from plugin {plugin_name}')
             rv = []
             for filename in listdir(plugin.abspath):
                 if filename.endswith('.py') and '__' not in filename:
@@ -133,8 +132,7 @@ def _bind_plugin(plugin_name, plugin):
                 plugin, sub('-', '_', open_pype))
                 if open_pype else created_pype_abspath)
             if not pype_abspath:
-                print_error(
-                    'Pype "{}" could not be found.'.format(open_pype))
+                print_error(f'Pype "{open_pype}" could not be found.')
                 return
             open_with_default(pype_abspath)
             toggle_invoked = True

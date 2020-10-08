@@ -2,7 +2,6 @@
 """$ pype."""
 
 from pype.config import __doc__ as config_doc
-
 from tests import invoke_runner
 
 

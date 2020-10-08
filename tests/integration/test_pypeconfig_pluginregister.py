@@ -4,7 +4,6 @@
 import importlib
 
 from pype.config import plugin_register, plugin_unregister
-
 from tests import create_runner, create_test_env, invoke_runner, reload_config
 
 
@@ -13,13 +12,13 @@ class TestCLIPypePluginRegister:  # noqa: D101
     def test_register_without_name(self):  # noqa: D102
         test_run = invoke_runner(plugin_register.main)
         assert test_run.result.exit_code == 2
-        assert 'Missing option "--name"' in test_run.result.output
+        assert 'Missing option \'--name\'' in test_run.result.output
 
     def test_register_without_path(self):  # noqa: D102
         test_run = invoke_runner(
             plugin_register.main, ['--name', 'test'])
         assert test_run.result.exit_code == 2
-        assert 'Missing option "--path"' in test_run.result.output
+        assert 'Missing option \'--path\'' in test_run.result.output
 
     def test_register_without_create(self):  # noqa: D102
         test_run = invoke_runner(

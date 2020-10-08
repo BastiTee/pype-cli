@@ -7,7 +7,6 @@ from os import environ, mkdir, path
 from sys import stderr
 
 from colorama import Fore, Style
-
 from jsonschema import ValidationError, validate
 
 from pype.constants import ENV_CONFIG_FOLDER
@@ -127,8 +126,7 @@ class PypeConfigHandler:
             print(Fore.RED + str(err) + Style.RESET_ALL + '\n', file=stderr)
             raise PypeException(
                 'Configuration file is not valid. See above for details '
-                + 'and refer to the schema file at {}'.format(
-                    CONFIG_SCHEMA_PATH))
+                + f'and refer to the schema file at {CONFIG_SCHEMA_PATH}')
         return True
 
     def get_core_config_logging(self, return_default_if_empty=False):

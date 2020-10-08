@@ -29,7 +29,7 @@ class Benchmark():
         self.end_time = time()
         self.elapsed_ms = round(
             (self.end_time - self.start_time) * 1000, 5)
-        print('{} | {} ms'.format(self.key, self.elapsed_ms), file=stderr)
+        print(f'{self.key} | {self.elapsed_ms} ms', file=stderr)
 
     @staticmethod
     def __is_active():
@@ -37,6 +37,7 @@ class Benchmark():
 
     @staticmethod
     def print_info(message):
+        """Print benchmark information."""
         if not Benchmark.__is_active():
             return
         print('- ' + message, file=stderr)

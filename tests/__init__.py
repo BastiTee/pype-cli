@@ -14,8 +14,7 @@ from string import ascii_lowercase
 
 from click.testing import CliRunner
 
-from pype import __main__
-from pype import resolve_path
+from pype import __main__, resolve_path
 from pype.config_handler import DEFAULT_CONFIG
 from pype.constants import ENV_CONFIG_FOLDER
 
