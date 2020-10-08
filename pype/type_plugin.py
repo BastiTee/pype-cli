@@ -10,6 +10,7 @@ from sys import path as syspath
 from pype.constants import NOT_DOCUMENTED_YET
 from pype.exceptions import PypeException
 from pype.type_pype import Pype
+from pype.util.benchmark import Benchmark
 from pype.util.iotools import resolve_path
 
 
@@ -18,6 +19,10 @@ class Plugin:
 
     def __init__(self, plugin_config, config_path):
         """Activate plugins for the provided configuration."""
+        with Benchmark(plugin_config['name']):
+            self.__init_internal(plugin_config, config_path)
+
+    def __init_internal(self, plugin_config, config_path):
         self.active = False
         if not self.__valid_for_user(plugin_config):
             return
@@ -42,8 +47,8 @@ class Plugin:
             self.module = importlib.import_module(self.name)
         # This used to be a ModuleNotFoundException but it's only Python >= 3.6
         except Exception:  # noqa: F821
-            raise PypeException('No plugin named "{}" found at {}'
-                                .format(self.name, self.abspath))
+            raise PypeException(
+                f'No plugin named "{self.name}" found at {self.abspath}')
         self.doc = self.__get_docu_or_default(self.module)
         subfiles = [
             path.basename(file)

@@ -8,6 +8,8 @@ import click
 import pype
 
 # Create a click command https://click.palletsprojects.com/en/7.x/commands/
+
+
 @click.command(name=pype.fname_to_name(__file__), help=__doc__)
 def main():
     """Script's main entry point."""

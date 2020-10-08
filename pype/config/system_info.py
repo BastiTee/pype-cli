@@ -6,11 +6,10 @@ import sys
 from os import environ
 
 import click
+from tabulate import tabulate
 
 from pype.constants import ENV_CONFIG_FOLDER
 from pype.util.cli import fname_to_name
-
-from tabulate import tabulate
 
 
 @click.command(name=fname_to_name(__file__), help=__doc__)

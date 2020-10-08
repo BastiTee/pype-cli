@@ -3,7 +3,7 @@
 > A command-line tool for command-line tools
 <img align="right" src="res/icon.png" alt="pype-cli Logo" width="150" height="150">
 
-[![Build Status](https://travis-ci.org/BastiTee/pype-cli.svg?branch=develop)](https://travis-ci.org/BastiTee/pype-cli)
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/BastiTee/pype-cli/CI)
 ![PyPU - Version](https://img.shields.io/pypi/v/pype-cli.svg)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/pype-cli.svg)
 

@@ -4,7 +4,6 @@
 # Import the "Command Line Interface Creation Kit"
 # <https://click.palletsprojects.com>
 import click
-
 # For colored output pype includes the colorama library
 from colorama import Fore, Style
 

@@ -32,15 +32,14 @@ def main(name, path, create, user_only):
     try:
         module = load_module(name, path)
     except PypeException:
-        print_error('Could not find a python module "{}" at {}'
-                    .format(name, path))
+        print_error(f'Could not find a python module "{name}" at {path}')
         exit(1)
     # Append plugin to global configuration
     config_handler = PypeConfigHandler()
     config_json = config_handler.get_json()
     if any([plugin for plugin in config_json['plugins']
             if plugin['name'] == name]):
-        print_error('There is already a plugin named "{}".'.format(name))
+        print_error(f'There is already a plugin named "{name}".')
         exit(1)
     path = _replace_parentfolder_if_relative_to_config(
         path, config_handler.get_file_path())
@@ -53,7 +52,7 @@ def main(name, path, create, user_only):
     })
     config_handler.set_json(config_json)
 
-    print_success('Plugin "{}" successfully registered.'.format(name))
+    print_success(f'Plugin "{name}" successfully registered.')
 
 
 def _replace_homefolder_with_tilde(plugin_path):
@@ -71,15 +70,14 @@ def _replace_parentfolder_if_relative_to_config(plugin_path, config_path):
 def _create_on_the_fly(name, path):
     abspath = resolve_path(path)
     if not isdir(abspath):
-        print_error('Path {} does not point to a directoy.'.format(abspath))
+        print_error(f'Path {abspath} does not point to a directoy.')
         exit(1)
     plugin_dir = join(abspath, name)
     if isdir(plugin_dir):
-        print_error('Path {} already exists.'.format(abspath))
+        print_error(f'Path {abspath} already exists.')
         exit(1)
     plugin_init_file = join(plugin_dir, '__init__.py')
     mkdir(plugin_dir)
     with open(plugin_init_file, 'w+') as init:
         init.write('"""' + NOT_DOCUMENTED_YET + '"""\n')
-    print_success('Plugin "{}" successfully created at {}'.format(
-        name, abspath))
+    print_success(f'Plugin "{name}" successfully created at {abspath}')

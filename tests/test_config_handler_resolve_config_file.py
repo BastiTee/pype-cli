@@ -3,14 +3,13 @@
 
 from os import environ, path
 
-from pype.config_handler import (
-    ConfigResolverSource, DEFAULT_CONFIG, PypeConfigHandler)
-from pype.constants import ENV_CONFIG_FOLDER
-from pype.exceptions import PypeException
-
 import pytest
 
-from tests import Configuration, VALID_CONFIG, create_test_env
+from pype.config_handler import (DEFAULT_CONFIG, ConfigResolverSource,
+                                 PypeConfigHandler)
+from pype.constants import ENV_CONFIG_FOLDER
+from pype.exceptions import PypeException
+from tests import VALID_CONFIG, Configuration, create_test_env
 
 
 class TestPypeConfigHandlerResolveConfigFile:  # noqa: D101

@@ -7,11 +7,11 @@ from re import sub
 from sys import path as syspath
 
 import click
-
 from colorama import init
 
 from pype.core import PypeCore, print_context_help
 from pype.exceptions import PypeException
+from pype.util.benchmark import Benchmark
 from pype.util.cli import fname_to_name, print_error
 from pype.util.iotools import open_with_default
 
@@ -69,6 +69,7 @@ def _bind_plugin(plugin_name, plugin):
                 *args, **kwargs)
 
         def list_commands(self, ctx):
+            Benchmark.print_info(f'Loading pypes from plugin {plugin_name}')
             rv = []
             for filename in listdir(plugin.abspath):
                 if filename.endswith('.py') and '__' not in filename:
@@ -78,11 +79,12 @@ def _bind_plugin(plugin_name, plugin):
 
         def get_command(self, ctx, name):
             name = sub('-', '_', name)
+            full_name = plugin.name + '.' + name
             try:
-                syspath.append(path.dirname(plugin.abspath))
-                mod = __import__(plugin.name + '.' + name,
-                                 {}, {}, ['main'])
-                return mod.main
+                with Benchmark(key=full_name):
+                    syspath.append(path.dirname(plugin.abspath))
+                    mod = __import__(full_name, {}, {}, ['main'])
+                    return mod.main
             except ImportError as import_error:
                 print_error(str(import_error))
                 exit(1)
@@ -130,8 +132,7 @@ def _bind_plugin(plugin_name, plugin):
                 plugin, sub('-', '_', open_pype))
                 if open_pype else created_pype_abspath)
             if not pype_abspath:
-                print_error(
-                    'Pype "{}" could not be found.'.format(open_pype))
+                print_error(f'Pype "{open_pype}" could not be found.')
                 return
             open_with_default(pype_abspath)
             toggle_invoked = True

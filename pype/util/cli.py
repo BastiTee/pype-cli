@@ -34,5 +34,5 @@ def print_error(message):
 
 
 def _print_highlight(message, prefix, color):
-    click.echo(click.style(prefix + ' ' + message.strip(),
-                           fg=color, bold=True))
+    prefix = prefix + ' ' if prefix else ''
+    click.echo(click.style(prefix + message.strip(), fg=color, bold=True))
