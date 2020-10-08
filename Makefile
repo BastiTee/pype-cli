@@ -10,7 +10,7 @@ endif
 export PIPENV_VERBOSITY=1
 # Use relative .venv folder instead of home-folder based
 export PIPENV_VENV_IN_PROJECT=1
-# Ignore existing venvs (required for travis)
+# Ignore existing venvs
 export PIPENV_IGNORE_VIRTUALENVS=1
 # Make sure we are running with an explicit encoding
 export LC_ALL=C
