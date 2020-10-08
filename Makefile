@@ -71,4 +71,4 @@ publish: build
 
 changelog:
 	@echo Return changelog since last version tag
-	git --no-pager log --pretty=format:%s $(VERSION_HASH)..HEAD |cat
+	git --no-pager log --pretty=format:"- %s" $(VERSION_HASH)..HEAD |cat
