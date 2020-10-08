@@ -15,6 +15,8 @@ export PIPENV_IGNORE_VIRTUALENVS=1
 # Make sure we are running with an explicit encoding
 export LC_ALL=C
 export LANG=C.UTF-8
+LAST_VERSION := $(shell git tag | sort --version-sort -r | head -n1)
+VERSION_HASH := $(shell git show-ref -s $(LAST_VERSION))
 
 all: prepare build
 
@@ -63,6 +65,10 @@ dockerize: build
 	docker build -t "pype-docker-mint-install" .
 	docker run -ti --rm "pype-docker-mint-install"
 
-publish:
+publish: build
 	@echo Publish pype to pypi.org
 	pipenv run twine upload dist/*
+
+changelog:
+	@echo Return changelog since last version tag
+	git --no-pager log --pretty=format:%s $(VERSION_HASH)..HEAD |cat
