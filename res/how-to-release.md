@@ -11,7 +11,7 @@
 - Switch to latest `develop` branch
 - Finish development and push all changes
 - Check [Github Actions](https://github.com/BastiTee/pype-cli/actions) for successful builds
-- Run a full build: `make build`
+- Run a full build: `make`
 - Start release, e.g., for release 0.0.1: `git flow release start 0.0.1`
 - Finish release by..
   - setting final version number for release
