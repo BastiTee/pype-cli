@@ -118,9 +118,10 @@ Again you can refer to the [__basics__](example_pypes/basics) plugin for guidanc
 
 ## pype-cli development
 
-* Run `./make venv` to create a new virtual environment
+* Run `make venv` to create a new virtual environment
 * Run `pipenv shell` to activate a local shell with the required configurations
 * Run `pype` to operate locale development version (it will react to code changes)
+* Run `PYPE_BENCHMARK_INIT=1 pype` to print loading times for individual plugins or pypes
 
 ## License and attribution
 
