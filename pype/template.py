@@ -27,6 +27,6 @@ def main(option, verbose):
     print(Fore.RED + '- verbose: ' + Style.DIM + Fore.GREEN + str(verbose))
 
     # Use a pype utility
-    pype.run_interactive('ls')
+    pype.sh('ls')
 
     # Your code goes here ...
