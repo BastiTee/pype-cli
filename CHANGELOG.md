@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 0.5.4
+
+- Fix template.py
+
 ## Version 0.5.3
 
 - Fix open formatting and Makefile issues
