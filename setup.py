@@ -14,12 +14,12 @@ with open(path.join(path.abspath(path.dirname(__file__)), 'README.md'),
 # Configure shell command
 custom_shell_command = environ.get('PYPE_CUSTOM_SHELL_COMMAND', None)
 shell_command = custom_shell_command if custom_shell_command else 'pype'
-console_scripts = ['{}=pype.__main__:main'.format(shell_command)]
+console_scripts = [f'{shell_command}=pype.__main__:main']
 
 setup(
     # Basic project information
     name='pype-cli',
-    version='0.5.2',
+    version='0.5.3',
     # Authorship and online reference
     author='Basti Tee',
     author_email='basti.tee@posteo.de',

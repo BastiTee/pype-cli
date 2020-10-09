@@ -69,8 +69,8 @@ class PypeConfigHandler:
             env_config_folder = environ[ENV_CONFIG_FOLDER]
             if not path.isdir(env_config_folder):
                 raise PypeException(
-                    'Provided configuration folder {} does not exist!'
-                    .format(env_config_folder))
+                    f'Provided configuration folder {env_config_folder} '
+                    + 'does not exist!')
             self.filepath = path.join(
                 env_config_folder, self.DEFAULT_CONFIG_FILE
             )
