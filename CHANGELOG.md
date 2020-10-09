@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 0.5.3
+
+- Fix open formatting and Makefile issues
+- Add documentation how to show benchmark information
+
 ## Version 0.5.2
 
 - Add load time benchmarking using `PYPE_BENCHMARK_INIT=1` as trigger variable
