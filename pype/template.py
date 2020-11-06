@@ -15,8 +15,8 @@ import pype
 # Add options https://click.palletsprojects.com/en/7.x/options/
 @click.option('--option', '-o', default='default', help='An option')
 @click.option('--verbose', '-v', is_flag=True, help='A toggle')
-def main(option, verbose):
-    """Script's main entry point."""
+def main(option, verbose):  # noqa: D103
+
     # Print out something in shiny colors
     pype.print_success('Yay!')
     pype.print_warning('Meh.')
