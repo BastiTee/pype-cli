@@ -37,7 +37,7 @@ shell:
 
 clean:
 	@echo Clean project base
-	rm -rf .venv build dist .pytest_cache *.egg-info src Pipfile.lock
+	rm -rf .venv build dist .pytest_cache *.egg-info src
 
 test:
 	@echo Run all tests in default virtualenv

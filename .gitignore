@@ -1,7 +1,5 @@
 # Lock files
 .dockerignore
-Pipfile.lock
-requirements.txt
 
 # Local configuration files
 .pype-cli/
