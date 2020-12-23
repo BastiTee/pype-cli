@@ -18,6 +18,7 @@ pytest = "*" # Python base-testing library
 tox = "*" # Automated and standardized testing in Python
 rope = "*" # Refactoring library
 twine = "*" # Interoperability with pypi.org
+mypy = "*" # Optional static type checker
 
 [packages]
 click = "*" # Command-line interface library

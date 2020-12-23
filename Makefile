@@ -62,6 +62,10 @@ lint:
 	@echo Run code formatting checks against source code base
 	pipenv run flake8 $(PY_FILES)
 
+mypy:
+	@echo Run static code checks against source code base
+	pipenv run mypy $(PY_FILES)
+
 dockerize: build
 	@echo Install pype into a dockercontainer to test mint installation
 	docker build -t $(DOCKER_IMAGE) .
