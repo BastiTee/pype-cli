@@ -81,10 +81,13 @@ mypy:
 	@echo Run static code checks against source code base
 	pipenv run mypy $(PY_FILES)
 
-sysinfo:
+sys-info:
 	@echo Print pype configuration within venv
 	pipenv run pype pype.config system-info
 
+install-wheel: # all
+	@echo Install from wheel
+	pip3 install --force-reinstall dist/*.whl
 
 dockerize: build
 	@echo Install pype into a dockercontainer to test mint installation
