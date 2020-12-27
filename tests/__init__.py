@@ -12,7 +12,9 @@ from os import environ, mkdir, path
 from random import choice
 from re import sub
 from string import ascii_lowercase
+from typing import Generator, Optional, cast
 
+from click.core import BaseCommand
 from click.testing import CliRunner
 
 from pype import __main__, resolve_path
@@ -58,7 +60,9 @@ class Configuration(Enum):
 
 
 @contextlib.contextmanager
-def create_test_env(configuration=Configuration.EMPTY):
+def create_test_env(
+    configuration: Configuration = Configuration.EMPTY) -> Generator[
+        TestEnvironment, None, None]:
     """Create a temporary configuration folder for testing purposes."""
     # Setup base folder
     test_base_folder = resolve_path('./.venv/pype-cli-tests')
@@ -73,6 +77,7 @@ def create_test_env(configuration=Configuration.EMPTY):
     mkdir(config_dir)
     # Create configuration file
     config_file = path.join(config_dir, 'config.json')
+    config: Optional[dict] = None
     if configuration == Configuration.EMPTY:
         config = DEFAULT_CONFIG
     elif configuration == Configuration.VALID:
@@ -107,7 +112,10 @@ def create_test_env(configuration=Configuration.EMPTY):
             pass  # Might not have been set but if so it has to be deleted
 
 
-def invoke_runner(component_under_test, arguments=None):
+def invoke_runner(
+        component_under_test: BaseCommand,
+        arguments: list = None
+) -> TestRunner:
     """Create and invoke a test runner."""
     if arguments is None:
         arguments = []
@@ -115,7 +123,11 @@ def invoke_runner(component_under_test, arguments=None):
         return create_runner(test_env, component_under_test, arguments)
 
 
-def create_runner(test_env, component_under_test, arguments=None):
+def create_runner(
+        test_env: TestEnvironment,
+        component_under_test: BaseCommand,
+        arguments: list = None
+) -> TestRunner:
     """Create a test runner with a provided test environment.
 
     We need to delay the import of pype.__main__ until we set the environment
@@ -124,8 +136,6 @@ def create_runner(test_env, component_under_test, arguments=None):
     """
     if arguments is None:
         arguments = []
-    if isinstance(arguments, str):
-        arguments = [arguments]
     environ[ENV_CONFIG_FOLDER] = test_env.config_dir
     runner = CliRunner(env=environ)
     importlib.reload(__main__)
@@ -137,11 +147,13 @@ def create_runner(test_env, component_under_test, arguments=None):
     return TestRunner(
         result=runner.invoke(component_under_test, arguments, env=environ),
         runner=runner,
-        reload_and_get_main=importlib.reload(__main__).main,
+        reload_and_get_main=cast(
+            BaseCommand, importlib.reload(__main__)
+        ).main,
         test_env=test_env
     )
 
 
-def reload_config(test_run):
+def reload_config(test_run: TestRunner) -> dict:
     """Load configuration of test as JSON-object."""
     return load(open(test_run.test_env.config_file, 'r'))

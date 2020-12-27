@@ -12,27 +12,27 @@ from tests import VALID_CONFIG
 
 class TestPypeConfigHandlerResolveConfigFile:  # noqa: D101
 
-    def test_noneinput_raisetypeerror(self):  # noqa: D102
+    def test_noneinput_raisetypeerror(self) -> None:  # noqa: D102
         config = PypeConfigHandler()
         with raises(PypeException):
             config.validate_config(None)
 
-    def test_emptyinput_raisetypeerror(self):  # noqa: D102
+    def test_emptyinput_raisetypeerror(self) -> None:  # noqa: D102
         config = PypeConfigHandler()
         with raises(PypeException):
             config.validate_config({})
 
-    def test_validfulljson(self):  # noqa: D102
+    def test_validfulljson(self) -> None:  # noqa: D102
         config = PypeConfigHandler()
         assert config.validate_config(VALID_CONFIG)
 
-    def test_validfulljsonwithextensions(self):  # noqa: D102
+    def test_validfulljsonwithextensions(self) -> None:  # noqa: D102
         config = PypeConfigHandler()
         input_config = copy.deepcopy(VALID_CONFIG)
         input_config['additional_property'] = {}
         assert config.validate_config(input_config)
 
-    def test_missingaliasesattribute(self):  # noqa: D102
+    def test_missingaliasesattribute(self) -> None:  # noqa: D102
         config = PypeConfigHandler()
         input_config = {
             'plugins': []
@@ -40,7 +40,7 @@ class TestPypeConfigHandlerResolveConfigFile:  # noqa: D101
         with raises(PypeException):
             config.validate_config(input_config)
 
-    def test_misconfiguredplugin(self):  # noqa: D102
+    def test_misconfiguredplugin(self) -> None:  # noqa: D102
         config = PypeConfigHandler()
         input_config = copy.deepcopy(VALID_CONFIG)
         input_config['plugins'].append({
@@ -49,7 +49,7 @@ class TestPypeConfigHandlerResolveConfigFile:  # noqa: D101
         with raises(PypeException):
             config.validate_config(input_config)
 
-    def test_configuredplugin(self):  # noqa: D102
+    def test_configuredplugin(self) -> None:  # noqa: D102
         config = PypeConfigHandler()
         input_config = copy.deepcopy(VALID_CONFIG)
         input_config['plugins'].append({
@@ -59,7 +59,7 @@ class TestPypeConfigHandlerResolveConfigFile:  # noqa: D101
         })
         assert config.validate_config(input_config)
 
-    def test_misconfigureduserinplugin(self):  # noqa: D102
+    def test_misconfigureduserinplugin(self) -> None:  # noqa: D102
         config = PypeConfigHandler()
         input_config = copy.deepcopy(VALID_CONFIG)
         input_config['plugins'].append({
@@ -70,7 +70,7 @@ class TestPypeConfigHandlerResolveConfigFile:  # noqa: D101
         with raises(PypeException):
             config.validate_config(input_config)
 
-    def test_configuredalias(self):  # noqa: D102
+    def test_configuredalias(self) -> None:  # noqa: D102
         config = PypeConfigHandler()
         input_config = copy.deepcopy(VALID_CONFIG)
         input_config['aliases'].append({
@@ -79,7 +79,7 @@ class TestPypeConfigHandlerResolveConfigFile:  # noqa: D101
         })
         assert config.validate_config(input_config)
 
-    def test_misconfiguredalias(self):  # noqa: D102
+    def test_misconfiguredalias(self) -> None:  # noqa: D102
         config = PypeConfigHandler()
         input_config = copy.deepcopy(VALID_CONFIG)
         input_config['aliases'].append({
