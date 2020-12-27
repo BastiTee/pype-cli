@@ -19,6 +19,7 @@ tox = "*" # Automated and standardized testing in Python
 rope = "*" # Refactoring library
 twine = "*" # Interoperability with pypi.org
 mypy = "*" # Optional static type checker
+pype-cli = {path = ".", editable = true}
 
 [packages]
 click = "*" # Command-line interface library
