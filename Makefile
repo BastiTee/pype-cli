@@ -80,7 +80,7 @@ sys-info:
 	@echo Print pype configuration within venv
 	pipenv run pype pype.config system-info
 
-install-wheel: # all
+install-wheel: all
 	@echo Install from wheel
 	pip3 install --force-reinstall dist/*.whl
 
