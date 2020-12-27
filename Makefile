@@ -81,6 +81,11 @@ mypy:
 	@echo Run static code checks against source code base
 	pipenv run mypy $(PY_FILES)
 
+sysinfo:
+	@echo Print pype configuration within venv
+	pipenv run pype pype.config system-info
+
+
 dockerize: build
 	@echo Install pype into a dockercontainer to test mint installation
 	docker build -t $(DOCKER_IMAGE) .
