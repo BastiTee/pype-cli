@@ -18,6 +18,7 @@ from click.testing import CliRunner
 from pype import __main__, resolve_path
 from pype.config_handler import DEFAULT_CONFIG
 from pype.constants import ENV_CONFIG_FOLDER
+from pype.core import in_virtualenv
 
 VALID_CONFIG = {
     'plugins': [
@@ -60,7 +61,8 @@ class Configuration(Enum):
 def create_test_env(configuration=Configuration.EMPTY):
     """Create a temporary configuration folder for testing purposes."""
     # Setup base folder
-    test_base_folder = resolve_path('./.pype-cli-tests')
+    test_base_folder = resolve_path('./.venv/pype-cli-tests')
+    activate_file = resolve_path('./.venv/bin/activate')
     if not path.isdir(test_base_folder):
         mkdir(test_base_folder)
     # Create test environment
@@ -86,7 +88,19 @@ def create_test_env(configuration=Configuration.EMPTY):
             config_file=config_file
         )
     finally:
-        shutil.rmtree(config_dir)
+        shutil.rmtree(test_base_folder)
+        # cleanup shell rc
+        if in_virtualenv():
+            activate_file_h = open(activate_file, 'r')
+            activate_lines = activate_file_h.readlines()
+            activate_file_h.close()
+            # activate_file_h = open(activate_file, 'w')
+            activate_lines = [
+                line for line in activate_lines if '# pype-cli' not in line
+            ]
+            activate_file_h = open(activate_file, 'w')
+            [activate_file_h.write(line) for line in activate_lines]
+            activate_file_h.close()
         try:
             del environ[ENV_CONFIG_FOLDER]
         except KeyError:
