@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """pype-cli test suite."""
 
 import contextlib
