@@ -30,7 +30,7 @@ prepare: clean
 	pipenv install --dev
 	mkdir -p $(PYPE_CONFIG_FOLDER)
 
-build: test coverage isort lint
+build: test isort lint
 	@echo Run setup.py-based build process to package application
 	pipenv run python setup.py bdist_wheel
 
@@ -49,7 +49,6 @@ clean:
 	-name ".mypy_cache" -o \
 	-name ".pytest_cache" -o \
 	-iname "*.egg-info" -o \
-	-iname ".pype-cli-tests" -o \
 	-name "src" \
 	|xargs rm -rfv
 
@@ -59,10 +58,6 @@ clean:
 
 test:
 	@echo Run all tests in default virtualenv
-	pipenv run py.test tests
-
-coverage:
-	@echo Run test coverage checks
 	pipenv run py.test --verbose tests
 
 isort:
