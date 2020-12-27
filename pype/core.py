@@ -33,12 +33,15 @@ class PypeCore:
         self.__config = PypeConfigHandler()
         self.__setup_logging(self.__config)
         self.__rc_files = [
-            resolve_path('./.venv/bin/activate'),
             resolve_path('~/.bashrc'),
             resolve_path('~/.bash_profile'),
             resolve_path('~/.zshrc')
         ]
-        # load all external plugins
+        # Configure if executed in virtual environment
+        if in_virtualenv():
+            self.__rc_files = [
+                resolve_path('./.venv/bin/activate')
+            ]
         Benchmark.print_info('Loading plugin information')
         self.plugins = [
             Plugin(plugin, self.__config.get_file_path())
@@ -126,7 +129,7 @@ class PypeCore:
             )
             file_handle.write(f'. {init_file} {self.SHELL_RC_HINT}\n')
             file_handle.close()
-            if hasattr(sys, 'real_prefix'):
+            if in_virtualenv():
                 print('Running in .venv. Skipping system rc files.')
                 break
         print_success('Successfully written init-files')
@@ -369,3 +372,19 @@ def print_context_help(ctx, level=0):
         print(sub('Commands:', 'Pypes:', default_help))
     else:
         print(default_help)
+
+
+def get_base_prefix_compat():
+    """Get base/real prefix, or sys.prefix if there is none."""
+    return getattr(sys, 'base_prefix', None) or \
+        getattr(sys, 'real_prefix', None) or sys.prefix
+
+
+def in_virtualenv():
+    """Return True when pype is executed inside a virtual env."""
+    return (
+        hasattr(sys, 'real_prefix')
+        or (
+            hasattr(sys, 'base_prefix') and sys.base_prefix != sys.prefix
+        )
+    )
