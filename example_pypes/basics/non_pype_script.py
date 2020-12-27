@@ -11,7 +11,7 @@ import click
 
 
 @click.command(name='non-pype-script', help=__doc__)
-def main():
+def main() -> None:
     """Script's main entry point."""
     print('I am a pype-cli independent script!')
 
