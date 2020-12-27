@@ -40,7 +40,22 @@ shell:
 
 clean:
 	@echo Clean project base
-	rm -rf .venv build dist .pytest_cache *.egg-info src
+	find . -type d \
+	-name ".venv" -o \
+	-name ".ropeproject" -o \
+	-name "build" -o \
+	-name "dist" -o \
+	-name "__pycache__" -o \
+	-name ".mypy_cache" -o \
+	-name ".pytest_cache" -o \
+	-iname "*.egg-info" -o \
+	-iname ".pype-cli-tests" -o \
+	-name "src" \
+	|xargs rm -rfv
+
+	find . -type f \
+	-name "pyproject.toml" \
+	|xargs rm -rfv
 
 test:
 	@echo Run all tests in default virtualenv
