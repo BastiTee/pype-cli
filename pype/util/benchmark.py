@@ -4,6 +4,7 @@
 from os import environ
 from sys import stderr
 from time import time
+from typing import Any
 
 ENV_BENCHMARK_INIT = 'PYPE_BENCHMARK_INIT'
 
@@ -11,19 +12,20 @@ ENV_BENCHMARK_INIT = 'PYPE_BENCHMARK_INIT'
 class Benchmark():
     """Benchmark context."""
 
-    def __init__(self, key):  # noqa: D107
+    def __init__(self, key: str) -> None:  # noqa: D107
         self.active = self.__is_active()
         if not self.active:
             return
         self.key = key
         pass
 
-    def __enter__(self):  # noqa: D105
+    def __enter__(self) -> None:  # noqa: D105
         if not self.active:
             return
         self.start_time = time()
 
-    def __exit__(self, type_s, value, traceback):  # noqa: D105
+    def __exit__(self, type_s: Any, value: Any,
+                 traceback: Any) -> None:  # noqa: D105
         if not self.active:
             return
         self.end_time = time()
@@ -32,11 +34,11 @@ class Benchmark():
         print(f'{self.key} | {self.elapsed_ms} ms', file=stderr)
 
     @staticmethod
-    def __is_active():
+    def __is_active() -> bool:
         return int(environ.get(ENV_BENCHMARK_INIT, 0)) == 1
 
     @staticmethod
-    def print_info(message):
+    def print_info(message: str) -> None:
         """Print benchmark information."""
         if not Benchmark.__is_active():
             return

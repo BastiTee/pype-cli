@@ -33,14 +33,14 @@ class PypeConfigHandler:
     DEFAULT_CONFIG_FOLDER = resolve_path('~/.pype-cli')
     DEFAULT_CONFIG_FILE = 'config.json'
 
-    def __init__(self, init=True):
+    def __init__(self, init: bool = True) -> None:
         """Construct a default configuaration handler."""
         self.filepath = None
         self.config_json = None
         if init:
             self.resolve_config_file()
 
-    def resolve_config_file(self):
+    def resolve_config_file(self) -> None:
         """Resolve the configuration using various options.
 
         Returns an enum that explains from where the configuration was

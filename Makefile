@@ -80,9 +80,9 @@ lint:
 
 mypy:
 	@echo Run static code checks against source code base
-	# pipenv run mypy -m pype
-	pipenv run mypy -m tests
-	pipenv run mypy example_pypes/basics
+	# pipenv run mypy -p pype
+	pipenv run mypy example_pypes
+	pipenv run mypy tests
 
 sys-info:
 	@echo Print pype configuration within venv
