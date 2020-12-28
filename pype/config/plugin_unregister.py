@@ -2,22 +2,24 @@
 """Unregister an existing plugin."""
 
 
+from typing import List
+
 import click
 
 from pype.config_handler import PypeConfigHandler
 from pype.util.cli import fname_to_name, print_success, print_warning
 
 
-def _resolve_available_plugins():
+def __resolve_available_plugins() -> List[str]:
     return [plugin['name']
             for plugin in PypeConfigHandler().get_json()['plugins']]
 
 
 @click.command(name=fname_to_name(__file__), help=__doc__)
 @click.option('--name', '-n', help='Plugin name.',
-              type=click.Choice(_resolve_available_plugins()),
+              type=click.Choice(__resolve_available_plugins()),
               metavar='NAME', required=True)
-def main(name):
+def main(name: str) -> None:
     """Script's main entry point."""
     # Try to load the module to verify the configuration
     config_handler = PypeConfigHandler()

@@ -29,6 +29,7 @@ prepare: clean
 	@echo Preparing virtual environment
 	pipenv install --dev
 	mkdir -p $(PYPE_CONFIG_FOLDER)
+	echo "export PYPE_CONFIG_FOLDER=$(PYPE_CONFIG_FOLDER)" >> .venv/bin/activate
 
 build: test mypy isort lint
 	@echo Run setup.py-based build process to package application

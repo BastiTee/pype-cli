@@ -23,10 +23,10 @@ from pype.util.iotools import resolve_path
               metavar='PATH', required=True)
 @click.option('--create', '-c', help='Create on the fly.', is_flag=True)
 @click.option('--user-only', '-u', help='Just for current user.', is_flag=True)
-def main(name, path, create, user_only):
+def main(name: str, path: str, create: bool, user_only: bool) -> None:
     """Script's main entry point."""
     if create:
-        _create_on_the_fly(name, path)
+        __create_on_the_fly(name, path)
     # Try to load the module to verify the configuration
     module = None
     try:
@@ -41,9 +41,9 @@ def main(name, path, create, user_only):
             if plugin['name'] == name]):
         print_error(f'There is already a plugin named "{name}".')
         exit(1)
-    path = _replace_parentfolder_if_relative_to_config(
+    path = __replace_parentfolder_if_relative_to_config(
         path, config_handler.get_file_path())
-    path = _replace_homefolder_with_tilde(path)
+    path = __replace_homefolder_with_tilde(path)
     users = [getpass.getuser()] if user_only else []
     config_json['plugins'].append({
         'name': module.__name__,
@@ -55,19 +55,22 @@ def main(name, path, create, user_only):
     print_success(f'Plugin "{name}" successfully registered.')
 
 
-def _replace_homefolder_with_tilde(plugin_path):
+def __replace_homefolder_with_tilde(plugin_path: str) -> str:
     home_folder = resolve_path('~')
     return sub(home_folder, '~', plugin_path, flags=IGNORECASE)
 
 
-def _replace_parentfolder_if_relative_to_config(plugin_path, config_path):
+def __replace_parentfolder_if_relative_to_config(
+    plugin_path: str,
+    config_path: str
+) -> str:
     plugin_path_abs = resolve_path(plugin_path)
     config_dir_abs = resolve_path(dirname(config_path))
     return sub(sub(r'[/]+$', '', config_dir_abs, flags=IGNORECASE),
                '.', plugin_path_abs, flags=IGNORECASE)
 
 
-def _create_on_the_fly(name, path):
+def __create_on_the_fly(name: str, path: str) -> None:
     abspath = resolve_path(path)
     if not isdir(abspath):
         print_error(f'Path {abspath} does not point to a directoy.')

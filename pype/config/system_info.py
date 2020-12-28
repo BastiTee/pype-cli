@@ -4,18 +4,20 @@
 import platform
 import sys
 from os import environ
+from typing import Iterable, cast
 
 import click
+import pkg_resources
 from tabulate import tabulate
 
 from pype.config_handler import PypeConfigHandler
 from pype.constants import ENV_CONFIG_FOLDER
-from pype.core import in_virtualenv
+from pype.core import get_pype_basepath, in_virtualenv
 from pype.util.cli import fname_to_name
 
 
 @click.command(name=fname_to_name(__file__), help=__doc__)
-def main():
+def main() -> None:
     """Script's main entry point."""
     unset = 'Not set'
     print('PYPE SYSTEM ENVIRONMENT')
@@ -41,7 +43,11 @@ def main():
     infos.append(
         ['EFFECTIVE CONFIG FILE', PypeConfigHandler(init=True).filepath]
     )
-    infos.append(
-        ['IN VIRTUAL ENV', in_virtualenv()]
-    )
-    print(tabulate(infos))
+    infos.append(['IN VIRTUAL ENV', in_virtualenv()])
+    # Version info
+    base_path = get_pype_basepath()
+    version = pkg_resources.get_distribution('pype-cli').version
+    infos.append(['PYPE-CLI VERSION', version])
+    infos.append(['PYPE-CLI INSTALL', base_path])
+    # Output
+    print(tabulate(cast(Iterable[Iterable[str]], infos)))
