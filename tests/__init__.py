@@ -51,8 +51,8 @@ TestEnvironment = namedtuple(
 )
 
 
-class Configuration(Enum):
-    """Configuration selection."""
+class TestConfigurationType(Enum):
+    """Type of configuration selection."""
 
     EMPTY = 0
     VALID = 1
@@ -61,7 +61,8 @@ class Configuration(Enum):
 
 @contextlib.contextmanager
 def create_test_env(
-    configuration: Configuration = Configuration.EMPTY) -> Generator[
+    configuration: TestConfigurationType = TestConfigurationType.EMPTY
+) -> Generator[
         TestEnvironment, None, None]:
     """Create a temporary configuration folder for testing purposes."""
     # Setup base folder
@@ -78,11 +79,11 @@ def create_test_env(
     # Create configuration file
     config_file = path.join(config_dir, 'config.json')
     config: Optional[dict] = None
-    if configuration == Configuration.EMPTY:
+    if configuration == TestConfigurationType.EMPTY:
         config = DEFAULT_CONFIG
-    elif configuration == Configuration.VALID:
+    elif configuration == TestConfigurationType.VALID:
         config = VALID_CONFIG
-    elif configuration == Configuration.NONE:
+    elif configuration == TestConfigurationType.NONE:
         config = None
     if config:
         dump(config, open(config_file, 'w+'))
