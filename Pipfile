@@ -24,4 +24,5 @@ pype-cli = {path = ".", editable = true}
 [packages]
 click = "*" # Command-line interface library
 jsonschema = "*" # JSON schema validation
+dacite = "*" # Simplifies creation of data classes
 tabulate = "*" # Table-formatter

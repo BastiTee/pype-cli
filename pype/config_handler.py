@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """Pype configuration handler."""
 
-from enum import Enum
 from json import JSONDecodeError, dump, load
 from os import environ, mkdir, path
 from sys import stderr
@@ -9,32 +8,20 @@ from sys import stderr
 from colorama import Fore, Style
 from jsonschema import ValidationError, validate
 
+from pype import config_model
+from pype.config_model import ConfigResolverSource
 from pype.constants import ENV_CONFIG_FOLDER
 from pype.exceptions import PypeException
 from pype.util.iotools import resolve_path
 
+DEFAULT_CONFIG = config_model.Configuration(
+    plugins=[],
+    aliases=[],
+    core_config=config_model.ConfigurationCore()
+)
 
-class ConfigResolverSource(Enum):
-    """Source of the resolved configuration file."""
+DEFAULT_CONFIG_DICT: dict = DEFAULT_CONFIG.asdict()
 
-    FROM_ENV = 1
-    FROM_DEFAULT_PATH = 2
-    FROM_SCRATCH_TO_DEFAULT_PATH = 3
-    FROM_SCRATCH_TO_PROVIDED_PATH = 4
-
-
-DEFAULT_CONFIG = {
-    'plugins': [],
-    'aliases': [],
-    'core_config': {}
-}
-
-DEFAULT_CORE_CONFIG_LOGGING = {
-    'enabled': False,
-    'level': 'INFO',
-    'pattern': '%(asctime)s %(levelname)s %(name)s %(message)s',
-    'directory': None
-}
 
 CONFIG_SCHEMA_PATH = path.join(path.dirname(__file__), 'config-schema.json')
 CONFIG_SCHEMA = load(open(CONFIG_SCHEMA_PATH))
@@ -49,7 +36,7 @@ class PypeConfigHandler:
     def __init__(self, init=True):
         """Construct a default configuaration handler."""
         self.filepath = None
-        self.config = None
+        self.config_json = None
         if init:
             self.resolve_config_file()
 
@@ -84,31 +71,32 @@ class PypeConfigHandler:
         if not self.filepath:
             if not path.isdir(self.DEFAULT_CONFIG_FOLDER):
                 mkdir(self.DEFAULT_CONFIG_FOLDER)
-            dump(DEFAULT_CONFIG, open(default_config_file, 'w+'), indent=4)
+            dump(DEFAULT_CONFIG_DICT, open(default_config_file, 'w+'),
+                 indent=4)
             self.filepath = default_config_file
             config_source = ConfigResolverSource.FROM_SCRATCH_TO_DEFAULT_PATH
         try:
-            self.config = load(open(self.filepath, 'r'))
+            self.config_json = load(open(self.filepath, 'r'))
         except JSONDecodeError:
             raise PypeException('Provided configuration file not valid JSON.')
         except FileNotFoundError:
             # Priorty 4: File name provided but file does not exist
-            dump(DEFAULT_CONFIG, open(self.filepath, 'w+'), indent=4)
-            self.config = load(open(self.filepath, 'r'))
+            dump(DEFAULT_CONFIG_DICT, open(self.filepath, 'w+'), indent=4)
+            self.config_json = load(open(self.filepath, 'r'))
             config_source = ConfigResolverSource.FROM_SCRATCH_TO_PROVIDED_PATH
-        self.validate_config(self.config)
+        self.validate_config(self.config_json)
         return config_source
 
     def get_json(self):
         """Get pype configuration as JSON object."""
-        return self.config
+        return self.config_json
 
     def set_json(self, config):
         """Validate, set and persist configuration from JSON object."""
         self.validate_config(config)
-        self.config = config
+        self.config_json = config
         # always update config file as well
-        dump(self.config, open(self.filepath, 'w+'), indent=4)
+        dump(self.config_json, open(self.filepath, 'w+'), indent=4)
 
     def get_file_path(self):
         """Get absolute filepath to configuration JSON file."""
@@ -132,9 +120,9 @@ class PypeConfigHandler:
     def get_core_config_logging(self, return_default_if_empty=False):
         """Return current or default logging configuration."""
         core_config = self.get_json().get('core_config', None)
-        default_config = DEFAULT_CORE_CONFIG_LOGGING
+        default_config = config_model.ConfigurationCoreLogging()
         # Set default logging directory to pypes config folder
-        default_config['directory'] = path.dirname(self.filepath)
+        default_config.directory = path.dirname(self.filepath)
         if not core_config:
             return default_config if return_default_if_empty else None
         logging_config = core_config.get('logging', None)

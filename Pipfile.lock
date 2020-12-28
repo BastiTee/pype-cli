@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "be4a1ab0bf156f388d1201eda5779603362c726b89e6be7eb026169c1bfebb26"
+            "sha256": "686dc9ffdadeae77d031b7b131eba1fdb48db040e287173e74360df1c67813ee"
         },
         "pipfile-spec": 6,
         "requires": {},
@@ -28,6 +28,14 @@
             ],
             "index": "pypi",
             "version": "==7.1.2"
+        },
+        "dacite": {
+            "hashes": [
+                "sha256:4331535f7aabb505c732fa4c3c094313fc0a1d5ea19907bf4726a7819a68b93f",
+                "sha256:d48125ed0a0352d3de9f493bf980038088f45f3f9d7498f090b50a847daaa6df"
+            ],
+            "index": "pypi",
+            "version": "==1.6.0"
         },
         "importlib-metadata": {
             "hashes": [

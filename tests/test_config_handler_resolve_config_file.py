@@ -20,7 +20,7 @@ class TestPypeConfigHandlerResolveConfigFile:  # noqa: D101
             config = PypeConfigHandler(init=False)
             source = config.resolve_config_file()
             assert config.get_file_path() == test_env.config_file
-            assert config.get_json() == VALID_CONFIG
+            assert config.get_json() == VALID_CONFIG.asdict()
             assert source == ConfigResolverSource.FROM_ENV
 
     def test_withenv_but_folder_does_not_exist(self) -> None:  # noqa: D102
@@ -37,7 +37,7 @@ class TestPypeConfigHandlerResolveConfigFile:  # noqa: D101
             config.DEFAULT_CONFIG_FILE = test_env.config_file
             source = config.resolve_config_file()
             assert config.get_file_path() == test_env.config_file
-            assert config.get_json() == VALID_CONFIG
+            assert config.get_json() == VALID_CONFIG.asdict()
             assert source == ConfigResolverSource.FROM_DEFAULT_PATH
 
     def test_onthefly_to_default(self) -> None:  # noqa: D102
@@ -48,7 +48,7 @@ class TestPypeConfigHandlerResolveConfigFile:  # noqa: D101
             source = config.resolve_config_file()
             assert config.get_file_path() == path.join(
                 test_env.config_dir, 'test_config.json')
-            assert config.get_json() == DEFAULT_CONFIG
+            assert config.get_json() == DEFAULT_CONFIG.asdict()
             assert source == ConfigResolverSource.FROM_SCRATCH_TO_DEFAULT_PATH
 
     def test_onthefly_to_provided(self) -> None:  # noqa: D102
@@ -58,5 +58,5 @@ class TestPypeConfigHandlerResolveConfigFile:  # noqa: D101
             source = config.resolve_config_file()
             assert config.get_file_path() == path.join(
                 test_env.config_dir, 'config.json')
-            assert config.get_json() == DEFAULT_CONFIG
+            assert config.get_json() == DEFAULT_CONFIG.asdict()
             assert source == ConfigResolverSource.FROM_SCRATCH_TO_PROVIDED_PATH

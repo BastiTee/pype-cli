@@ -24,17 +24,17 @@ class TestPypeConfigHandlerResolveConfigFile:  # noqa: D101
 
     def test_validfulljson(self) -> None:  # noqa: D102
         config = PypeConfigHandler()
-        assert config.validate_config(VALID_CONFIG)
+        assert config.validate_config(VALID_CONFIG.asdict())
 
     def test_validfulljsonwithextensions(self) -> None:  # noqa: D102
         config = PypeConfigHandler()
-        input_config = copy.deepcopy(VALID_CONFIG)
+        input_config = copy.deepcopy(VALID_CONFIG.asdict())
         input_config['additional_property'] = {}
         assert config.validate_config(input_config)
 
     def test_missingaliasesattribute(self) -> None:  # noqa: D102
         config = PypeConfigHandler()
-        input_config = {
+        input_config: dict = {
             'plugins': []
         }
         with raises(PypeException):
@@ -42,7 +42,7 @@ class TestPypeConfigHandlerResolveConfigFile:  # noqa: D101
 
     def test_misconfiguredplugin(self) -> None:  # noqa: D102
         config = PypeConfigHandler()
-        input_config = copy.deepcopy(VALID_CONFIG)
+        input_config = copy.deepcopy(VALID_CONFIG.asdict())
         input_config['plugins'].append({
             'name': 'new_plugin'
         })
@@ -51,7 +51,7 @@ class TestPypeConfigHandlerResolveConfigFile:  # noqa: D101
 
     def test_configuredplugin(self) -> None:  # noqa: D102
         config = PypeConfigHandler()
-        input_config = copy.deepcopy(VALID_CONFIG)
+        input_config = copy.deepcopy(VALID_CONFIG.asdict())
         input_config['plugins'].append({
             'name': 'new_plugin',
             'path': '/some/path',
@@ -61,7 +61,7 @@ class TestPypeConfigHandlerResolveConfigFile:  # noqa: D101
 
     def test_misconfigureduserinplugin(self) -> None:  # noqa: D102
         config = PypeConfigHandler()
-        input_config = copy.deepcopy(VALID_CONFIG)
+        input_config = copy.deepcopy(VALID_CONFIG.asdict())
         input_config['plugins'].append({
             'name': 'new_plugin',
             'path': '/some/path',
@@ -72,7 +72,7 @@ class TestPypeConfigHandlerResolveConfigFile:  # noqa: D101
 
     def test_configuredalias(self) -> None:  # noqa: D102
         config = PypeConfigHandler()
-        input_config = copy.deepcopy(VALID_CONFIG)
+        input_config = copy.deepcopy(VALID_CONFIG.asdict())
         input_config['aliases'].append({
             'alias': 'al',
             'command': 'pype test'
@@ -81,7 +81,7 @@ class TestPypeConfigHandlerResolveConfigFile:  # noqa: D101
 
     def test_misconfiguredalias(self) -> None:  # noqa: D102
         config = PypeConfigHandler()
-        input_config = copy.deepcopy(VALID_CONFIG)
+        input_config = copy.deepcopy(VALID_CONFIG.asdict())
         input_config['aliases'].append({
             'aliass': 'al',
             'commando': 'pype test'

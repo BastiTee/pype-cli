@@ -5,6 +5,7 @@ import contextlib
 import importlib
 import shutil
 from collections import namedtuple
+from dataclasses import asdict
 from datetime import datetime
 from enum import Enum
 from json import dump, load
@@ -17,28 +18,20 @@ from typing import Generator, Optional, cast
 from click.core import BaseCommand
 from click.testing import CliRunner
 
-from pype import __main__, resolve_path
+from pype import __main__, config_model, resolve_path
 from pype.config_handler import DEFAULT_CONFIG
 from pype.constants import ENV_CONFIG_FOLDER
 from pype.core import in_virtualenv
 
-VALID_CONFIG = {
-    'plugins': [
-        {
-            'name': 'plugin_name',
-            'path': '~/some/path',
-            'users': ['someuser']
-        }
-    ],
-    'aliases': [
-        {
-            'alias': 'alias_name',
-            'command': 'pype myplugin mypype'
-        }
-    ],
-    'core_config': {
-    }
-}
+VALID_CONFIG = config_model.Configuration(
+    core_config=config_model.ConfigurationCore(),
+    plugins=[config_model.ConfigurationPlugin(
+        name='plugin_name', path='~/some/path', users=['someuser']
+    )],
+    aliases=[config_model.ConfigurationAlias(
+        alias='alias_name', command='pype myplugin mypype'
+    )]
+)
 
 TestRunner = namedtuple(
     'TestRunner',
@@ -59,7 +52,7 @@ class TestConfigurationType(Enum):
     NONE = 2
 
 
-@contextlib.contextmanager
+@ contextlib.contextmanager
 def create_test_env(
     configuration: TestConfigurationType = TestConfigurationType.EMPTY
 ) -> Generator[
@@ -78,7 +71,7 @@ def create_test_env(
     mkdir(config_dir)
     # Create configuration file
     config_file = path.join(config_dir, 'config.json')
-    config: Optional[dict] = None
+    config: Optional[config_model.Configuration] = None
     if configuration == TestConfigurationType.EMPTY:
         config = DEFAULT_CONFIG
     elif configuration == TestConfigurationType.VALID:
@@ -86,7 +79,7 @@ def create_test_env(
     elif configuration == TestConfigurationType.NONE:
         config = None
     if config:
-        dump(config, open(config_file, 'w+'))
+        dump(asdict(config), open(config_file, 'w+'))
     # Yield
     try:
         yield TestEnvironment(
