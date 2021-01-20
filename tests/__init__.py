@@ -1,9 +1,11 @@
+# -*- coding: utf-8 -*-
 """pype-cli test suite."""
 
 import contextlib
 import importlib
 import shutil
 from collections import namedtuple
+from dataclasses import asdict
 from datetime import datetime
 from enum import Enum
 from json import dump, load
@@ -11,30 +13,25 @@ from os import environ, mkdir, path
 from random import choice
 from re import sub
 from string import ascii_lowercase
+from typing import Generator, Optional, cast
 
+from click.core import BaseCommand
 from click.testing import CliRunner
 
-from pype import __main__, resolve_path
+from pype import __main__, config_model, resolve_path
 from pype.config_handler import DEFAULT_CONFIG
 from pype.constants import ENV_CONFIG_FOLDER
+from pype.core import in_virtualenv
 
-VALID_CONFIG = {
-    'plugins': [
-        {
-            'name': 'plugin_name',
-            'path': '~/some/path',
-            'users': ['someuser']
-        }
-    ],
-    'aliases': [
-        {
-            'alias': 'alias_name',
-            'command': 'pype myplugin mypype'
-        }
-    ],
-    'core_config': {
-    }
-}
+VALID_CONFIG = config_model.Configuration(
+    core_config=config_model.ConfigurationCore(),
+    plugins=[config_model.ConfigurationPlugin(
+        name='plugin_name', path='~/some/path', users=['someuser']
+    )],
+    aliases=[config_model.ConfigurationAlias(
+        alias='alias_name', command='pype myplugin mypype'
+    )]
+)
 
 TestRunner = namedtuple(
     'TestRunner',
@@ -47,19 +44,23 @@ TestEnvironment = namedtuple(
 )
 
 
-class Configuration(Enum):
-    """Configuration selection."""
+class TestConfigurationType(Enum):
+    """Type of configuration selection."""
 
     EMPTY = 0
     VALID = 1
     NONE = 2
 
 
-@contextlib.contextmanager
-def create_test_env(configuration=Configuration.EMPTY):
+@ contextlib.contextmanager
+def create_test_env(
+    configuration: TestConfigurationType = TestConfigurationType.EMPTY
+) -> Generator[
+        TestEnvironment, None, None]:
     """Create a temporary configuration folder for testing purposes."""
     # Setup base folder
-    test_base_folder = resolve_path('./.pype-cli-tests')
+    test_base_folder = resolve_path('./.venv/pype-cli-tests')
+    activate_file = resolve_path('./.venv/bin/activate')
     if not path.isdir(test_base_folder):
         mkdir(test_base_folder)
     # Create test environment
@@ -70,14 +71,15 @@ def create_test_env(configuration=Configuration.EMPTY):
     mkdir(config_dir)
     # Create configuration file
     config_file = path.join(config_dir, 'config.json')
-    if configuration == Configuration.EMPTY:
+    config: Optional[config_model.Configuration] = None
+    if configuration == TestConfigurationType.EMPTY:
         config = DEFAULT_CONFIG
-    elif configuration == Configuration.VALID:
+    elif configuration == TestConfigurationType.VALID:
         config = VALID_CONFIG
-    elif configuration == Configuration.NONE:
+    elif configuration == TestConfigurationType.NONE:
         config = None
     if config:
-        dump(config, open(config_file, 'w+'))
+        dump(asdict(config), open(config_file, 'w+'))
     # Yield
     try:
         yield TestEnvironment(
@@ -85,14 +87,29 @@ def create_test_env(configuration=Configuration.EMPTY):
             config_file=config_file
         )
     finally:
-        shutil.rmtree(config_dir)
+        shutil.rmtree(test_base_folder)
+        # cleanup shell rc
+        if in_virtualenv():
+            activate_file_h = open(activate_file, 'r')
+            activate_lines = activate_file_h.readlines()
+            activate_file_h.close()
+            # activate_file_h = open(activate_file, 'w')
+            activate_lines = [
+                line for line in activate_lines if '# pype-cli' not in line
+            ]
+            activate_file_h = open(activate_file, 'w')
+            [activate_file_h.write(line) for line in activate_lines]
+            activate_file_h.close()
         try:
             del environ[ENV_CONFIG_FOLDER]
         except KeyError:
             pass  # Might not have been set but if so it has to be deleted
 
 
-def invoke_runner(component_under_test, arguments=None):
+def invoke_runner(
+        component_under_test: BaseCommand,
+        arguments: list = None
+) -> TestRunner:
     """Create and invoke a test runner."""
     if arguments is None:
         arguments = []
@@ -100,7 +117,11 @@ def invoke_runner(component_under_test, arguments=None):
         return create_runner(test_env, component_under_test, arguments)
 
 
-def create_runner(test_env, component_under_test, arguments=None):
+def create_runner(
+        test_env: TestEnvironment,
+        component_under_test: BaseCommand,
+        arguments: list = None
+) -> TestRunner:
     """Create a test runner with a provided test environment.
 
     We need to delay the import of pype.__main__ until we set the environment
@@ -109,8 +130,6 @@ def create_runner(test_env, component_under_test, arguments=None):
     """
     if arguments is None:
         arguments = []
-    if isinstance(arguments, str):
-        arguments = [arguments]
     environ[ENV_CONFIG_FOLDER] = test_env.config_dir
     runner = CliRunner(env=environ)
     importlib.reload(__main__)
@@ -122,11 +141,13 @@ def create_runner(test_env, component_under_test, arguments=None):
     return TestRunner(
         result=runner.invoke(component_under_test, arguments, env=environ),
         runner=runner,
-        reload_and_get_main=importlib.reload(__main__).main,
+        reload_and_get_main=cast(
+            BaseCommand, importlib.reload(__main__)
+        ).main,
         test_env=test_env
     )
 
 
-def reload_config(test_run):
+def reload_config(test_run: TestRunner) -> dict:
     """Load configuration of test as JSON-object."""
     return load(open(test_run.test_env.config_file, 'r'))

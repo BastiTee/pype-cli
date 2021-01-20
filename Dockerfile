@@ -1,5 +1,5 @@
 # Mint linux container image to test basic pype installation
-FROM ubuntu:18.04
+FROM ubuntu
 
 # Install python3 interpreter, package manager and zsh
 RUN apt-get update

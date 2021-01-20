@@ -14,6 +14,6 @@ import pype
 # Add an option https://click.palletsprojects.com/en/7.x/options/
 @click.option('--message', '-m', default='Hello World!',
               metavar='MESSAGE', help='Alternative message')
-def main(message):
+def main(message: str) -> None:
     """Script's main entry point."""
     print(message)

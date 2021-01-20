@@ -7,14 +7,16 @@ ifeq (, $(shell which pipenv))
 endif
 
 # Suppress warning if pipenv is started inside .venv
-export PIPENV_VERBOSITY=1
+export PIPENV_VERBOSITY = 1
 # Use relative .venv folder instead of home-folder based
-export PIPENV_VENV_IN_PROJECT=1
+export PIPENV_VENV_IN_PROJECT = 1
 # Ignore existing venvs
-export PIPENV_IGNORE_VIRTUALENVS=1
+export PIPENV_IGNORE_VIRTUALENVS = 1
 # Make sure we are running with an explicit encoding
-export LC_ALL=C
-export LANG=C.UTF-8
+export LC_ALL = C
+export LANG = C.UTF-8
+# Set configuration folder to venv
+export PYPE_CONFIG_FOLDER = $(shell pwd)/.venv/.pype-cli
 # Process variables
 LAST_VERSION := $(shell git tag | sort --version-sort -r | head -n1)
 VERSION_HASH := $(shell git show-ref -s $(LAST_VERSION))
@@ -26,8 +28,10 @@ all: prepare build
 prepare: clean
 	@echo Preparing virtual environment
 	pipenv install --dev
+	mkdir -p $(PYPE_CONFIG_FOLDER)
+	echo "export PYPE_CONFIG_FOLDER=$(PYPE_CONFIG_FOLDER)" >> .venv/bin/activate
 
-build: test coverage isort lint
+build: test mypy isort lint
 	@echo Run setup.py-based build process to package application
 	pipenv run python setup.py bdist_wheel
 
@@ -37,15 +41,30 @@ shell:
 
 clean:
 	@echo Clean project base
-	rm -rf .venv build dist .pytest_cache *.egg-info src
+	find . -type d \
+	-name ".venv" -o \
+	-name ".ropeproject" -o \
+	-name "build" -o \
+	-name "dist" -o \
+	-name "__pycache__" -o \
+	-name ".mypy_cache" -o \
+	-name ".pytest_cache" -o \
+	-iname "*.egg-info" -o \
+	-name "src" \
+	|xargs rm -rfv
+
+	find . -type f \
+	-name "pyproject.toml" \
+	|xargs rm -rfv
 
 test:
 	@echo Run all tests in default virtualenv
-	pipenv run py.test tests
-
-coverage:
-	@echo Run test coverage checks
 	pipenv run py.test --verbose tests
+
+test-one:
+	@echo Run one test in default virtualenv
+	pipenv run py.test --verbose --capture=no \
+	tests -k test_withenv
 
 isort:
 	@echo Check for incorrectly sorted imports
@@ -58,6 +77,20 @@ isort-apply:
 lint:
 	@echo Run code formatting checks against source code base
 	pipenv run flake8 $(PY_FILES)
+
+mypy:
+	@echo Run static code checks against source code base
+	# pipenv run mypy -p pype
+	pipenv run mypy example_pypes
+	pipenv run mypy tests
+
+sys-info:
+	@echo Print pype configuration within venv
+	pipenv run pype pype.config system-info
+
+install-wheel: all
+	@echo Install from wheel
+	pip3 install --force-reinstall dist/*.whl
 
 dockerize: build
 	@echo Install pype into a dockercontainer to test mint installation

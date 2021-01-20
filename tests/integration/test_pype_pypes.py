@@ -14,7 +14,7 @@ class TestCLIPypePypes:  # noqa: D101
     plugin = 'test-plugin'
 
     @pytest.fixture(autouse=True, scope='module')
-    def _run_around_tests(self):
+    def _run_around_tests(self) -> None:
         with create_test_env() as test_env:
             # Before all
             pytest.test_run = create_runner(
@@ -36,14 +36,14 @@ class TestCLIPypePypes:  # noqa: D101
             assert result.exit_code == 0
             assert 'successfully unregistered' in result.output
 
-    def test_registered_plugin_found(self):  # noqa: D102
+    def test_registered_plugin_found(self) -> None:  # noqa: D102
         result = pytest.test_run.runner.invoke(
             pytest.test_run.reload_and_get_main
         )
         assert result.exit_code == 0
         assert self.plugin in result.output
 
-    def test_plugin_called_without_options(self):  # noqa: D102
+    def test_plugin_called_without_options(self) -> None:  # noqa: D102
         result = pytest.test_run.runner.invoke(
             pytest.test_run.reload_and_get_main, [
                 self.plugin
@@ -52,7 +52,7 @@ class TestCLIPypePypes:  # noqa: D101
         assert result.exit_code == 0
         assert 'Usage: main test-plugin' in result.output
 
-    def test_delete_non_existing_pype(self):  # noqa: D102
+    def test_delete_non_existing_pype(self) -> None:  # noqa: D102
         result = pytest.test_run.runner.invoke(
             pytest.test_run.reload_and_get_main, [
                 self.plugin, '--delete-pype', 'nan'
@@ -61,7 +61,7 @@ class TestCLIPypePypes:  # noqa: D101
         assert result.exit_code == 2
         assert 'choose from' in result.output
 
-    def test_create_pype(self):  # noqa: D102
+    def test_create_pype(self) -> None:  # noqa: D102
         result = pytest.test_run.runner.invoke(
             pytest.test_run.reload_and_get_main, [
                 self.plugin, '--create-pype', 'test'
