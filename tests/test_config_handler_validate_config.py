@@ -15,7 +15,7 @@ class TestPypeConfigHandlerResolveConfigFile:  # noqa: D101
     def test_noneinput_raisetypeerror(self) -> None:  # noqa: D102
         config = PypeConfigHandler()
         with raises(PypeException):
-            config.validate_config(None)
+            config.validate_config({})
 
     def test_emptyinput_raisetypeerror(self) -> None:  # noqa: D102
         config = PypeConfigHandler()
