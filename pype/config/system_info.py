@@ -41,7 +41,7 @@ def main() -> None:
         )
     # Effective configuration
     infos.append(
-        ['EFFECTIVE CONFIG FILE', PypeConfigHandler(init=True).filepath]
+        ['EFFECTIVE CONFIG FILE', PypeConfigHandler().filepath]
     )
     infos.append(['IN VIRTUAL ENV', in_virtualenv()])
     # Version info
