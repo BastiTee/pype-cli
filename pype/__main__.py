@@ -26,20 +26,35 @@ PYPE_CORE = PypeCore()
     context_settings=dict(help_option_names=['-h', '--help']),
     help=__doc__
 )
-@click.option('--list-pypes', '-l', is_flag=True,
-              help='Print all available pypes.')
-@click.option('--aliases', '-a', is_flag=True,
-              help='Print all available aliases.')
-@click.option('--alias-register', '-r', metavar='ALIAS',
-              help='Register alias for following pype.')
-@click.option('--alias-unregister', '-u', metavar='ALIAS',
-              type=click.Choice(PYPE_CORE.get_aliases()),
-              help='Unregister alias.')
-@click.option('--open-config', '-o', is_flag=True,
-              help='Open config file in default editor.')
+@click.option(
+    '--list-pypes', '-l', is_flag=True,
+    help='Print all available pypes.'
+)
+@click.option(
+    '--aliases', '-a', is_flag=True,
+    help='Print all available aliases.'
+)
+@click.option(
+    '--alias-register', '-r', metavar='ALIAS',
+    help='Register alias for following pype.'
+)
+@click.option(
+    '--alias-unregister', '-u', metavar='ALIAS',
+    type=click.Choice(PYPE_CORE.get_aliases()), help='Unregister alias.'
+)
+@click.option(
+    '--open-config', '-o', is_flag=True,
+    help='Open config file in default editor.'
+)
 @click.pass_context
-def main(ctx, list_pypes, aliases,
-         open_config, alias_register, alias_unregister):
+def main(
+    ctx: Any,
+    list_pypes: bool,
+    aliases: bool,
+    open_config: bool,
+    alias_register: str,
+    alias_unregister: str
+) -> None:
     """Pype main entry point."""
     if not _process_alias_configuration(
             ctx, list_pypes, open_config, alias_register, alias_unregister):
@@ -61,7 +76,10 @@ def main(ctx, list_pypes, aliases,
         print_context_help(ctx, level=1)
 
 
-def _bind_plugin(plugin_name: str, plugin: Plugin) -> Callable:
+def _bind_plugin(
+    plugin_name: str,
+    plugin: Plugin
+) -> Callable:
 
     class PypeCLI(click.MultiCommand):
 
@@ -96,23 +114,39 @@ def _bind_plugin(plugin_name: str, plugin: Plugin) -> Callable:
         def get_pype_command_names(plugin: Plugin) -> List[str]:
             return [sub('_', '-', pype.name) for pype in plugin.pypes]
 
-    @click.option('--create-pype', '-c', metavar='PYPE',
-                  help='Create new pype with given name.')
-    @click.option('--open-pype', '-o', metavar='PYPE',
-                  help='Open pype with given name in default editor.',
-                  type=Choice(PypeCLI.get_pype_command_names(plugin)))
-    @click.option('--delete-pype', '-d', metavar='PYPE',
-                  help='Delete pype with given name.',
-                  type=Choice(PypeCLI.get_pype_command_names(plugin)))
-    @click.option('--minimal', '-m', is_flag=True,
-                  help='Use a minimal template with less boilerplate '
-                  + '(only used along with "--create-pype" option).')
-    @click.option('--edit', '-e', is_flag=True,
+    @click.option(
+        '--create-pype', '-c', metavar='PYPE',
+        help='Create new pype with given name.'
+    )
+    @click.option(
+        '--open-pype', '-o', metavar='PYPE',
+        help='Open pype with given name in default editor.',
+        type=Choice(PypeCLI.get_pype_command_names(plugin))
+    )
+    @click.option(
+        '--delete-pype', '-d', metavar='PYPE',
+        help='Delete pype with given name.',
+        type=Choice(PypeCLI.get_pype_command_names(plugin))
+    )
+    @click.option(
+        '--minimal', '-m', is_flag=True,
+        help='Use a minimal template with less boilerplate '
+        + '(only used along with "--create-pype" option).'
+    )
+    @click.option(
+        '--edit', '-e', is_flag=True,
                   help='Open new pype immediately for editing '
-                  + '(only used along with "--create-pype" option).')
+                  + '(only used along with "--create-pype" option).'
+    )
     @click.pass_context
     def _plugin_bind_plugin_function(
-            ctx, create_pype, minimal, edit, delete_pype, open_pype):
+            ctx: Any,
+            create_pype: str,
+            minimal: bool,
+            edit: bool,
+            delete_pype: str,
+            open_pype: str
+    ) -> None:
         if (minimal or edit) and not create_pype:
             print_error(
                 '"-m" and "-e" can only be used with "-c" option.')
@@ -156,8 +190,8 @@ def _process_alias_configuration(
         ctx: Any,
         list_pypes: bool,
         open_config: bool,
-        alias_register: bool,
-        alias_unregister: bool
+        alias_register: str,
+        alias_unregister: str
 ) -> bool:
     if alias_register and alias_unregister:
         print_error('Options -r and -u cannot be combined.')
