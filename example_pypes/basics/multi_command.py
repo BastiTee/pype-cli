@@ -3,6 +3,7 @@
 
 import json
 from os import path
+from typing import Any, List
 
 # Import the "Command Line Interface Creation Kit"
 # <https://click.palletsprojects.com>
@@ -15,7 +16,7 @@ commands_registry = path.join(
     pype.Config().get_dir_path(), 'example-multicommands')
 
 
-def _load_command_registry():
+def _load_command_registry() -> List:
     """Load the available commands from a json file."""
     try:
         commands = json.load(open(commands_registry, 'r'))
@@ -24,7 +25,7 @@ def _load_command_registry():
     return commands
 
 
-def _generate_multi_command():
+def _generate_multi_command() -> List[Any]:
     """Create the subcommand registry."""
     commands = _load_command_registry()
     return [{
@@ -33,17 +34,15 @@ def _generate_multi_command():
     } for command in commands]
 
 
-def _command_callback(command, context):
+def _command_callback(command: str, context: click.Context) -> None:
     """Process the passed subcommand."""
     print('Executing ' + command)
     print('Command context: ' + str(context))
 
 
 # Create a new click command with dynamic sub commands
-@click.command(
+@click.group(
     name=pype.fname_to_name(__file__), help=__doc__,
-    # This will allow to call the pype without a sub command
-    invoke_without_command=True,
     # Initialize dynamic subcommands using the convenience function
     cls=pype.generate_dynamic_multicommand(
         # Add a function to create multi commands, in this case
@@ -52,14 +51,16 @@ def _command_callback(command, context):
         # Provide a callback to receive the command and the
         # click context object.
         _command_callback
-    )
+    ),
+    # This will allow to call the pype without a sub command
+    invoke_without_command=True
 )
 # Add an option to extend the command registry
 @click.option('--add', '-a', metavar='COMMAND_NAME',
               help='Add a new subcommand')
 # Pass the context to be able to print the help text
 @click.pass_context
-def main(ctx, add):
+def main(ctx: click.Context, add: str) -> None:
     """Script's main entry point."""
     # Load the current registry from a local json-file
     command_registry = _load_command_registry()

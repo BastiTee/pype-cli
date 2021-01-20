@@ -11,6 +11,6 @@ import pype
 
 
 @click.command(name=pype.fname_to_name(__file__), help=__doc__)
-def main():
+def main() -> None:
     """Script's main entry point."""
     print('Hello World!')

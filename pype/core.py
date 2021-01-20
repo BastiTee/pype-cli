@@ -7,7 +7,9 @@ from importlib import import_module
 from os import environ, path, remove
 from re import sub
 from shutil import copyfile
+from typing import Any, List, Optional
 
+from click import Context
 from colorama import Fore, Style
 from tabulate import tabulate
 
@@ -27,23 +29,25 @@ class PypeCore:
     SHELL_COMPLETE_PREFIX = 'complete-'
     SHELL_RC_HINT = '# pype-cli'
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Public constructor."""
         self.__set_environment_variables()
         self.__config = PypeConfigHandler()
         self.__setup_logging(self.__config)
         self.__rc_files = [
-            resolve_path('./.venv/bin/activate'),
             resolve_path('~/.bashrc'),
             resolve_path('~/.bash_profile'),
             resolve_path('~/.zshrc')
         ]
-        # load all external plugins
+        # Configure if executed in virtual environment
+        if in_virtualenv():
+            self.__rc_files = [
+                resolve_path('./.venv/bin/activate')
+            ]
         Benchmark.print_info('Loading plugin information')
         self.plugins = [
             Plugin(plugin, self.__config.get_file_path())
-            for plugin in get_from_json_or_default(
-                self.__config.get_json(), 'plugins', [])
+            for plugin in self.__config.get_json().get('plugins', [])
         ]
         # filter plugins not valid for current environment
         self.plugins = [plugin for plugin in self.plugins if plugin.active]
@@ -54,15 +58,15 @@ class PypeCore:
         }, self.__config.get_file_path()))
         Benchmark.print_info('Plugins loaded')
 
-    def get_plugins(self):
+    def get_plugins(self) -> List[Plugin]:
         """Get list of configured plugins."""
         return self.plugins
 
-    def open_config_with_default(self):
+    def open_config_with_default(self) -> None:
         """Get absolute filepath to configuration JSON file."""
         return open_with_default(self.__config.get_file_path())
 
-    def list_pypes(self):
+    def list_pypes(self) -> None:
         """Print list of pypes to console."""
         for plugin in self.plugins:
             built_in = 'Built-in' if plugin.internal else plugin.abspath
@@ -79,14 +83,14 @@ class PypeCore:
                 )
             print()
 
-    def get_aliases(self):
+    def get_aliases(self) -> List[str]:
         """Return available aliases."""
-        aliases = self.__config.get_json().get('aliases')
+        aliases = self.__config.get_json().get('aliases', [])
         return sorted([alias['alias'] for alias in aliases])
 
-    def print_aliases(self):
+    def print_aliases(self) -> None:
         """Print list of aliases to console."""
-        aliases = self.__config.get_json().get('aliases')
+        aliases = self.__config.get_json().get('aliases', [])
         sorted_alias_keys = sorted([alias['alias'] for alias in aliases])
         alias_table = []
 
@@ -99,13 +103,12 @@ class PypeCore:
             ])
         print(tabulate(alias_table, tablefmt='plain'))
 
-    def install_to_shell(self):
+    def install_to_shell(self) -> None:
         """Install shell features."""
         # Clean up first
         self.uninstall_from_shell()
         print_success('Successfully cleaned up existing configurations')
-        aliases = get_from_json_or_default(
-            self.__config.get_json(), 'aliases', [])
+        aliases = self.__config.get_json().get('aliases', [])
         self.__write_init_file('bsh', aliases)
         self.__write_init_file('zsh', aliases)
         print('Add link to init-file in rc-files if present')
@@ -126,12 +129,12 @@ class PypeCore:
             )
             file_handle.write(f'. {init_file} {self.SHELL_RC_HINT}\n')
             file_handle.close()
-            if hasattr(sys, 'real_prefix'):
+            if in_virtualenv():
                 print('Running in .venv. Skipping system rc files.')
                 break
         print_success('Successfully written init-files')
 
-    def uninstall_from_shell(self):
+    def uninstall_from_shell(self) -> None:
         """Uninstall shell features."""
         # Remove init files
         cfg_dir = self.__config.get_dir_path()
@@ -150,9 +153,9 @@ class PypeCore:
             content = file_handle.readlines()
             file_handle.close()
             # Don't rewrite if rc file does not link to initfile
-            if not any(
-                list(filter(
-                    lambda x: self.SHELL_RC_HINT in x, content))):
+            if not any(list(filter(
+                    lambda x: self.SHELL_RC_HINT in str(x), content
+            ))):
                 continue
             # Delete initfile-links from rc file
             print(f' - "{file}"')
@@ -164,7 +167,7 @@ class PypeCore:
                 print('Running in .venv. Skipping system rc files.')
                 break
 
-    def alias_register(self, ctx):
+    def alias_register(self, ctx: Any) -> None:
         """Register a new alias."""
         alias = ctx.parent.alias_register
         # Combine the current context's command path with remaining CL-args
@@ -187,7 +190,7 @@ class PypeCore:
         if self.__alias_present(config_json, alias):
             print_warning('Alias already registered.')
             return
-        config_json.get('aliases').append({
+        config_json.get('aliases', []).append({
             'alias': alias,
             'command': cmd_line
         })
@@ -196,7 +199,7 @@ class PypeCore:
         # update install script
         self.install_to_shell()
 
-    def alias_unregister(self, alias):
+    def alias_unregister(self, alias: str) -> None:
         """Unregister the provided alias."""
         if not alias:
             return
@@ -217,7 +220,7 @@ class PypeCore:
         print_success(f'Unregistered alias: {alias}')
         self.install_to_shell()
 
-    def __write_init_file(self, init_file, aliases):
+    def __write_init_file(self, init_file: str, aliases: List) -> None:
         shell_command = path.basename(sys.argv[0])
         cfg_dir = self.__config.get_dir_path()
         source_cmd = 'source_zsh' if init_file == 'zsh' else 'source'
@@ -249,8 +252,12 @@ then
 fi
 """)
 
-    @ staticmethod
-    def create_pype_or_exit(pype_name, plugin, minimal):
+    @staticmethod
+    def create_pype_or_exit(
+        pype_name: str,
+        plugin: Plugin,
+        minimal: bool
+    ) -> str:
         """Create a new pype inside the given plugin."""
         if plugin.internal:
             print_error('Creating internal pypes is not supported.')
@@ -270,8 +277,8 @@ fi
         print_success('Created new pype ' + target_file)
         return target_file
 
-    @ staticmethod
-    def delete_pype(pype_name, plugin):
+    @staticmethod
+    def delete_pype(pype_name: str, plugin: Plugin) -> None:
         """Delete pype from the given plugin."""
         if plugin.internal:
             print_error('Deleting internal pypes is not supported.')
@@ -285,16 +292,16 @@ fi
             exit(1)
         print_success('Deleted pype ' + source_name)
 
-    @ staticmethod
-    def get_abspath_to_pype(plugin, name):
+    @staticmethod
+    def get_abspath_to_pype(plugin: Plugin, name: str) -> Optional[str]:
         """Get absoulte path to pype Python script."""
         for pype in plugin.pypes:
             if name == pype.name:
                 return pype.abspath
         return None
 
-    @ staticmethod
-    def __remove_file_silently(target_file):
+    @staticmethod
+    def __remove_file_silently(target_file: str) -> None:
         target_file = resolve_path(target_file)
         print('Removing init-file ' + target_file)
         try:
@@ -302,50 +309,40 @@ fi
         except FileNotFoundError:
             pass  # Silent ignore to make function idempotent
 
-    @ staticmethod
-    def __set_environment_variables():
+    @staticmethod
+    def __set_environment_variables() -> None:
         environ['LC_ALL'] = 'C.UTF-8'
         environ['LANG'] = 'C.UTF-8'
 
-    @ staticmethod
-    def __find_alias(aliases, key):
+    @staticmethod
+    def __find_alias(aliases: dict, key: str) -> dict:
         for alias in aliases:
             if key == alias['alias']:
                 return alias
+        return {}
 
-    @ staticmethod
-    def __alias_present(config_json, alias):
-        return any(
-            [existing_alias for existing_alias in config_json.get('aliases')
-             if existing_alias['alias'] == alias])
+    @staticmethod
+    def __alias_present(config_json: dict, alias: str) -> bool:
+        return any([
+            existing_alias
+            for existing_alias in config_json.get('aliases', [])
+            if existing_alias['alias'] == alias
+        ])
 
-    @ staticmethod
-    def __setup_logging(config):
+    @staticmethod
+    def __setup_logging(config: PypeConfigHandler) -> None:
         log_cfg = config.get_core_config_logging()
-        if not log_cfg or not log_cfg.get('enabled', False):
+        if not log_cfg or not log_cfg.enabled:
             return
         logging.basicConfig(
-            level=log_cfg['level'],
-            format=log_cfg['pattern'],
-            filename=path.join(log_cfg['directory'], 'pype-cli.log')
+            level=str(log_cfg.level),
+            format=log_cfg.pattern,
+            filename=path.join(log_cfg.directory, 'pype-cli.log')
         )
         logging.getLogger('pype-cli')
 
 
-def get_from_json_or_default(json, path, default_value):
-    """Try to load a key breadcrumb from a JSON object or return default."""
-    if not path:
-        return default_value
-    json = json if json else {}
-    try:
-        for breadcrumb in path.split('.'):
-            json = json[breadcrumb]
-        return json if json else default_value
-    except KeyError:
-        return default_value
-
-
-def load_module(name, module_path):
+def load_module(name: str, module_path: str) -> Any:
     """Try to import the module at the provided path using classloader."""
     sys.path.append(path.abspath(module_path))
     try:
@@ -355,12 +352,12 @@ def load_module(name, module_path):
         raise PypeException(e)
 
 
-def get_pype_basepath():
+def get_pype_basepath() -> str:
     """Get directory filename of this pype installation."""
     return path.dirname(path.dirname(__file__))
 
 
-def print_context_help(ctx, level=0):
+def print_context_help(ctx: Context, level: int = 0) -> None:
     """Print help page for current context with some slight improvements."""
     default_help = ctx.get_help()
     if level == 1:
@@ -369,3 +366,19 @@ def print_context_help(ctx, level=0):
         print(sub('Commands:', 'Pypes:', default_help))
     else:
         print(default_help)
+
+
+def get_base_prefix_compat() -> str:
+    """Get base/real prefix, or sys.prefix if there is none."""
+    return getattr(sys, 'base_prefix', None) or \
+        getattr(sys, 'real_prefix', None) or sys.prefix
+
+
+def in_virtualenv() -> bool:
+    """Return True when pype is executed inside a virtual env."""
+    return (
+        hasattr(sys, 'real_prefix')
+        or (
+            hasattr(sys, 'base_prefix') and sys.base_prefix != sys.prefix
+        )
+    )

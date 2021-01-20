@@ -47,10 +47,16 @@
             }
         },
         "core_config": {
-            "type": "object",
+            "type": [
+                "object",
+                "null"
+            ],
             "properties": {
                 "logging": {
-                    "type": "object",
+                    "type": [
+                        "object",
+                        "null"
+                    ],
                     "properties": {
                         "enabled": {
                             "type": "boolean"

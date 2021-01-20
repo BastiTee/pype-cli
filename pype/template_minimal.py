@@ -7,5 +7,5 @@ import pype
 
 
 @click.command(name=pype.fname_to_name(__file__), help=__doc__)
-def main():  # noqa: D103
+def main() -> None:  # noqa: D103
     pass

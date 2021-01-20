@@ -9,7 +9,7 @@ import pype
 
 
 @click.command(name=pype.fname_to_name(__file__), help=__doc__)
-def main():
+def main() -> None:
     """Script's main entry point."""
     # For this to work it is required that you've set up global logging
     # via 'pype pype.config logger' before. See its help pages to get yourself

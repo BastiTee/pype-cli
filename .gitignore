@@ -1,9 +1,6 @@
 # Lock files
 .dockerignore
-
-# Local configuration files
-.pype-cli/
-.pype-cli-tests/
+Pipfile.lock
 
 # PyCharm
 .idea/
