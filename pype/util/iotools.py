@@ -49,7 +49,7 @@ def open_with_default(filepath: str) -> None:
     try:
         # Use open command
         run(['open', filepath], check=True)
-    except Exception:
+    except Exception:  # noqa: B902
         # If not possible try to find $EDITOR or $VISUAL environment var
         editor = environ.get('EDITOR', None)
         if not editor:
