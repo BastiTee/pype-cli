@@ -5,12 +5,15 @@
 from os import listdir, path
 from re import sub
 from sys import path as syspath
+from typing import Any, Callable, List
 
 import click
+from click import Choice
 from colorama import init
 
 from pype.core import PypeCore, print_context_help
 from pype.exceptions import PypeException
+from pype.type_plugin import Plugin
 from pype.util.benchmark import Benchmark
 from pype.util.cli import fname_to_name, print_error
 from pype.util.iotools import open_with_default
@@ -58,17 +61,17 @@ def main(ctx, list_pypes, aliases,
         print_context_help(ctx, level=1)
 
 
-def _bind_plugin(plugin_name, plugin):
+def _bind_plugin(plugin_name: str, plugin: Plugin) -> Callable:
 
     class PypeCLI(click.MultiCommand):
 
-        def __init__(self, *args, **kwargs):
+        def __init__(self, **attrs: Any) -> None:
             click.MultiCommand.__init__(
                 self,
                 invoke_without_command=True,
-                *args, **kwargs)
+                **attrs)
 
-        def list_commands(self, ctx):
+        def list_commands(self, ctx: Any) -> List:
             Benchmark.print_info(f'Loading pypes from plugin {plugin_name}')
             rv = []
             for filename in listdir(plugin.abspath):
@@ -77,7 +80,7 @@ def _bind_plugin(plugin_name, plugin):
             rv.sort()
             return rv
 
-        def get_command(self, ctx, name):
+        def get_command(self, ctx: click.Context, name: str) -> Any:
             name = sub('-', '_', name)
             full_name = plugin.name + '.' + name
             try:
@@ -89,17 +92,18 @@ def _bind_plugin(plugin_name, plugin):
                 print_error(str(import_error))
                 exit(1)
 
-        def get_pype_command_names():
+        @staticmethod
+        def get_pype_command_names(plugin: Plugin) -> List[str]:
             return [sub('_', '-', pype.name) for pype in plugin.pypes]
 
     @click.option('--create-pype', '-c', metavar='PYPE',
                   help='Create new pype with given name.')
     @click.option('--open-pype', '-o', metavar='PYPE',
                   help='Open pype with given name in default editor.',
-                  type=click.Choice(PypeCLI.get_pype_command_names()))
+                  type=Choice(PypeCLI.get_pype_command_names(plugin)))
     @click.option('--delete-pype', '-d', metavar='PYPE',
                   help='Delete pype with given name.',
-                  type=click.Choice(PypeCLI.get_pype_command_names()))
+                  type=Choice(PypeCLI.get_pype_command_names(plugin)))
     @click.option('--minimal', '-m', is_flag=True,
                   help='Use a minimal template with less boilerplate '
                   + '(only used along with "--create-pype" option).')
@@ -149,7 +153,12 @@ def _bind_plugin(plugin_name, plugin):
 
 
 def _process_alias_configuration(
-        ctx, list_pypes, open_config, alias_register, alias_unregister):
+        ctx: Any,
+        list_pypes: bool,
+        open_config: bool,
+        alias_register: bool,
+        alias_unregister: bool
+) -> bool:
     if alias_register and alias_unregister:
         print_error('Options -r and -u cannot be combined.')
         return False
