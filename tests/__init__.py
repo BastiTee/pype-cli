@@ -13,7 +13,7 @@ from os import environ, mkdir, path
 from random import choice
 from re import sub
 from string import ascii_lowercase
-from typing import Generator, Optional, cast
+from typing import Generator, Optional, Union, cast
 
 from click.core import BaseCommand
 from click.testing import CliRunner
@@ -107,7 +107,7 @@ def create_test_env(
 
 
 def invoke_runner(
-        component_under_test: BaseCommand,
+        component_under_test: Union[str, BaseCommand],
         arguments: list = None
 ) -> TestRunner:
     """Create and invoke a test runner."""
@@ -119,7 +119,7 @@ def invoke_runner(
 
 def create_runner(
         test_env: TestEnvironment,
-        component_under_test: BaseCommand,
+        component_under_test: Union[str, BaseCommand],
         arguments: list = None
 ) -> TestRunner:
     """Create a test runner with a provided test environment.
@@ -133,13 +133,19 @@ def create_runner(
     environ[ENV_CONFIG_FOLDER] = test_env.config_dir
     runner = CliRunner(env=environ)
     importlib.reload(__main__)
-    if component_under_test == r'%MAIN%':
-        component_under_test = __main__.main
+    cot: BaseCommand
+    if (
+        isinstance(component_under_test, str)
+        and component_under_test == r'%MAIN%'
+    ):
+        cot = __main__.main
+    else:
+        cot = cast(BaseCommand, component_under_test)
     # Replace %CONFIG_DIR% in arguments with actual test-config dir
     arguments = [
         sub(r'%CONFIG_DIR%', test_env.config_dir, arg) for arg in arguments]
     return TestRunner(
-        result=runner.invoke(component_under_test, arguments, env=environ),
+        result=runner.invoke(cot, arguments, env=environ),
         runner=runner,
         reload_and_get_main=cast(
             BaseCommand, importlib.reload(__main__)
