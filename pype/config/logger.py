@@ -2,20 +2,20 @@
 """Configure global logging."""
 
 import contextlib
-from json import dumps
 from typing import IO, Generator
 
 import click
+from config_model import ConfigurationCoreLogging
 
 from pype.config_handler import PypeConfigHandler, get_supported_log_levels
 from pype.util.cli import fname_to_name, print_error, print_success
 
 
 @contextlib.contextmanager
-def open_configuration() -> Generator[dict, None, None]:
+def open_configuration() -> Generator[ConfigurationCoreLogging, None, None]:
     """Open configuration file context."""
     cfg_handler = PypeConfigHandler()
-    log_cfg = cfg_handler.get_core_config_logging(return_default_if_empty=True)
+    log_cfg = cfg_handler.get_core_config_logging()
     yield log_cfg
     cfg_handler.set_core_config_logging(log_cfg)
 
@@ -30,7 +30,7 @@ def main() -> None:  # noqa: D103
                 type=click.Choice(get_supported_log_levels()))
 def set_level(level: str) -> None:  # noqa: D103
     with open_configuration() as log_cfg:
-        log_cfg['level'] = level
+        log_cfg.level = level
     print_success(f'Log level set to {level}.')
 
 
@@ -42,7 +42,7 @@ def set_pattern(pattern: str) -> None:  # noqa: D103, A002
         exit(1)
     pattern = pattern.strip()
     with open_configuration() as log_cfg:
-        log_cfg['pattern'] = pattern
+        log_cfg.pattern = pattern
     print_success(f'Log pattern set to \'{pattern}\'.')
 
 
@@ -51,25 +51,25 @@ def set_pattern(pattern: str) -> None:  # noqa: D103, A002
                 type=click.Path(exists=True, writable=True))
 def set_directory(directory: IO) -> None:  # noqa: D103
     with open_configuration() as log_cfg:
-        log_cfg['directory'] = directory
+        log_cfg.directory = directory
     print_success(f'Log directory set to \'{directory}\'.')
 
 
 @main.command(help='Enable global logger')
 def enable() -> None:  # noqa: D103
     with open_configuration() as log_cfg:
-        log_cfg['enabled'] = True
+        log_cfg.enabled = True
     print_success('Global logging enabled.')
 
 
 @main.command(help='Disable global logger')
 def disable() -> None:  # noqa: D103
     with open_configuration() as log_cfg:
-        log_cfg['enabled'] = False
+        log_cfg.enabled = False
     print_success('Global logging disabled.')
 
 
 @main.command(help='Print current configuration')
 def print_config() -> None:  # noqa: D103
-    with open_configuration() as log_cfg:
-        print(dumps(log_cfg, indent=4))
+    log_cfg = PypeConfigHandler().get_core_config_logging()
+    print(log_cfg.asjson())

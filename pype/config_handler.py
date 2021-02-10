@@ -4,9 +4,10 @@
 from json import JSONDecodeError, dump, load
 from os import environ, mkdir, path
 from sys import stderr
-from typing import List, Optional
+from typing import List
 
 from colorama import Fore, Style
+from dacite import from_dict
 from jsonschema import ValidationError, validate
 
 from pype import config_model
@@ -105,21 +106,17 @@ class PypeConfigHandler:
         """Return indicator from which config was resolved."""
         return self.config_source
 
-    def get_core_config_logging(
-        self,
-        return_default_if_empty: bool = False
-    ) -> Optional[ConfigurationCoreLogging]:
+    def get_core_config_logging(self) -> ConfigurationCoreLogging:
         """Return current or default logging configuration."""
         core_config = self.get_json().get('core_config', None)
         default_config = config_model.ConfigurationCoreLogging()
-        # Set default logging directory to pypes config folder
         default_config.directory = path.dirname(self.filepath)
         if not core_config:
-            return default_config if return_default_if_empty else None
+            return default_config
         logging_config = core_config.get('logging', None)
         if not logging_config:
-            return default_config if return_default_if_empty else None
-        return logging_config
+            return default_config
+        return from_dict(ConfigurationCoreLogging, logging_config)
 
     def set_core_config_logging(
         self,
@@ -129,7 +126,7 @@ class PypeConfigHandler:
         config_json = self.get_json()
         if not config_json.get('core_config', None):
             config_json['core_config'] = {}
-        config_json['core_config']['logging'] = logging_config
+        config_json['core_config']['logging'] = logging_config.asdict()
         self.set_json(config_json)  # Setter takes care of validation
 
     @staticmethod
