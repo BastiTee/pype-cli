@@ -3,7 +3,7 @@
 
 import getpass
 from os import mkdir
-from os.path import dirname, isdir, join
+from os.path import dirname, isdir, isfile, join
 from re import IGNORECASE, sub
 
 import click
@@ -31,8 +31,14 @@ def main(name: str, path: str, create: bool, user_only: bool) -> None:
     module = None
     try:
         module = load_module(name, path)
-    except PypeException:
-        print_error(f'Could not find a python module "{name}" at {path}')
+    except PypeException as ex:
+        print_error(f'Could not find a python module "{name}" at {path}: {ex}')
+        exit(1)
+    # Check __init__.py
+    init_file = join(path, name, '__init__.py')
+    if not isfile(init_file):
+        print_error(f'Could not find __init__.py at {init_file}. '
+                    + 'This plugin path seems invalid.')
         exit(1)
     # Append plugin to global configuration
     config_handler = PypeConfigHandler()
