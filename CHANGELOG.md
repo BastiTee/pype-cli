@@ -1,5 +1,14 @@
 # Changelog
 
+## Version 0.6.1
+
+- Activate mypy for full code base
+- Harden plugin resolving
+- Fix dependency statements
+- Fix broken pype pype.config.logger
+- Rename test helpers to not confuse pytest
+- Add tests for config_model
+
 ## Version 0.6.0
 
 - Source code now fully typed and typings ensured via mypy

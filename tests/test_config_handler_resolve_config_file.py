@@ -9,13 +9,13 @@ from pype.config_handler import (DEFAULT_CONFIG, ConfigResolverSource,
                                  PypeConfigHandler)
 from pype.constants import ENV_CONFIG_FOLDER
 from pype.exceptions import PypeException
-from tests import VALID_CONFIG, TestConfigurationType, create_test_env
+from tests import VALID_CONFIG, ConfigTypeForTest, create_test_env
 
 
 class TestPypeConfigHandlerResolveConfigFile:  # noqa: D101
 
     def test_withenv(self) -> None:  # noqa: D102
-        with create_test_env(TestConfigurationType.VALID) as test_env:
+        with create_test_env(ConfigTypeForTest.VALID) as test_env:
             environ[ENV_CONFIG_FOLDER] = test_env.config_dir
             config = PypeConfigHandler()
             assert config.get_file_path() == test_env.config_file
@@ -29,7 +29,7 @@ class TestPypeConfigHandlerResolveConfigFile:  # noqa: D101
         del environ[ENV_CONFIG_FOLDER]
 
     def test_withdefaultfile(self) -> None:  # noqa: D102
-        with create_test_env(TestConfigurationType.VALID) as test_env:
+        with create_test_env(ConfigTypeForTest.VALID) as test_env:
             config = PypeConfigHandler(
                 test_env.config_dir, test_env.config_file
             )
@@ -39,7 +39,7 @@ class TestPypeConfigHandlerResolveConfigFile:  # noqa: D101
                 ConfigResolverSource.FROM_DEFAULT_PATH)
 
     def test_onthefly_to_default(self) -> None:  # noqa: D102
-        with create_test_env(TestConfigurationType.NONE) as test_env:
+        with create_test_env(ConfigTypeForTest.NONE) as test_env:
             config = PypeConfigHandler(
                 test_env.config_dir, 'test_config.json'
             )
@@ -50,7 +50,7 @@ class TestPypeConfigHandlerResolveConfigFile:  # noqa: D101
                 ConfigResolverSource.FROM_SCRATCH_TO_DEFAULT_PATH)
 
     def test_onthefly_to_provided(self) -> None:  # noqa: D102
-        with create_test_env(TestConfigurationType.NONE) as test_env:
+        with create_test_env(ConfigTypeForTest.NONE) as test_env:
             environ[ENV_CONFIG_FOLDER] = test_env.config_dir
             config = PypeConfigHandler()
             assert config.get_file_path() == path.join(

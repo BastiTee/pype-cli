@@ -27,3 +27,4 @@ click = "*" # Command-line interface library
 jsonschema = "*" # JSON schema validation
 dacite = "*" # Simplifies creation of data classes
 tabulate = "*" # Table-formatter
+colorama = "*" # CLI coloring

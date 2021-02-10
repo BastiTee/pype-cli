@@ -4,10 +4,11 @@
 from dataclasses import asdict as dc_asdict
 from dataclasses import dataclass, field
 from enum import Enum
+from json import dumps
 from typing import List, Optional
 
 
-class ConfigResolverSource(Enum):
+class ConfigResolverSource(str, Enum):
     """Source of the resolved configuration file."""
 
     FROM_ENV = 1
@@ -16,8 +17,20 @@ class ConfigResolverSource(Enum):
     FROM_SCRATCH_TO_PROVIDED_PATH = 4
 
 
+class BaseDataClass:
+    """Base data class with asdict capability."""
+
+    def asdict(self) -> dict:
+        """Convert to dictionary."""
+        return dc_asdict(self)
+
+    def asjson(self) -> str:
+        """Convert to JSON."""
+        return dumps(self.asdict(), indent=4)
+
+
 @dataclass
-class ConfigurationPlugin:
+class ConfigurationPlugin(BaseDataClass):
     """Configuration type for a single plugin."""
 
     name: str
@@ -26,48 +39,34 @@ class ConfigurationPlugin:
 
 
 @dataclass
-class ConfigurationAlias:
+class ConfigurationAlias(BaseDataClass):
     """Configuration type for an alias."""
 
     alias: str
     command: str
 
 
-class ConfigurationCoreLoggingLevel(Enum):
-    """Logging levels."""
-
-    FATAL = 1
-    ERROR = 2
-    WARN = 3
-    INFO = 4
-    DEBUG = 5
-
-
 @dataclass
-class ConfigurationCoreLogging:
+class ConfigurationCoreLogging(BaseDataClass):
     """Core Configuration type for logging subsystem."""
 
     enabled: bool = False
-    level: ConfigurationCoreLoggingLevel = ConfigurationCoreLoggingLevel.INFO
+    level: str = 'INFO'
     pattern: str = r'%(asctime)s %(levelname)s %(name)s %(message)s'
     directory: str = ''
 
 
 @dataclass
-class ConfigurationCore:
+class ConfigurationCore(BaseDataClass):
     """Core Configuration type."""
 
     logging: Optional[ConfigurationCoreLogging] = None
 
 
 @dataclass
-class Configuration:
+class Configuration(BaseDataClass):
     """Configuration type."""
 
     plugins: List[ConfigurationPlugin] = field(default_factory=list)
     aliases: List[ConfigurationAlias] = field(default_factory=list)
     core_config: Optional[ConfigurationCore] = None
-
-    def asdict(self) -> dict:
-        """Convert to dictionary."""
-        return dc_asdict(self)

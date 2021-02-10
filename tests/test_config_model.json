@@ -1,0 +1,25 @@
+{
+    "plugins": [
+        {
+            "name": "p1",
+            "path": "/somewhere",
+            "users": [
+                "bastitee"
+            ]
+        }
+    ],
+    "aliases": [
+        {
+            "alias": "myalias",
+            "command": "pype config"
+        }
+    ],
+    "core_config": {
+        "logging": {
+            "enabled": false,
+            "level": "INFO",
+            "pattern": "%(asctime)s %(levelname)s %(name)s %(message)s",
+            "directory": ""
+        }
+    }
+}

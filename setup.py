@@ -19,7 +19,7 @@ console_scripts = [f'{shell_command}=pype.__main__:main']
 setup(
     # Basic project information
     name='pype-cli',
-    version='0.6.0',
+    version='0.6.1',
     # Authorship and online reference
     author='Basti Tee',
     author_email='basti.tee@posteo.de',
@@ -35,6 +35,9 @@ setup(
         'Intended Audience :: Developers',
         'License :: OSI Approved :: Apache Software License',
         'Programming Language :: Python',
+        'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9'
     ],
     # Package configuration
     packages=find_packages(exclude=('tests',)),
@@ -42,12 +45,10 @@ setup(
     python_requires='>=3.7',
     install_requires=[
         'click',
+        'jsonschema',
+        'dacite',
         'tabulate',
         'colorama',
-        'pygments',
-        'requests',
-        'jsonschema',
-        'progress'
     ],
     entry_points={
         'console_scripts': console_scripts

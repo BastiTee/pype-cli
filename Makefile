@@ -61,11 +61,6 @@ test:
 	@echo Run all tests in default virtualenv
 	pipenv run py.test --verbose tests
 
-test-one:
-	@echo Run one test in default virtualenv
-	pipenv run py.test --verbose --capture=no \
-	tests -k test_withenv
-
 isort:
 	@echo Check for incorrectly sorted imports
 	pipenv run isort --check-only $(PY_FILES)
@@ -80,9 +75,7 @@ lint:
 
 mypy:
 	@echo Run static code checks against source code base
-	# pipenv run mypy -p pype
-	pipenv run mypy example_pypes
-	pipenv run mypy tests
+	pipenv run mypy pype example_pypes tests
 
 sys-info:
 	@echo Print pype configuration within venv

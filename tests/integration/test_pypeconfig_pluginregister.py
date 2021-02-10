@@ -81,7 +81,7 @@ class TestCLIPypePluginRegister:  # noqa: D101
             # Register plugin again
             result = test_run.runner.invoke(
                 plugin_register.main,
-                ['--name', 'plug', '--path', '%CONFIG_DIR%'])
+                ['--name', 'plug', '--path', test_env.config_dir])
             assert result.exit_code == 0
             assert 'successfully registered' in result.output
             result_configuration = reload_config(test_run)

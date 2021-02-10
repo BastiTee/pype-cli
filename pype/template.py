@@ -27,6 +27,6 @@ def main(option: str, verbose: bool) -> None:  # noqa: D103
     print(Fore.RED + '- verbose: ' + Style.DIM + Fore.GREEN + str(verbose))
 
     # Use a pype utility
-    pype.sh('ls')
+    pype.sh(['ls'])
 
     # Your code goes here ...
