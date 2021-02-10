@@ -45,12 +45,10 @@ setup(
     python_requires='>=3.7',
     install_requires=[
         'click',
+        'jsonschema',
+        'dacite',
         'tabulate',
         'colorama',
-        'pygments',
-        'requests',
-        'jsonschema',
-        'progress'
     ],
     entry_points={
         'console_scripts': console_scripts
