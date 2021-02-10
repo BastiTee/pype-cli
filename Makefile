@@ -61,11 +61,6 @@ test:
 	@echo Run all tests in default virtualenv
 	pipenv run py.test --verbose tests
 
-test-one:
-	@echo Run one test in default virtualenv
-	pipenv run py.test --verbose --capture=no \
-	tests -k test_withenv
-
 isort:
 	@echo Check for incorrectly sorted imports
 	pipenv run isort --check-only $(PY_FILES)
