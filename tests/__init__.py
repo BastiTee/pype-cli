@@ -33,8 +33,8 @@ VALID_CONFIG = config_model.Configuration(
     )]
 )
 
-TestRunner = namedtuple(
-    'TestRunner',
+RunnerEnvironment = namedtuple(
+    'RunnerEnvironment',
     'result runner reload_and_get_main test_env'
 )
 
@@ -44,7 +44,7 @@ TestEnvironment = namedtuple(
 )
 
 
-class TestConfigurationType(Enum):
+class ConfigTypeForTest(Enum):
     """Type of configuration selection."""
 
     EMPTY = 0
@@ -54,7 +54,7 @@ class TestConfigurationType(Enum):
 
 @ contextlib.contextmanager
 def create_test_env(
-    configuration: TestConfigurationType = TestConfigurationType.EMPTY
+    configuration: ConfigTypeForTest = ConfigTypeForTest.EMPTY
 ) -> Generator[
         TestEnvironment, None, None]:
     """Create a temporary configuration folder for testing purposes."""
@@ -72,11 +72,11 @@ def create_test_env(
     # Create configuration file
     config_file = path.join(config_dir, 'config.json')
     config: Optional[config_model.Configuration] = None
-    if configuration == TestConfigurationType.EMPTY:
+    if configuration == ConfigTypeForTest.EMPTY:
         config = DEFAULT_CONFIG
-    elif configuration == TestConfigurationType.VALID:
+    elif configuration == ConfigTypeForTest.VALID:
         config = VALID_CONFIG
-    elif configuration == TestConfigurationType.NONE:
+    elif configuration == ConfigTypeForTest.NONE:
         config = None
     if config:
         dump(asdict(config), open(config_file, 'w+'))
@@ -109,7 +109,7 @@ def create_test_env(
 def invoke_runner(
         component_under_test: Union[str, BaseCommand],
         arguments: list = None
-) -> TestRunner:
+) -> RunnerEnvironment:
     """Create and invoke a test runner."""
     if arguments is None:
         arguments = []
@@ -121,7 +121,7 @@ def create_runner(
         test_env: TestEnvironment,
         component_under_test: Union[str, BaseCommand],
         arguments: list = None
-) -> TestRunner:
+) -> RunnerEnvironment:
     """Create a test runner with a provided test environment.
 
     We need to delay the import of pype.__main__ until we set the environment
@@ -144,7 +144,7 @@ def create_runner(
     # Replace %CONFIG_DIR% in arguments with actual test-config dir
     arguments = [
         sub(r'%CONFIG_DIR%', test_env.config_dir, arg) for arg in arguments]
-    return TestRunner(
+    return RunnerEnvironment(
         result=runner.invoke(cot, arguments, env=environ),
         runner=runner,
         reload_and_get_main=cast(
@@ -154,6 +154,6 @@ def create_runner(
     )
 
 
-def reload_config(test_run: TestRunner) -> dict:
+def reload_config(test_run: RunnerEnvironment) -> dict:
     """Load configuration of test as JSON-object."""
     return load(open(test_run.test_env.config_file, 'r'))

@@ -7,9 +7,9 @@ from typing import Generator
 import pytest
 
 from pype.config import plugin_register, plugin_unregister
-from tests import TestRunner, create_runner, create_test_env
+from tests import RunnerEnvironment, create_runner, create_test_env
 
-test_run: TestRunner
+test_run: RunnerEnvironment
 
 
 class TestCLIPypePypes:  # noqa: D101
