@@ -1,6 +1,7 @@
 # Lock files
 .dockerignore
 Pipfile.lock
+.DS_Store
 
 # PyCharm
 .idea/
