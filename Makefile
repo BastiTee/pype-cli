@@ -21,7 +21,6 @@ export PYPE_CONFIG_FOLDER = $(shell pwd)/.venv/.pype-cli
 LAST_VERSION := $(shell git tag | sort --version-sort -r | head -n1)
 VERSION_HASH := $(shell git show-ref -s $(LAST_VERSION))
 PY_FILES := setup.py pype tests example_pypes
-DOCKER_IMAGE := pype-docker-mint-install
 
 all: prepare build
 
@@ -84,11 +83,6 @@ sys-info:
 install-wheel: all
 	@echo Install from wheel
 	pip3 install --force-reinstall dist/*.whl
-
-dockerize: build
-	@echo Install pype into a dockercontainer to test mint installation
-	docker build -t $(DOCKER_IMAGE) .
-	docker run -ti --rm $(DOCKER_IMAGE)
 
 publish: all
 	@echo Publish pype to pypi.org
