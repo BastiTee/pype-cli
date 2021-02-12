@@ -12,7 +12,7 @@ jobs:
             - uses: actions/checkout@v2
             - uses: actions/setup-python@v1
 
-            - name: CI checks
+            - name: Release
               run: |
                   python3 -m pip install pipenv
                   TWINE_USERNAME="$TWINE_USERNAME" \
