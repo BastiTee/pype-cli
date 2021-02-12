@@ -19,7 +19,7 @@ class TestPypeConfigHandlerResolveConfigFile:  # noqa: D101
             environ[ENV_CONFIG_FOLDER] = test_env.config_dir
             config = PypeConfigHandler()
             assert config.get_file_path() == test_env.config_file
-            assert config.get_json() == VALID_CONFIG.asdict()
+            assert config.get_config() == VALID_CONFIG
             assert config.get_config_source() == ConfigResolverSource.FROM_ENV
 
     def test_withenv_but_folder_does_not_exist(self) -> None:  # noqa: D102
@@ -34,7 +34,7 @@ class TestPypeConfigHandlerResolveConfigFile:  # noqa: D101
                 test_env.config_dir, test_env.config_file
             )
             assert config.get_file_path() == test_env.config_file
-            assert config.get_json() == VALID_CONFIG.asdict()
+            assert config.get_config() == VALID_CONFIG
             assert config.get_config_source() == (
                 ConfigResolverSource.FROM_DEFAULT_PATH)
 
@@ -45,7 +45,7 @@ class TestPypeConfigHandlerResolveConfigFile:  # noqa: D101
             )
             assert config.get_file_path() == path.join(
                 test_env.config_dir, 'test_config.json')
-            assert config.get_json() == DEFAULT_CONFIG.asdict()
+            assert config.get_config() == DEFAULT_CONFIG
             assert config.get_config_source() == (
                 ConfigResolverSource.FROM_SCRATCH_TO_DEFAULT_PATH)
 
@@ -55,6 +55,6 @@ class TestPypeConfigHandlerResolveConfigFile:  # noqa: D101
             config = PypeConfigHandler()
             assert config.get_file_path() == path.join(
                 test_env.config_dir, 'config.json')
-            assert config.get_json() == DEFAULT_CONFIG.asdict()
+            assert config.get_config() == DEFAULT_CONFIG
             assert config.get_config_source() == (
                 ConfigResolverSource.FROM_SCRATCH_TO_PROVIDED_PATH)
