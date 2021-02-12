@@ -1,8 +1,11 @@
 # pype-cli
 
-> A command-line tool for command-line tools ![pype-cli Logo](res/icon.png)
+> A command-line tool for command-line tools
+<img align="right" src="res/icon.png" alt="pype-cli Logo" width="150" height="150">
 
-![GitHub Workflow Status](https://img.shields.io/github/workflow/status/BastiTee/pype-cli/CI) ![PyPU - Version](https://img.shields.io/pypi/v/pype-cli.svg) ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/pype-cli.svg)
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/BastiTee/pype-cli/CI)
+![PyPU - Version](https://img.shields.io/pypi/v/pype-cli.svg)
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/pype-cli.svg)
 
 ## In a nutshell
 
