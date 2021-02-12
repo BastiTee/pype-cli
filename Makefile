@@ -53,7 +53,8 @@ clean:
 	|xargs rm -rfv
 
 	find . -type f \
-	-name "pyproject.toml" \
+	-name "pyproject.toml" -o \
+	-name "Pipfile.lock" \
 	|xargs rm -rfv
 
 test:
