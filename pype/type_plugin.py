@@ -8,6 +8,8 @@ from os import path
 from sys import path as syspath
 from typing import Any
 
+from config_model import ConfigurationPlugin
+
 from pype.constants import NOT_DOCUMENTED_YET
 from pype.exceptions import PypeException
 from pype.type_pype import Pype
@@ -18,32 +20,38 @@ from pype.util.iotools import resolve_path
 class Plugin:
     """Data structure defining a plugin, i.e., a set of pypes."""
 
-    def __init__(self, plugin_config: dict, config_path: str) -> None:
+    def __init__(
+        self, plugin: ConfigurationPlugin,
+        config_path: str
+    ) -> None:
         """Activate plugins for the provided configuration."""
-        with Benchmark(plugin_config['name']):
-            self.__init_internal(plugin_config, config_path)
+        with Benchmark(plugin.name):
+            self.__init_internal(plugin, config_path)
 
-    def __init_internal(self, plugin_config: dict, config_path: str) -> None:
+    def __init_internal(
+        self, plugin: ConfigurationPlugin,
+        config_path: str
+    ) -> None:
         self.active = False
-        if not self.__valid_for_user(plugin_config):
+        if not self.__valid_for_user(plugin):
             return
-        if 'path' in plugin_config:
+        if plugin.path:
             # plugin pype
-            self.name = plugin_config['name']
+            self.name = plugin.name
             self.internal = False
             python_abspath = path.join(resolve_path(
                 self.__handle_relative_path(
-                    plugin_config['path'],
+                    plugin.path,
                     config_path
                 )))
             syspath.append(python_abspath)
-            self.abspath = path.join(python_abspath, plugin_config['name'])
+            self.abspath = path.join(python_abspath, plugin.name)
         else:
             # internal pype
-            self.name = 'pype.' + plugin_config['name']
+            self.name = 'pype.' + plugin.name
             self.internal = True
             self.abspath = path.join(path.dirname(
-                __file__), plugin_config['name'])
+                __file__), plugin.name)
         try:
             self.module = importlib.import_module(self.name)
         # This used to be a ModuleNotFoundException but it's only Python >= 3.6
@@ -79,11 +87,10 @@ class Plugin:
         )
 
     @staticmethod
-    def __valid_for_user(plugin_config: dict) -> bool:
-        plugin_users = plugin_config.get('users', [])
-        if len(plugin_users) == 0:
+    def __valid_for_user(plugin: ConfigurationPlugin) -> bool:
+        if not plugin.users or len(plugin.users) == 0:
             return True
         username = getpass.getuser()
-        if any([user for user in plugin_users if user == username]):
+        if any([user for user in plugin.users if user == username]):
             return True
         return False

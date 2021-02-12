@@ -11,6 +11,7 @@ from typing import Any, List, Optional
 
 from click import Context
 from colorama import Fore, Style
+from config_model import Configuration, ConfigurationAlias, ConfigurationPlugin
 from tabulate import tabulate
 
 from pype.config_handler import PypeConfigHandler
@@ -47,15 +48,15 @@ class PypeCore:
         Benchmark.print_info('Loading plugin information')
         self.plugins = [
             Plugin(plugin, self.__config.get_file_path())
-            for plugin in self.__config.get_json().get('plugins', [])
+            for plugin in self.__config.get_config().plugins
         ]
         # filter plugins not valid for current environment
         self.plugins = [plugin for plugin in self.plugins if plugin.active]
         # append internal plugins
-        self.plugins.append(Plugin({
-            'name': 'config',
-            'users': []
-        }, self.__config.get_file_path()))
+        self.plugins.append(Plugin(
+            ConfigurationPlugin('config', []),
+            self.__config.get_file_path())
+        )
         Benchmark.print_info('Plugins loaded')
 
     def get_plugins(self) -> List[Plugin]:
@@ -85,17 +86,17 @@ class PypeCore:
 
     def get_aliases(self) -> List[str]:
         """Return available aliases."""
-        aliases = self.__config.get_json().get('aliases', [])
-        return sorted([alias['alias'] for alias in aliases])
+        aliases = self.__config.get_config().aliases
+        return sorted([alias.alias for alias in aliases])
 
     def print_aliases(self) -> None:
         """Print list of aliases to console."""
-        aliases = self.__config.get_json().get('aliases', [])
-        sorted_alias_keys = sorted([alias['alias'] for alias in aliases])
+        aliases = self.__config.get_config().aliases
+        sorted_alias_keys = sorted([alias.alias for alias in aliases])
         alias_table = []
 
         for alias in sorted_alias_keys:
-            find_alias = self.__find_alias(aliases, alias)['command']
+            find_alias = self.__find_alias(aliases, alias)
             alias_table.append([
                 f'{Style.BRIGHT}{Fore.BLUE}{alias}',
                 Style.RESET_ALL + '=',
@@ -108,7 +109,7 @@ class PypeCore:
         # Clean up first
         self.uninstall_from_shell()
         print_success('Successfully cleaned up existing configurations')
-        aliases = self.__config.get_json().get('aliases', [])
+        aliases = self.__config.get_config().aliases
         self.__write_init_file('bsh', aliases)
         self.__write_init_file('zsh', aliases)
         print('Add link to init-file in rc-files if present')
@@ -184,18 +185,13 @@ class PypeCore:
             return
         alias_cmd = f'{alias}="{cmd_line.strip()}"'
         # store to internal config
-        config_json = self.__config.get_json()
-        if not config_json.get('aliases', None):
-            config_json['aliases'] = []
-        if self.__alias_present(config_json, alias):
+        config = self.__config.get_config()
+        if self.__alias_present(config, alias):
             print_warning('Alias already registered.')
             return
-        config_json.get('aliases', []).append({
-            'alias': alias,
-            'command': cmd_line
-        })
+        config.aliases.append(ConfigurationAlias(alias, cmd_line))
         print_success(f'Configured alias: {alias_cmd}')
-        self.__config.set_json(config_json)
+        self.__config.set_config(config)
         # update install script
         self.install_to_shell()
 
@@ -204,18 +200,18 @@ class PypeCore:
         if not alias:
             return
         # store to internal config
-        config_json = self.__config.get_json()
-        if not config_json.get('aliases', None):
+        config = self.__config.get_config()
+        if not config.aliases:
             print_warning('No aliases registered.')
             exit(1)
-        if not self.__alias_present(config_json, alias):
+        if not self.__alias_present(config, alias):
             print_warning('Alias not registered.')
             exit(1)
-        for obj in enumerate(config_json['aliases']):
-            if obj[1]['alias'] != alias:
+        for obj in enumerate(config.aliases):
+            if obj[1].alias != alias:
                 continue
-            del config_json['aliases'][obj[0]]
-        self.__config.set_json(config_json)
+            del config.aliases[obj[0]]
+        self.__config.set_config(config)
         # update install script
         print_success(f'Unregistered alias: {alias}')
         self.install_to_shell()
@@ -233,7 +229,7 @@ class PypeCore:
         target_handle = open(resolve_path(target_file), 'w+')
         print('Writing init-file ' + target_file)
         alias_definition = ''.join([
-            f'\talias {alias["alias"]}="{alias["command"]}"\n'
+            f'\talias {alias.alias}="{alias.command}"\n'
             for alias in aliases
         ])
         console_script = path.dirname(sys.argv[0])
@@ -315,18 +311,21 @@ fi
         environ['LANG'] = 'C.UTF-8'
 
     @staticmethod
-    def __find_alias(aliases: dict, key: str) -> dict:
+    def __find_alias(
+        aliases: List[ConfigurationAlias],
+        key: str
+    ) -> Optional[ConfigurationAlias]:
         for alias in aliases:
-            if key == alias['alias']:
+            if key == alias.alias:
                 return alias
-        return {}
+        return None
 
     @staticmethod
-    def __alias_present(config_json: dict, alias: str) -> bool:
+    def __alias_present(config: Configuration, alias: str) -> bool:
         return any([
             existing_alias
-            for existing_alias in config_json.get('aliases', [])
-            if existing_alias['alias'] == alias
+            for existing_alias in config.aliases
+            if existing_alias.alias == alias
         ])
 
     @staticmethod
