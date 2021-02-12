@@ -15,6 +15,6 @@ jobs:
             - name: Release
               run: |
                   python3 -m pip install pipenv
-                  TWINE_USERNAME="$TWINE_USERNAME" \
-                  TWINE_PASSWORD="$TWINE_PASSWORD" \
+                  TWINE_USERNAME="${{ secrets.TWINE_USERNAME }}" \
+                  TWINE_PASSWORD="${{ secrets.TWINE_PASSWORD }}" \
                   make publish
