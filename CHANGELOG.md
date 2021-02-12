@@ -1,6 +1,10 @@
 # Changelog
 
-## Version 0.6.1
+## 0.6.2
+
+- Simplify build and release process via Github actions
+
+## 0.6.1
 
 - Activate mypy for full code base
 - Harden plugin resolving
@@ -9,7 +13,7 @@
 - Rename test helpers to not confuse pytest
 - Add tests for config_model
 
-## Version 0.6.0
+## 0.6.0
 
 - Source code now fully typed and typings ensured via mypy
 - Extended 'pype pype.config system-info' with venv infos
@@ -22,31 +26,31 @@
 - Lean setup.py and lower python bound 3.7
 - Add vscode extensions recommendations
 
-## Version 0.5.5
+## 0.5.5
 
 - Clean up templates
 
-## Version 0.5.4
+## 0.5.4
 
 - Fix template.py
 
-## Version 0.5.3
+## 0.5.3
 
 - Fix open formatting and Makefile issues
 - Add documentation how to show benchmark information
 
-## Version 0.5.2
+## 0.5.2
 
 - Add load time benchmarking using `PYPE_BENCHMARK_INIT=1` as trigger variable
 - Replace make script with Makefile
 - Replace Travis CI with GitHub actions
 - Upgrade build environment
 
-## Version 0.5.1
+## 0.5.1
 
 - Complete `pype <plugin> --open-pype <pype>`
 
-## Version 0.5.0
+## 0.5.0
 
 - Functionality
 
@@ -68,11 +72,11 @@
 
   - Remove facading of config handler in core
 
-## Version 0.4.1
+## 0.4.1
 
 - Add [short aliases](pype/__init__.py) for run_interactive and run_and_get_output
 
-## Version 0.4.0
+## 0.4.0
 
 - Breaking changes
 
@@ -101,7 +105,7 @@
   - Reference click in documentation to highlight heavy usage
   - Reference templates in example documentation
 
-## Version 0.3.7
+## 0.3.7
 
 - run_interactive and run_and_get_output now always shell=True
 - Combine make-extension and make
@@ -110,23 +114,23 @@
 - Update pype-cli documentation
 - Add terminalizer for resources
 
-## Version 0.3.6
+## 0.3.6
 
 - Fix bug in pype.config.shell-install
 - Source complete script for zsh and bsh only once
 - Split complete files for bash and zsh
 - Improve init-file creation
 
-## Version 0.3.5
+## 0.3.5
 
 - Fix simplified process for custom shell command
 
-## Version 0.3.4
+## 0.3.4
 
 - Simplified process for custom shell command
 - Improve README
 
-## Version 0.3.3
+## 0.3.3
 
 - Add auto creation for empty config filepaths
 - Improved development workflow
@@ -136,11 +140,11 @@
 - Improved template pype
 - Add .env file for editor support
 
-## Version 0.3.2
+## 0.3.2
 
 - NaN
 
-## Version 0.3.1
+## 0.3.1
 
 - Add dynamic subcommand routine
 - Allow one-tab completion for bash-environments
@@ -148,7 +152,7 @@
 - Fix linux installation
 - Refine dependency installation
 
-## Version 0.3.0
+## 0.3.0
 
 - Rewrite `__main__` procedure now using click multicommands instead of spawning a new subshell, which allows much better dynamic chaining of pypes
 - Reduce complexity of install shell by writing to all available rc files
@@ -169,7 +173,7 @@
 - Refine pype --list
 - Add pype --aliases
 
-## Version 0.2.0
+## 0.2.0
 
 - Extended pype.config.system-info
 - Alternative shell command (instead of `pype`) configurable via config file entry `core_config.shell_command`
@@ -178,7 +182,7 @@
 - Make keyboard interrupt silent on subprocess
 - Internal class renaming for consistency
 
-## Version 0.1.2
+## 0.1.2
 
 - Add <https://pypi.org/project/progress/> as external dependency
 - Refine `pype --list`
@@ -186,11 +190,11 @@
 - Add `make profile` to benchmark runtime performance
 - Fix docker image for mint-installation testing
 
-## Version 0.1.1
+## 0.1.1
 
 - Fixed missing jsonschema dependency in setup.py
 
-## Version 0.1.0
+## 0.1.0
 
 - Stabilized interfaces
 - Added configuration file schema validation using jsonschema
