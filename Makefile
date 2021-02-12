@@ -90,8 +90,9 @@ dockerize: build
 	docker build -t $(DOCKER_IMAGE) .
 	docker run -ti --rm $(DOCKER_IMAGE)
 
-publish: build
+publish: all
 	@echo Publish pype to pypi.org
+	TWINE_USERNAME=$(TWINE_USERNAME) TWINE_PASSWORD=$(TWINE_PASSWORD) \
 	pipenv run twine upload dist/*
 
 changelog:

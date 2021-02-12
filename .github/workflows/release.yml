@@ -1,11 +1,8 @@
-name: CI
+name: Release
 
 on:
-    push:
-        branches:
-            - master
-            - develop
-            - feature/*
+    workflow_dispatch:
+
 
 jobs:
     build:
@@ -18,4 +15,6 @@ jobs:
             - name: CI checks
               run: |
                   python3 -m pip install pipenv
-                  make
+                  TWINE_USERNAME="$TWINE_USERNAME" \
+                  TWINE_PASSWORD="$TWINE_PASSWORD" \
+                  make publish
