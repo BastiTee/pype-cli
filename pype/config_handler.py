@@ -11,7 +11,8 @@ from dacite import from_dict
 from jsonschema import ValidationError, validate
 
 from pype import config_model
-from pype.config_model import ConfigResolverSource, ConfigurationCoreLogging
+from pype.config_model import (ConfigResolverSource, Configuration,
+                               ConfigurationCore, ConfigurationCoreLogging)
 from pype.constants import ENV_CONFIG_FOLDER
 from pype.exceptions import PypeException
 from pype.util.iotools import resolve_path
@@ -82,15 +83,16 @@ class PypeConfigHandler:
                 ConfigResolverSource.FROM_SCRATCH_TO_PROVIDED_PATH
             )
         self.validate_config(self.config_json)
+        self.config = from_dict(Configuration, self.config_json)
 
-    def get_json(self) -> dict:
-        """Get pype configuration as JSON object."""
-        return self.config_json
+    def get_config(self) -> Configuration:
+        """Get pype configuration."""
+        return self.config
 
-    def set_json(self, config: dict) -> None:
-        """Validate, set and persist configuration from JSON object."""
-        self.validate_config(config)
-        self.config_json = config
+    def set_config(self, config: Configuration) -> None:
+        """Validate, set and persist configuration."""
+        self.validate_config(config.asdict())
+        self.config_json = config.asdict()
         # always update config file as well
         dump(self.config_json, open(self.filepath, 'w+'), indent=4)
 
@@ -108,26 +110,23 @@ class PypeConfigHandler:
 
     def get_core_config_logging(self) -> ConfigurationCoreLogging:
         """Return current or default logging configuration."""
-        core_config = self.get_json().get('core_config', None)
+        core_config = self.get_config().core_config
         default_config = config_model.ConfigurationCoreLogging()
         default_config.directory = path.dirname(self.filepath)
-        if not core_config:
+        if not core_config or not core_config.logging:
             return default_config
-        logging_config = core_config.get('logging', None)
-        if not logging_config:
-            return default_config
-        return from_dict(ConfigurationCoreLogging, logging_config)
+        return core_config.logging
 
     def set_core_config_logging(
         self,
         logging_config: ConfigurationCoreLogging
     ) -> None:
         """Set logging configuration."""
-        config_json = self.get_json()
-        if not config_json.get('core_config', None):
-            config_json['core_config'] = {}
-        config_json['core_config']['logging'] = logging_config.asdict()
-        self.set_json(config_json)  # Setter takes care of validation
+        config = self.get_config()
+        if not config.core_config:
+            config.core_config = ConfigurationCore()
+        config.core_config.logging = logging_config
+        self.set_config(config)  # Setter takes care of validation
 
     @staticmethod
     def validate_config(config: dict) -> bool:

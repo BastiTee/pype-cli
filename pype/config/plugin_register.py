@@ -7,6 +7,7 @@ from os.path import dirname, isdir, isfile, join
 from re import IGNORECASE, sub
 
 import click
+from config_model import ConfigurationPlugin
 
 from pype.config_handler import PypeConfigHandler
 from pype.constants import NOT_DOCUMENTED_YET
@@ -42,21 +43,17 @@ def main(name: str, path: str, create: bool, user_only: bool) -> None:
         exit(1)
     # Append plugin to global configuration
     config_handler = PypeConfigHandler()
-    config_json = config_handler.get_json()
-    if any([plugin for plugin in config_json['plugins']
-            if plugin['name'] == name]):
+    config = config_handler.get_config()
+    if any([plugin for plugin in config.plugins
+            if plugin.name == name]):
         print_error(f'There is already a plugin named "{name}".')
         exit(1)
     path = __replace_parentfolder_if_relative_to_config(
         path, config_handler.get_file_path())
     path = __replace_homefolder_with_tilde(path)
     users = [getpass.getuser()] if user_only else []
-    config_json['plugins'].append({
-        'name': module.__name__,
-        'path': path,
-        'users': users
-    })
-    config_handler.set_json(config_json)
+    config.plugins.append(ConfigurationPlugin(module.__name__, path, users))
+    config_handler.set_config(config)
 
     print_success(f'Plugin "{name}" successfully registered.')
 
