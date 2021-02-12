@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.6.5
+
+- Type-safe Configuration object everywhere
+- Merge pull request #12 from BastiTee/feature/type-safe-configuration
+
 ## 0.6.4
 
 - New release process
