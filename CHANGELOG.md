@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.4
+
+- New release process
+
 ## 0.6.2
 
 - Simplify build and release process via Github actions
