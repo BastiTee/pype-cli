@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.6
+
+- Codebase clean up
+
 ## 0.6.5
 
 - Type-safe Configuration object everywhere
