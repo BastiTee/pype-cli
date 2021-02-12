@@ -95,6 +95,15 @@ publish: all
 	TWINE_USERNAME=$(TWINE_USERNAME) TWINE_PASSWORD=$(TWINE_PASSWORD) \
 	pipenv run twine upload dist/*
 
+release:
+	@echo Commit release - requires NEXT_VERSION to be set
+	test $(NEXT_VERSION)
+	sed -i '' "s/version='[0-9\.]*',/version='$(NEXT_VERSION)',/" setup.py
+	git commit -am "Release $(NEXT_VERSION)"
+	git tag $(NEXT_VERSION)
+	git push origin $(NEXT_VERSION)
+	git push
+
 changelog:
 	@echo Return changelog since last version tag
 	git --no-pager log --pretty=format:"- %s" $(VERSION_HASH)..HEAD |cat
