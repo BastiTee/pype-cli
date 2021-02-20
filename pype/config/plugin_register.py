@@ -7,9 +7,9 @@ from os.path import dirname, isdir, isfile, join
 from re import IGNORECASE, sub
 
 import click
-from config_model import ConfigurationPlugin
 
 from pype.config_handler import PypeConfigHandler
+from pype.config_model import ConfigurationPlugin
 from pype.constants import NOT_DOCUMENTED_YET
 from pype.core import load_module
 from pype.exceptions import PypeException

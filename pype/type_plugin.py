@@ -8,8 +8,7 @@ from os import path
 from sys import path as syspath
 from typing import Any
 
-from config_model import ConfigurationPlugin
-
+from pype.config_model import ConfigurationPlugin
 from pype.constants import NOT_DOCUMENTED_YET
 from pype.exceptions import PypeException
 from pype.type_pype import Pype
@@ -21,7 +20,8 @@ class Plugin:
     """Data structure defining a plugin, i.e., a set of pypes."""
 
     def __init__(
-        self, plugin: ConfigurationPlugin,
+        self,
+        plugin: ConfigurationPlugin,
         config_path: str
     ) -> None:
         """Activate plugins for the provided configuration."""
@@ -29,13 +29,14 @@ class Plugin:
             self.__init_internal(plugin, config_path)
 
     def __init_internal(
-        self, plugin: ConfigurationPlugin,
+        self,
+        plugin: ConfigurationPlugin,
         config_path: str
     ) -> None:
         self.active = False
         if not self.__valid_for_user(plugin):
             return
-        if plugin.path:
+        if plugin.path != '%INTERNAL%':
             # plugin pype
             self.name = plugin.name
             self.internal = False

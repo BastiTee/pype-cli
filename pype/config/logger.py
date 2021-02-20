@@ -2,12 +2,12 @@
 """Configure global logging."""
 
 import contextlib
-from typing import IO, Generator
+from typing import Generator
 
 import click
-from config_model import ConfigurationCoreLogging
 
 from pype.config_handler import PypeConfigHandler, get_supported_log_levels
+from pype.config_model import ConfigurationCoreLogging
 from pype.util.cli import fname_to_name, print_error, print_success
 
 
@@ -49,7 +49,7 @@ def set_pattern(pattern: str) -> None:  # noqa: D103, A002
 @main.command(help='Configure target directory')
 @click.argument('directory', metavar='TARGETDIR', nargs=1,
                 type=click.Path(exists=True, writable=True))
-def set_directory(directory: IO) -> None:  # noqa: D103
+def set_directory(directory: str) -> None:  # noqa: D103
     with open_configuration() as log_cfg:
         log_cfg.directory = directory
     print_success(f'Log directory set to \'{directory}\'.')

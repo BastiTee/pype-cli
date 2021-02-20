@@ -11,10 +11,11 @@ from typing import Any, List, Optional
 
 from click import Context
 from colorama import Fore, Style
-from config_model import Configuration, ConfigurationAlias, ConfigurationPlugin
 from tabulate import tabulate
 
 from pype.config_handler import PypeConfigHandler
+from pype.config_model import (Configuration, ConfigurationAlias,
+                               ConfigurationPlugin)
 from pype.constants import ENV_CONFIG_FOLDER
 from pype.exceptions import PypeException
 from pype.type_plugin import Plugin
@@ -54,7 +55,7 @@ class PypeCore:
         self.plugins = [plugin for plugin in self.plugins if plugin.active]
         # append internal plugins
         self.plugins.append(Plugin(
-            ConfigurationPlugin('config', []),
+            ConfigurationPlugin('config', '%INTERNAL%'),
             self.__config.get_file_path())
         )
         Benchmark.print_info('Plugins loaded')
