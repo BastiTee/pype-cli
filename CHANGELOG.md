@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.7
+
+- Hotfix for bug in dependency managemen
+
 ## 0.6.6
 
 - Codebase clean up
