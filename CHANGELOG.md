@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.7.0
+
+- Rename PypeException to PypeError
+- Update of all libraries
+
 ## 0.6.7
 
 - Hotfix for bug in dependency management
