@@ -17,7 +17,7 @@ from pype.config_handler import PypeConfigHandler
 from pype.config_model import (Configuration, ConfigurationAlias,
                                ConfigurationPlugin)
 from pype.constants import ENV_CONFIG_FOLDER
-from pype.exceptions import PypeException
+from pype.errors import PypeError
 from pype.type_plugin import Plugin
 from pype.util.benchmark import Benchmark
 from pype.util.cli import print_error, print_success, print_warning
@@ -349,7 +349,7 @@ def load_module(name: str, module_path: str) -> Any:
         return import_module(name)
     # This used to be a ModuleNotFoundException but it's only Python >= 3.6
     except Exception as e:  # noqa: F821
-        raise PypeException(e)
+        raise PypeError(e)
 
 
 def get_pype_basepath() -> str:

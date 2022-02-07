@@ -12,7 +12,7 @@ from pype.config_handler import PypeConfigHandler
 from pype.config_model import ConfigurationPlugin
 from pype.constants import NOT_DOCUMENTED_YET
 from pype.core import load_module
-from pype.exceptions import PypeException
+from pype.errors import PypeError
 from pype.util.cli import fname_to_name, print_error, print_success
 from pype.util.iotools import resolve_path
 
@@ -32,7 +32,7 @@ def main(name: str, path: str, create: bool, user_only: bool) -> None:
     module = None
     try:
         module = load_module(name, path)
-    except PypeException as ex:
+    except PypeError as ex:
         print_error(f'Could not find a python module "{name}" at {path}: {ex}')
         exit(1)
     # Check __init__.py

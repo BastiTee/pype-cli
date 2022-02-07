@@ -12,7 +12,7 @@ from click import Choice
 from colorama import init
 
 from pype.core import PypeCore, print_context_help
-from pype.exceptions import PypeException
+from pype.errors import PypeError
 from pype.type_plugin import Plugin
 from pype.util.benchmark import Benchmark
 from pype.util.cli import fname_to_name, print_error
@@ -214,6 +214,6 @@ try:
         _bind_plugin(plugin.name, plugin)
         for plugin in PYPE_CORE.get_plugins()
     ]
-except PypeException as pype_exception:
-    print_error(str(pype_exception))
+except PypeError as pype_error:
+    print_error(str(pype_error))
     exit(1)

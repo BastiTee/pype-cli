@@ -10,7 +10,7 @@ from typing import Any
 
 from pype.config_model import ConfigurationPlugin
 from pype.constants import NOT_DOCUMENTED_YET
-from pype.exceptions import PypeException
+from pype.errors import PypeError
 from pype.type_pype import Pype
 from pype.util.benchmark import Benchmark
 from pype.util.iotools import resolve_path
@@ -57,7 +57,7 @@ class Plugin:
             self.module = importlib.import_module(self.name)
         # This used to be a ModuleNotFoundException but it's only Python >= 3.6
         except Exception:  # noqa: F821
-            raise PypeException(
+            raise PypeError(
                 f'No plugin named "{self.name}" found at {self.abspath}')
         self.doc = self.__get_docu_or_default(self.module)
         subfiles = [
