@@ -6,7 +6,7 @@ import copy
 from pytest import raises
 
 from pype.config_handler import PypeConfigHandler
-from pype.exceptions import PypeException
+from pype.errors import PypeError
 from tests import VALID_CONFIG
 
 
@@ -14,12 +14,12 @@ class TestPypeConfigHandlerResolveConfigFile:  # noqa: D101
 
     def test_noneinput_raisetypeerror(self) -> None:  # noqa: D102
         config = PypeConfigHandler()
-        with raises(PypeException):
+        with raises(PypeError):
             config.validate_config({})
 
     def test_emptyinput_raisetypeerror(self) -> None:  # noqa: D102
         config = PypeConfigHandler()
-        with raises(PypeException):
+        with raises(PypeError):
             config.validate_config({})
 
     def test_validfulljson(self) -> None:  # noqa: D102
@@ -37,7 +37,7 @@ class TestPypeConfigHandlerResolveConfigFile:  # noqa: D101
         input_config: dict = {
             'plugins': []
         }
-        with raises(PypeException):
+        with raises(PypeError):
             config.validate_config(input_config)
 
     def test_misconfiguredplugin(self) -> None:  # noqa: D102
@@ -46,7 +46,7 @@ class TestPypeConfigHandlerResolveConfigFile:  # noqa: D101
         input_config['plugins'].append({
             'name': 'new_plugin'
         })
-        with raises(PypeException):
+        with raises(PypeError):
             config.validate_config(input_config)
 
     def test_configuredplugin(self) -> None:  # noqa: D102
@@ -67,7 +67,7 @@ class TestPypeConfigHandlerResolveConfigFile:  # noqa: D101
             'path': '/some/path',
             'users': [42]
         })
-        with raises(PypeException):
+        with raises(PypeError):
             config.validate_config(input_config)
 
     def test_configuredalias(self) -> None:  # noqa: D102
@@ -86,5 +86,5 @@ class TestPypeConfigHandlerResolveConfigFile:  # noqa: D101
             'aliass': 'al',
             'commando': 'pype test'
         })
-        with raises(PypeException):
+        with raises(PypeError):
             config.validate_config(input_config)

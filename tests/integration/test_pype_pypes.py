@@ -66,7 +66,7 @@ class TestCLIPypePypes:  # noqa: D101
             ]
         )
         assert result.exit_code == 2
-        assert 'choose from' in result.output
+        assert 'Invalid value for \'--delete-pype\'' in result.output
 
     def test_create_pype(self) -> None:  # noqa: D102
         global test_run

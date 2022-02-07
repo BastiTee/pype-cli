@@ -8,7 +8,7 @@ import pytest
 from pype.config_handler import (DEFAULT_CONFIG, ConfigResolverSource,
                                  PypeConfigHandler)
 from pype.constants import ENV_CONFIG_FOLDER
-from pype.exceptions import PypeException
+from pype.errors import PypeError
 from tests import VALID_CONFIG, ConfigTypeForTest, create_test_env
 
 
@@ -24,7 +24,7 @@ class TestPypeConfigHandlerResolveConfigFile:  # noqa: D101
 
     def test_withenv_but_folder_does_not_exist(self) -> None:  # noqa: D102
         environ[ENV_CONFIG_FOLDER] = '/somewhere/'
-        with pytest.raises(PypeException):
+        with pytest.raises(PypeError):
             PypeConfigHandler()
         del environ[ENV_CONFIG_FOLDER]
 

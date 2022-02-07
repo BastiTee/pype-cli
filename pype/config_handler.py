@@ -14,7 +14,7 @@ from pype import config_model
 from pype.config_model import (ConfigResolverSource, Configuration,
                                ConfigurationCore, ConfigurationCoreLogging)
 from pype.constants import ENV_CONFIG_FOLDER
-from pype.exceptions import PypeException
+from pype.errors import PypeError
 from pype.util.iotools import resolve_path
 
 DEFAULT_CONFIG = config_model.Configuration(
@@ -47,7 +47,7 @@ class PypeConfigHandler:
             # Priority 1: Environment variable
             env_config_folder = environ[ENV_CONFIG_FOLDER]
             if not path.isdir(env_config_folder):
-                raise PypeException(
+                raise PypeError(
                     f'Provided configuration folder {env_config_folder} '
                     + 'does not exist!')
             self.filepath = path.join(
@@ -74,7 +74,7 @@ class PypeConfigHandler:
         try:
             self.config_json = load(open(self.filepath, 'r'))
         except JSONDecodeError:
-            raise PypeException('Provided configuration file not valid JSON.')
+            raise PypeError('Provided configuration file not valid JSON.')
         except FileNotFoundError:
             # Priorty 4: File name provided but file does not exist
             dump(DEFAULT_CONFIG_DICT, open(self.filepath, 'w+'), indent=4)
@@ -135,7 +135,7 @@ class PypeConfigHandler:
             validate(instance=config, schema=CONFIG_SCHEMA)
         except ValidationError as err:
             print(Fore.RED + str(err) + Style.RESET_ALL + '\n', file=stderr)
-            raise PypeException(
+            raise PypeError(
                 'Configuration file is not valid. See above for details '
                 + f'and refer to the schema file at {CONFIG_SCHEMA_PATH}')
         return True

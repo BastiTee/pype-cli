@@ -24,8 +24,8 @@ class Benchmark():
             return
         self.start_time = time()
 
-    def __exit__(self, type_s: Any, value: Any,
-                 traceback: Any) -> None:  # noqa: D105
+    def __exit__(self, type_s: Any, value: Any,  # noqa: D105
+                 traceback: Any) -> None:
         if not self.active:
             return
         self.end_time = time()

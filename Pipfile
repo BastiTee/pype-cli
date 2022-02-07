@@ -20,6 +20,8 @@ rope = "*" # Refactoring library
 twine = "*" # Interoperability with pypi.org
 mypy = "*" # Optional static type checker
 typing_extensions = "*" # Typing extensions for mypy
+types-tabulate = "*" # Typing extensions for mypy + tabulate
+types-setuptools = "*" # Typing extensions for mypy + setuptools
 pype-cli = {path = ".", editable = true}
 
 [packages]
