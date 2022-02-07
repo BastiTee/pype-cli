@@ -2,7 +2,7 @@
 
 ## 0.6.7
 
-- Hotfix for bug in dependency managemen
+- Hotfix for bug in dependency management
 
 ## 0.6.6
 
