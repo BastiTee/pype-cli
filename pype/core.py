@@ -6,7 +6,6 @@ import sys
 from importlib import import_module
 from os import environ, path, remove
 from re import sub
-from shutil import copyfile
 from typing import Any, List, Optional
 
 from click import Context
@@ -269,8 +268,15 @@ fi
         # Depending on user input create a documented or simple template
         template_name = ('template_minimal.py' if minimal
                          else 'template.py')
-        source_name = path.join(path.dirname(__file__), template_name)
-        copyfile(source_name, target_file)
+        source_file = path.join(path.dirname(__file__), template_name)
+        source_handle = open(source_file, 'r', encoding='utf-8')
+        target_handle = open(target_file, 'w+', encoding='utf-8')
+        for line in source_handle.readlines():
+            if r'%%PYPE_NAME%%' in line:
+                line = sub(r'%%PYPE_NAME%%', pype_name, line)
+            target_handle.write(line)
+        source_handle.close()
+        target_handle.close()
         print_success('Created new pype ' + target_file)
         return target_file
 
