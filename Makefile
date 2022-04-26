@@ -1,9 +1,10 @@
 # Required executables
-ifeq (, $(shell which python3))
- $(error "No python3 on PATH.")
+ifeq (, $(shell which python))
+ $(error "No python on PATH.")
 endif
-ifeq (, $(shell which pipenv))
- $(error "No pipenv on PATH.")
+PIPENV_CMD := python -m pipenv
+ifeq (, $(shell $(PIPENV_CMD) --version))
+ $(error "No $(PIPENV_CMD) on PATH.")
 endif
 
 # Suppress warning if pipenv is started inside .venv
@@ -26,17 +27,17 @@ all: prepare build
 
 prepare: clean
 	@echo Preparing virtual environment
-	pipenv install --dev
+	$(PIPENV_CMD) install --dev
 	mkdir -p $(PYPE_CONFIG_FOLDER)
 	echo "export PYPE_CONFIG_FOLDER=$(PYPE_CONFIG_FOLDER)" >> .venv/bin/activate
 
 build: test mypy isort lint
 	@echo Run setup.py-based build process to package application
-	pipenv run python setup.py bdist_wheel
+	$(PIPENV_CMD) run python setup.py bdist_wheel
 
 shell:
 	@echo Initialize virtualenv and open a new shell using it
-	pipenv shell
+	$(PIPENV_CMD) shell
 
 clean:
 	@echo Clean project base
@@ -59,36 +60,36 @@ clean:
 
 test:
 	@echo Run all tests in default virtualenv
-	pipenv run py.test --verbose tests
+	$(PIPENV_CMD) run py.test --verbose tests
 
 isort:
 	@echo Check for incorrectly sorted imports
-	pipenv run isort --check-only $(PY_FILES)
+	$(PIPENV_CMD) run isort --check-only $(PY_FILES)
 
 isort-apply:
 	@echo Check for incorrectly sorted imports
-	pipenv run isort $(PY_FILES)
+	$(PIPENV_CMD) run isort $(PY_FILES)
 
 lint:
 	@echo Run code formatting checks against source code base
-	pipenv run flake8 $(PY_FILES)
+	$(PIPENV_CMD) run flake8 $(PY_FILES)
 
 mypy:
 	@echo Run static code checks against source code base
-	pipenv run mypy pype example_pypes tests
+	$(PIPENV_CMD) run mypy pype example_pypes tests
 
 sys-info:
 	@echo Print pype configuration within venv
-	pipenv run pype pype.config system-info
+	$(PIPENV_CMD) run pype pype.config system-info
 
 install-wheel: all
 	@echo Install from wheel
-	pip3 install --force-reinstall dist/*.whl
+	python -m pip install --force-reinstall dist/*.whl
 
 publish: all
 	@echo Publish pype to pypi.org
 	TWINE_USERNAME=$(TWINE_USERNAME) TWINE_PASSWORD=$(TWINE_PASSWORD) \
-	pipenv run twine upload dist/*
+	$(PIPENV_CMD) run twine upload dist/*
 
 release:
 	@echo Commit release - requires NEXT_VERSION to be set

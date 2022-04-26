@@ -15,8 +15,8 @@ __pype-cli__ is a command-line tool to manage sets of other command-line tools. 
 
 ## Quickstart
 
-- Install **pype-cli** via `pip3 install --user pype-cli`. This will install the command `pype` for the current user
-- To use an alternative name you need to install from source via `PYPE_CUSTOM_SHELL_COMMAND=my_cmd_name python3 setup.py install --user`
+- Install **pype-cli** via `python -m pip install --user pype-cli`. This will install the command `pype` for the current user
+- To use an alternative name you need to install from source via `PYPE_CUSTOM_SHELL_COMMAND=my_cmd_name python setup.py install --user`
 - Run `pype pype.config shell-install` and open a new shell to activate shell completion
 - Create a new **plugin** in your home folder: `pype pype.config plugin-register --create --name my-plugin --path ~/`
 - Create a sample **pype** for your plugin: `pype my-plugin --create-pype my-pype`
