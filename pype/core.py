@@ -219,7 +219,7 @@ class PypeCore:
     def __write_init_file(self, init_file: str, aliases: List) -> None:
         shell_command = path.basename(sys.argv[0])
         cfg_dir = self.__config.get_dir_path()
-        source_cmd = 'source_zsh' if init_file == 'zsh' else 'source'
+        source_cmd = 'zsh_source' if init_file == 'zsh' else 'bash_source'
         target_file = resolve_path(
             path.join(cfg_dir, self.SHELL_INIT_PREFIX + init_file)
         )
@@ -238,7 +238,7 @@ class PypeCore:
 export PATH=$PATH:{console_script}
 if [ ! -z "$( command -v {shell_command} )" ] # Only if installed
 then
-    if [ ! -f {complete_file} ]
+    if [ ! -s {complete_file} ]
     then
         _{shell_upper}_COMPLETE={source_cmd} {shell_command} > {complete_file}
     fi
