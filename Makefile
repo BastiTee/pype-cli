@@ -87,6 +87,12 @@ install-wheel: all
 	@echo Install from wheel
 	$(PIP_CMD) install --force-reinstall dist/*.whl
 
+install-wheel-no-test:
+	@echo Install from wheel including rebuild but skipping tests
+	rm -rf dist/*.whl
+	$(PIPENV_CMD) run python setup.py bdist_wheel
+	$(PIP_CMD) install --force-reinstall dist/*.whl
+
 publish: all
 	@echo Publish pype to pypi.org
 	TWINE_USERNAME=$(TWINE_USERNAME) TWINE_PASSWORD=$(TWINE_PASSWORD) \
