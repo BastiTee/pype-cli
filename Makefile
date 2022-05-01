@@ -22,7 +22,7 @@ export PYPE_CONFIG_FOLDER = $(shell pwd)/.venv/.pype-cli
 # Process variables
 LAST_VERSION := $(shell git tag | sort --version-sort -r | head -n1)
 VERSION_HASH := $(shell git show-ref -s $(LAST_VERSION))
-PY_FILES := setup.py pype tests example_pypes
+PY_FILES := setup.py pype tests
 
 all: prepare build
 
@@ -77,7 +77,7 @@ lint:
 
 mypy:
 	@echo Run static code checks against source code base
-	$(PIPENV_CMD) run mypy pype example_pypes tests
+	$(PIPENV_CMD) run mypy pype tests
 
 sys-info:
 	@echo Print pype configuration within venv
