@@ -1,22 +1,19 @@
 # pype-cli
 
-> A command-line tool for command-line tools
-<img align="right" src="res/icon.png" alt="pype-cli Logo" width="150" height="150">
+> A command-line tool for command-line tools ![pype-cli Logo](res/icon.png)
 
-![GitHub Workflow Status](https://img.shields.io/github/workflow/status/BastiTee/pype-cli/CI)
-![PyPU - Version](https://img.shields.io/pypi/v/pype-cli.svg)
-![PyPI - Python Version](https://img.shields.io/pypi/pyversions/pype-cli.svg)
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/BastiTee/pype-cli/CI) ![PyPU - Version](https://img.shields.io/pypi/v/pype-cli.svg) ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/pype-cli.svg)
 
 ## In a nutshell
 
-__pype-cli__ is a command-line tool to manage sets of other command-line tools. It simplifies the creation, orchestration and access of Python scripts that you require for your development work, process automation, etc.
+**pype-cli** is a command-line tool to manage sets of other command-line tools. It simplifies the creation, orchestration and access of Python scripts that you require for your development work, process automation, etc.
 
-<img src="res/pype-cli.gif" alt="pype-cli GIF" width="550">
+![pype-cli GIF](res/pype-cli.gif)
 
 ## Quickstart
 
-- Install **pype-cli** via `pip3 install --user pype-cli`. This will install the command `pype` for the current user
-- To use an alternative name you need to install from source via `PYPE_CUSTOM_SHELL_COMMAND=my_cmd_name python3 setup.py install --user`
+- Install **pype-cli** via `python -m pip install --user pype-cli`. This will install the command `pype` for the current user
+- To use an alternative name you need to install from source via `PYPE_CUSTOM_SHELL_COMMAND=my_cmd_name python setup.py install --user`
 - Run `pype pype.config shell-install` and open a new shell to activate shell completion
 - Create a new **plugin** in your home folder: `pype pype.config plugin-register --create --name my-plugin --path ~/`
 - Create a sample **pype** for your plugin: `pype my-plugin --create-pype my-pype`
@@ -86,7 +83,23 @@ If you have selected a **pype** from a **plugin** you can set **aliases** for it
 
 ### Global logging configuration
 
-**pype-cli** contains a built-in logger setup. To configure it use the **pype** `pype pype.config logger`. In your **pypes** you can use it right away [like in the provided example](example_pypes/basics/logger.py).
+**pype-cli** contains a built-in file logger setup. To configure it use the **pype** `pype pype.config logger`. In your **pypes** you can use it right away like this:
+
+```python
+import logging
+import click
+
+@click.command(name='my-pype', help=__doc__)
+def main() -> None:
+    # Name your logger. Note that this can be omitted but you will end up
+    # with the default 'root' logger.
+    logger = logging.getLogger(__name__)
+
+    # Log something to the global log file. Note that the output to the file
+    # depends on the logging configuration mentioned above.
+    logger.debug('Debug message')
+    logger.info('Info message')
+```
 
 - Enable/disable global logging: `pype pype.config logger enable/disable`
 - Print current configuration: `pype pype.config logger print-config`
@@ -98,21 +111,9 @@ If you have selected a **pype** from a **plugin** you can set **aliases** for it
 
 If your **plugin** contains shared code over all **pypes** you can simply put it into a subpackage of your **plugin** or into a file prefixed with `__`, e.g., `__commons__.py`. **pype-cli** will only scan / consider top-level Python scripts without underscores as **pypes**.
 
-### Example recipes
-
-You can register a sample **plugin** called [**basics**](example_pypes/basics) that contains some useful recipes to get you started with your own pipes.
-
-- Register the [**basics**](example_pypes/basics) **plugin**: `pype pype.config plugin-register --name basics --path <PYPE_REPOSITORY>/example_pypes`
-- Navigate to `pype basics <TAB>` to see its content
-- Open a recipe in your edior, for example: `pype basics --open-pype hello-world-opt`
-
-For some basic information you can also refer to the built-in [template.py](pype/template.py) and [template_minimal.py](pype/template_minimal.py) that are used on creation of new **pypes**.
-
-Note that as long as you don't import some of the [convenience utilities](pype/__init__.py) of **pype-cli** directly, your **pype** will remain [an independent Python script](example_pypes/basics/non_pype_script.py) that can be used regardless of **pype_cli**.
-
 ### Best practises
 
-**pype-cli** has been built around the [Click-project ("Command Line Interface Creation Kit")](https://click.palletsprojects.com/) which is a Python package for creating beautiful command line interfaces. To fully utilize the capabilities of **pype-cli** it is highly recommended to get familiar with the project and use it in your **pypes** as well. Again you can refer to the [**basics**](example_pypes/basics) plugin for guidance.
+**pype-cli** has been built around the [Click-project ("Command Line Interface Creation Kit")](https://click.palletsprojects.com/) which is a Python package for creating beautiful command line interfaces. To fully utilize the capabilities of **pype-cli** it is highly recommended to get familiar with the project and use it in your **pypes** as well.
 
 ## pype-cli development
 

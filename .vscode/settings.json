@@ -2,7 +2,6 @@
     "python.pythonPath": ".venv/bin/python",
     "python.analysis.extraPaths": [
         "pypes",
-        "example_pypes",
         ".venv/bin/python"
     ],
     // PEP8 settings (https://www.python.org/dev/peps/pep-0008/)

@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """Package installer script."""
 
@@ -19,7 +19,7 @@ console_scripts = [f'{shell_command}=pype.__main__:main']
 setup(
     # Basic project information
     name='pype-cli',
-    version='0.7.0',
+    version='0.8.0',
     # Authorship and online reference
     author='Basti Tee',
     author_email='basti.tee@posteo.de',
