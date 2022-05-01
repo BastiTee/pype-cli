@@ -3,6 +3,7 @@ ifeq (, $(shell which python))
  $(error "No python on PATH.")
 endif
 PIPENV_CMD := python -m pipenv
+PIP_CMD := python -m pip
 ifeq (, $(shell $(PIPENV_CMD) --version))
  $(error "No $(PIPENV_CMD) on PATH.")
 endif
@@ -84,7 +85,7 @@ sys-info:
 
 install-wheel: all
 	@echo Install from wheel
-	python -m pip install --force-reinstall dist/*.whl
+	$(PIP_CMD) install --force-reinstall dist/*.whl
 
 publish: all
 	@echo Publish pype to pypi.org
