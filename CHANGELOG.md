@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.8.1
+
+- Improved documentation
+
 ## 0.8.0
 
 - Removed assumptions about `python` versus `python3` installation. This simplifies the code and gives full control into the user's hand to determine the correct `python` through the path or tools such as `pyenv`

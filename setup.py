@@ -18,7 +18,7 @@ console_scripts = [f'{shell_command}=pype.__main__:main']
 setup(
     # Basic project information
     name='pype-cli',
-    version='0.8.0',
+    version='0.8.1',
     # Authorship and online reference
     author='Basti Tee',
     author_email='basti.tee@icloud.com',
