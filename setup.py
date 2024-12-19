@@ -22,7 +22,7 @@ setup(
     version='0.8.0',
     # Authorship and online reference
     author='Basti Tee',
-    author_email='basti.tee@posteo.de',
+    author_email='basti.tee@icloud.com',
     url='https://github.com/BastiTee/pype',
     # Detailed description
     description='A command-line tool for command-line tools',
