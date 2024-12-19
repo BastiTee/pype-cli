@@ -5,7 +5,7 @@ from dataclasses import asdict as dc_asdict
 from dataclasses import dataclass, field
 from enum import Enum
 from json import dumps
-from typing import List, Optional
+from typing import Any, List, Optional
 
 
 class ConfigResolverSource(str, Enum):
@@ -20,9 +20,10 @@ class ConfigResolverSource(str, Enum):
 class BaseDataClass:
     """Base data class with asdict capability."""
 
-    def asdict(self) -> dict:
+    def asdict(self) -> dict[str, Any]:
         """Convert to dictionary."""
-        return dc_asdict(self)
+        return dc_asdict(self)  # type: ignore
+        # https://github.com/python/mypy/issues/17550
 
     def asjson(self) -> str:
         """Convert to JSON."""

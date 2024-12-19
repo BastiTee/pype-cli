@@ -108,11 +108,9 @@ def create_test_env(
 
 def invoke_runner(
         component_under_test: Union[str, BaseCommand],
-        arguments: list = None
+        arguments: list = []
 ) -> RunnerEnvironment:
     """Create and invoke a test runner."""
-    if arguments is None:
-        arguments = []
     with create_test_env() as test_env:
         return create_runner(test_env, component_under_test, arguments)
 
@@ -120,7 +118,7 @@ def invoke_runner(
 def create_runner(
         test_env: TestEnvironment,
         component_under_test: Union[str, BaseCommand],
-        arguments: list = None
+        arguments: list = []
 ) -> RunnerEnvironment:
     """Create a test runner with a provided test environment.
 
@@ -128,8 +126,6 @@ def create_runner(
     variables correctly. That is why tests.invoke_runner gets called
     with a string instead of a module.
     """
-    if arguments is None:
-        arguments = []
     environ[ENV_CONFIG_FOLDER] = test_env.config_dir
     runner = CliRunner(env=environ)
     importlib.reload(__main__)
