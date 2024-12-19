@@ -1,8 +1,7 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """Package installer script."""
 
-from io import open
 from os import environ, path
 
 from setuptools import find_packages, setup
@@ -19,10 +18,10 @@ console_scripts = [f'{shell_command}=pype.__main__:main']
 setup(
     # Basic project information
     name='pype-cli',
-    version='0.7.1',
+    version='0.8.0',
     # Authorship and online reference
     author='Basti Tee',
-    author_email='basti.tee@posteo.de',
+    author_email='basti.tee@icloud.com',
     url='https://github.com/BastiTee/pype',
     # Detailed description
     description='A command-line tool for command-line tools',
@@ -35,14 +34,16 @@ setup(
         'Intended Audience :: Developers',
         'License :: OSI Approved :: Apache Software License',
         'Programming Language :: Python',
-        'Programming Language :: Python :: 3.7',
-        'Programming Language :: Python :: 3.8',
-        'Programming Language :: Python :: 3.9'
+        'Programming Language :: Python :: 3.9',
+        'Programming Language :: Python :: 3.10',
+        'Programming Language :: Python :: 3.11',
+        'Programming Language :: Python :: 3.12',
+        'Programming Language :: Python :: 3.13',
     ],
     # Package configuration
     packages=find_packages(exclude=('tests',)),
     include_package_data=True,
-    python_requires='>=3.7',
+    python_requires='>=3.9',
     install_requires=[
         'click',
         'jsonschema',

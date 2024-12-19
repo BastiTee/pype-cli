@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.8.0
+
+- Removed assumptions about `python` versus `python3` installation. This simplifies the code and gives full control into the user's hand to determine the correct `python` through the path or tools such as `pyenv`
+- Upgraded to Python 3.9..3.12
+- Using the minimal template for new pypes, e.g., `pype myplugin --create-pype my-pype --minimal` now creates a pype that can be executed independent from `pype-cli`, i.e., no built-in libraries are used
+- `pype pype.config shell-install` produces more robust completion scripts
+- Removal of all example pypes as they were outdated and misleading
+
 ## 0.7.0
 
 - Rename PypeException to PypeError

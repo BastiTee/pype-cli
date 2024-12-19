@@ -6,7 +6,6 @@ import sys
 from importlib import import_module
 from os import environ, path, remove
 from re import sub
-from shutil import copyfile
 from typing import Any, List, Optional
 
 from click import Context
@@ -220,7 +219,7 @@ class PypeCore:
     def __write_init_file(self, init_file: str, aliases: List) -> None:
         shell_command = path.basename(sys.argv[0])
         cfg_dir = self.__config.get_dir_path()
-        source_cmd = 'zsh_source' if init_file == 'zsh' else 'source'
+        source_cmd = 'zsh_source' if init_file == 'zsh' else 'bash_source'
         target_file = resolve_path(
             path.join(cfg_dir, self.SHELL_INIT_PREFIX + init_file)
         )
@@ -239,7 +238,7 @@ class PypeCore:
 export PATH=$PATH:{console_script}
 if [ ! -z "$( command -v {shell_command} )" ] # Only if installed
 then
-    if [ ! -f {complete_file} ]
+    if [ ! -s {complete_file} ]
     then
         _{shell_upper}_COMPLETE={source_cmd} {shell_command} > {complete_file}
     fi
@@ -269,8 +268,15 @@ fi
         # Depending on user input create a documented or simple template
         template_name = ('template_minimal.py' if minimal
                          else 'template.py')
-        source_name = path.join(path.dirname(__file__), template_name)
-        copyfile(source_name, target_file)
+        source_file = path.join(path.dirname(__file__), template_name)
+        source_handle = open(source_file, 'r', encoding='utf-8')
+        target_handle = open(target_file, 'w+', encoding='utf-8')
+        for line in source_handle.readlines():
+            if r'%%PYPE_NAME%%' in line:
+                line = sub(r'%%PYPE_NAME%%', pype_name, line)
+            target_handle.write(line)
+        source_handle.close()
+        target_handle.close()
         print_success('Created new pype ' + target_file)
         return target_file
 
