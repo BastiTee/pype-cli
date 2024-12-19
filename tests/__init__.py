@@ -52,7 +52,7 @@ class ConfigTypeForTest(Enum):
     NONE = 2
 
 
-@ contextlib.contextmanager
+@contextlib.contextmanager
 def create_test_env(
     configuration: ConfigTypeForTest = ConfigTypeForTest.EMPTY
 ) -> Generator[

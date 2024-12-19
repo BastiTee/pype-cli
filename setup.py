@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 """Package installer script."""
 
-from io import open
 from os import environ, path
 
 from setuptools import find_packages, setup
